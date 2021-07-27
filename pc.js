@@ -579,7 +579,7 @@ $(() => {
 			// script.onload = function() {
 			// 	log('loaded ' + src);
 			// };
-			script.onerror = function() {
+			script.onerror = function () {
 				this.error('Failed to load file ' + file + '\n\nCheck the Javascript console for more info.\n\nTo open the console use control+shift+i or command+option+i then click the Console tab.');
 			};
 			script.src = src;
@@ -748,7 +748,7 @@ $(() => {
 			<div class="bottomFrame">
 				<div class="fan">
 				</div>
-				<img class="logo" src="PC/logo.png" />
+				<img class="logo" src="node_modules/quintos/img/logo.png" />
 				<div class="powerButton">
 					<div class="powerIcon">
 					</div>
@@ -859,7 +859,7 @@ $(() => {
 		$('body').append(calcuHTML);
 		$('body').addClass('calcu');
 
-		$('#keys div p').click(function() {
+		$('#keys div p').click(function () {
 			let $this = $(this);
 			let key = $this.attr('name') || $this.text();
 			let count = 1;
