@@ -1,8 +1,10 @@
 # QuintOS
 
-Make retro games with QuintOS!
+Make retro games with QuintOS! Requires jquery and p5.js
 
 ```
+npm i jquery
+npm i p5
 npm i quintos
 ```
 

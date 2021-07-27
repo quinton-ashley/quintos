@@ -1,7 +1,7 @@
 {
   "name": "quintos",
   "description": "Addon to p5.js for making retro games",
-  "version": "1.6.48",
+  "version": "1.6.49",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "v": "npm version patch --force",
