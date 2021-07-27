@@ -1,0 +1,5 @@
+.DS_Store
+dev
+GAMES/*
+!GAMES/_
+DATA/*/preload.js
