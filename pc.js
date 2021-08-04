@@ -127,7 +127,7 @@ $(() => {
 		async text(txt, x, y, w, h, speed) {
 			if (typeof txt != 'string') txt += '';
 			w = w || (this.w - x);
-			speed = speed || 10;
+			if (typeof speed == 'undefined') speed = 10;
 			let chars = 0;
 			let frames = 1;
 			let _speed = speed;
