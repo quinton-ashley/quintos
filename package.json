@@ -1,4 +1,5 @@
 {
+  "author": "quinton-ashley",
   "name": "quintos",
   "description": "Addon to p5.js for making retro games",
   "license": "GPL-3.0-only",
@@ -13,5 +14,5 @@
     "version": "git add -A",
     "postversion": "git push"
   },
-  "version": "1.6.53"
+  "version": "1.6.54"
 }

@@ -123,6 +123,8 @@ $(() => {
     }
 
     async text(txt, x, y, w, h, speed) {
+      x ??= 0;
+      y ??= 0;
       if (typeof txt != "string") txt += "";
       w = w || this.w - x;
       if (this.level != 3) {
@@ -311,6 +313,7 @@ $(() => {
         let el = this.gpu[i];
         if (this.overlap(el, eraser)) {
           el.erase();
+          // remove element from gpu stack
           this.gpu.splice(i, 1);
         }
       }
@@ -339,7 +342,7 @@ $(() => {
           this.w = maxWidth;
           this.h = h;
 
-          // Add all tiles belonging to the button, to the button
+          // add all tiles belonging to the button, to the button
           for (let i = 0, cols = 0, nl = 0; i < txt.length; i++, cols++) {
             if (txt.charAt(i) == "\n") {
               y++;
@@ -349,15 +352,17 @@ $(() => {
             }
             this.tiles[i - nl] = _this.rows[y].tiles[x + cols];
           }
-          // ButtonAction
-          for (let i = 0; i < this.tiles.length; i++) {
-            $(this.tiles[i]).click(() => {
+
+          for (let tile of this.tiles) {
+            // when a tile in the button is clicked, do button action
+            $(tile).click(() => {
               if (!this.action) return;
               this.action();
             });
 
+            // when one tile is hovered over, all tiles in the button are highlighted
             let thisBtn = this;
-            $(this.tiles[i]).hover(
+            $(tile).hover(
               () => {
                 for (let tile of thisBtn.tiles) {
                   $(tile).addClass("hovered");
@@ -373,11 +378,13 @@ $(() => {
         }
 
         erase() {
+          // remove all tiles
           for (let tile of this.tiles) {
             $(tile).off();
             $(tile).removeClass("hovered");
             if (tile) tile.childNodes[0].nodeValue = " ";
           }
+          // remove from gpu stack
           _this.gpu.splice(_this.gpu.indexOf(this), 1);
         }
       }
@@ -416,7 +423,7 @@ $(() => {
           $(tile).removeClass("hovered");
           if (tile) tile.childNodes[0].nodeValue = " ";
           _this.erase(this.x, this.y, this.w, this.h);
-
+          // remove from gpu stack
           _this.gpu.splice(_this.gpu.indexOf(this), 1);
         }
 
@@ -658,7 +665,9 @@ $(() => {
       if (this.level == 0) {
         this.loadGame("Calculator", "PC/roms");
       } else {
-        this.input("", 0, 0);
+        let inp = this.input("", 0, 0, () => {
+          inp.y++;
+        });
       }
     }
   }
