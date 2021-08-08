@@ -620,7 +620,7 @@ $(() => {
     }
 
     preloadData(game, dir) {
-      dir = QuintOS.dir || dir || "GAMES";
+      dir = QuintOS.dir || dir || ".";
       let src = `${dir}/${
         game.slice(0, 1).toLowerCase() + game.slice(1)
       }-preload.js`;
@@ -628,7 +628,7 @@ $(() => {
     }
 
     loadGame(game, dir) {
-      dir = QuintOS.dir || dir || "GAMES";
+      dir = QuintOS.dir || dir || ".";
       let src = `${dir}/${game.slice(0, 1).toLowerCase() + game.slice(1)}.js`;
       this.loadJS(src);
       let title =
