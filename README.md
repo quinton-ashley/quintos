@@ -1,12 +1,8 @@
 # QuintOS
 
-Make retro games with QuintOS! Requires jquery and p5.js
+Use the template project to get started making your own retro games with QuintOS!
 
-```
-npm i jquery
-npm i @code-dot-org/p5.play
-npm i quintos
-```
+https://github.com/quinton-ashley/quintos-template
 
 ## alert
 
