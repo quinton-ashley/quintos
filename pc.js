@@ -419,11 +419,14 @@ $(() => {
 				erase() {
 					clearInterval(this.blink);
 					document.removeEventListener('keydown', this.onKeyDown);
-					let tile = _this.rows[this.y].tiles[this.cursorX];
-					$(tile).off();
-					$(tile).removeClass('hovered');
-					if (tile) tile.childNodes[0].nodeValue = ' ';
-					_this.erase(this.x, this.y, this.w, this.h);
+					let cursor = _this.rows[this.y].tiles[this.cursorX];
+					$(cursor).off();
+					$(cursor).removeClass('hovered');
+					for (let i = 0; i < this.cursorX - this.x + 1; i++) {
+						let tile = _this.rows[this.y].tiles[this.x + i];
+						if (tile) tile.childNodes[0].nodeValue = ' ';
+					}
+
 					// remove from gpu stack
 					_this.gpu.splice(_this.gpu.indexOf(this), 1);
 				}
@@ -621,7 +624,9 @@ $(() => {
 					'\n\nCheck the Javascript console for more info. To open the console use control+shift+i or command+option+i then click the Console tab.'
 				);
 			};
-			script.src = src + '?' + Date.now(); // prevent page loading from the browser's cache
+			// prevent page loading from the browser's cache
+			if (QuintOS.context == 'live') src += '?' + Date.now();
+			script.src = src;
 			document.body.appendChild(script);
 		}
 
