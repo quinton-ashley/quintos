@@ -611,17 +611,17 @@ $(() => {
 		loadJS(src) {
 			const script = document.createElement('script');
 			script.async = false;
-			// script.onload = function() {
-			// 	log('loaded ' + src);
-			// };
-			script.onerror = function () {
-				this.error(
-					'Failed to load file ' +
-						file +
-						'\n\nCheck the Javascript console for more info.\n\nTo open the console use control+shift+i or command+option+i then click the Console tab.'
+			script.onload = function () {
+				log('loaded: ' + src);
+			};
+			script.onerror = () => {
+				throw (
+					'Failed to load file: \n\n' +
+					src +
+					'\n\nCheck the Javascript console for more info. To open the console use control+shift+i or command+option+i then click the Console tab.'
 				);
 			};
-			script.src = src;
+			script.src = src + '?' + Date.now(); // prevent page loading from the browser's cache
 			document.body.appendChild(script);
 		}
 
@@ -630,13 +630,23 @@ $(() => {
 			let src = `${dir}/${
 				game.slice(0, 1).toLowerCase() + game.slice(1)
 			}-preload.js`;
-			this.loadJS(src);
+
+			try {
+				this.loadJS(src);
+			} catch (error) {
+				this.error(error);
+			}
 		}
 
 		loadGame(game, dir) {
-			dir = QuintOS.dir || dir || '.';
-			let src = `${dir}/${game.slice(0, 1).toLowerCase() + game.slice(1)}.js`;
-			this.loadJS(src);
+			dir = dir || QuintOS.dir || '.';
+			let file = `${game.slice(0, 1).toLowerCase() + game.slice(1)}.js`;
+			let src = dir + '/' + file;
+			try {
+				this.loadJS(src);
+			} catch (error) {
+				this.error(error);
+			}
 			let title =
 				'0' + this.level + '_' + game.slice(0, 1).toUpperCase() + game.slice(1);
 			$('head title').text(title);
@@ -657,19 +667,17 @@ $(() => {
 				let stack = e.stack.split('\n')[0].split('/').pop().split(':');
 				stack = stack[0] + ' line ' + stack[1];
 				await this.alert(
-					null,
-					null,
 					'ERROR: ' + e.message + '\n\n' + stack + '\n' + e.stack
 				);
 			} else {
-				await this.alert(null, null, 'ERROR: ' + e);
+				await this.alert('ERROR: ' + e);
 			}
 		}
 
 		async exit() {
 			await this.erase();
 			if (this.level == 0) {
-				this.loadGame('Calculator', 'PC/roms');
+				this.loadGame('Calculator', 'node_modules/quintos/roms');
 			} else {
 				let inp = this.input('', 0, 0, () => {
 					inp.y++;
