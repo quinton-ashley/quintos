@@ -122,7 +122,39 @@ $(() => {
 			// }
 		}
 
-		async text(txt, x, y, w, h, speed) {
+		_textSync(lines, x, y) {
+			for (let i = 0; i < lines.length; i++) {
+				let line = lines[i];
+				for (let j = 0; j < line.length; j++) {
+					this.drawChar(x + j, y + i, line[j]);
+				}
+			}
+		}
+
+		async _textAsync(lines, x, y, speed) {
+			let chars = 0;
+			let frames = 1;
+			let _speed = speed;
+			let interval = setInterval(() => {
+				if (!chars) return;
+				// checks the accuracy of the speed every four frames
+				speed = Math.max(1, _speed + (_speed * frames - chars));
+				frames += 4;
+			}, 64);
+
+			for (let i = 0; i < lines.length; i++) {
+				let line = lines[i];
+				for (let j = 0; j < line.length; j++) {
+					if (chars % speed == 0) await delay();
+					this.drawChar(x + j, y + i, line[j]);
+					chars++;
+				}
+			}
+
+			clearInterval(interval);
+		}
+
+		_text(txt, x, y, w, h, speed) {
 			x ??= 0;
 			y ??= 0;
 			if (typeof txt != 'string') txt += '';
@@ -130,29 +162,20 @@ $(() => {
 			if (this.level != 3) {
 				speed ??= 10;
 			} else {
-				speed = speed || 0;
+				speed ??= 0;
 			}
-			let chars = 0;
-			let frames = 1;
-			let _speed = speed;
-
-			// checks the accuracy of the speed every four frames
-			let interval;
-			if (speed)
-				interval = setInterval(() => {
-					if (!chars) return;
-					speed = Math.max(1, _speed + (_speed * frames - chars));
-					frames += 4;
-				}, 64);
 
 			// if (this.level == 0) txt = txt.toUpperCase();
 			if (this.level <= 1) txt = txt.replace(/\t/g, '  ');
-			let lines = txt.split('\n');
+			txt = txt.split('\n');
+			let lines = [];
 
-			for (let i = 0; i < lines.length; i++) {
-				let line = lines[i];
+			for (let i = 0; i < txt.length; i++) {
+				let line = txt[i];
 				if (line.length > w) {
+					// break line if it is too long
 					let part0 = line.slice(0, w);
+					// try to find space to break at
 					let bp = part0.lastIndexOf(' ');
 					let part1;
 					if (bp < 0) {
@@ -161,20 +184,24 @@ $(() => {
 						part0 = line.slice(0, bp);
 						part1 = line.slice(bp + 1);
 					}
-					lines.splice(i, 1, part0, part1);
-					i--;
-					continue;
+					txt.splice(i, 1, part0, part1);
+					line = part0;
 				}
-				for (let j = 0; j < line.length; j++) {
-					if (speed && chars % speed == 0) await delay();
-					this.drawChar(x + j, y, line.charAt(j));
-					chars++;
-				}
-				y++;
-				if ((h && i >= h) || y >= this.h) break;
+				lines.push(line);
+				// don't write beyond the bounds of the screen
+				if ((h && i >= h) || lines.length >= this.h) break;
 			}
-			if (speed) clearInterval(interval);
-			return lines.length; // return the height
+			return { lines, x, y, speed };
+		}
+
+		async text(txt, x, y, w, h, speed) {
+			txt = this._text(txt, x, y, w, h, speed);
+			if (txt.speed) {
+				await this._textAsync(txt.lines, txt.x, txt.y, txt.speed);
+			} else {
+				this._textSync(txt.lines, txt.x, txt.y);
+			}
+			return txt.lines.length; // returns the height
 		}
 
 		lcd(block, x, y, direction, name) {
@@ -288,10 +315,20 @@ $(() => {
 			return 0;
 		}
 
-		async erase(x, y, w, h, speed) {
+		erase() {
+			let w = this.w - 2;
+			let h = this.h - 2;
+			let lines = [];
+			for (let i = 0; i < h; i++) {
+				lines.push(' '.repeat(w));
+			}
+			this._textSync(lines, 1, 1);
+		}
+
+		async eraseRect(x, y, w, h, speed) {
 			if (this.level == 0 && (typeof h == 'undefined' || h > 1)) {
-				await this.erase(0, 0, this.w, 1);
-				await this.erase(0, 1, 4, 1);
+				await this.eraseRect(0, 0, this.w, 1);
+				await this.eraseRect(0, 1, 4, 1);
 				return;
 			}
 			x = x || 0;
@@ -309,12 +346,11 @@ $(() => {
 
 			await this.text((' '.repeat(w) + '\n').repeat(h), x, y, w, h, speed);
 
-			for (let i in this.gpu) {
+			for (let i = 0; i < this.gpu.length; i++) {
 				let el = this.gpu[i];
 				if (this.overlap(el, eraser)) {
 					el.erase();
-					// remove element from gpu stack
-					this.gpu.splice(i, 1);
+					i--;
 				}
 			}
 		}
@@ -323,36 +359,33 @@ $(() => {
 			if (this.level > 0 && this.level < 2) txt += '←';
 			if (this.level == 2) txt = '<' + txt + '>';
 
-			let h = this.text(txt, x, y, 0, 0, 0);
-
 			let _this = this;
 			class Button {
 				constructor(txt, x, y, action) {
-					this.txt = txt;
-					this.x = x;
-					this.y = y;
-					this.action = action;
-					this.tiles = new Array(txt.length);
-
-					let lines = txt.split('\n');
-					let maxWidth = 0;
+					txt = _this._text(txt, x, y);
+					this.x = txt.x;
+					this.y = txt.y;
+					let lines = txt.lines;
+					this.txt = lines.join('\n');
+					let w = 0; // max width of text
 					for (let line of lines) {
-						if (line.length > maxWidth) maxWidth = line.length;
+						if (line.length > w) w = line.length;
 					}
-					this.w = maxWidth;
-					this.h = h;
+					this.w = w;
+					this.h = lines.length;
+					this.action = action;
+					this.tiles = [];
 
 					// add all tiles belonging to the button, to the button
-					for (let i = 0, cols = 0, nl = 0; i < txt.length; i++, cols++) {
-						if (txt.charAt(i) == '\n') {
-							y++;
-							cols = -1;
-							nl++;
-							if (this.level == 0) break;
-							continue;
+					for (let i = 0; i < lines.length; i++) {
+						if (i != 0 && this.level == 0) break;
+						let line = lines[i];
+						for (let j = 0; j < line.length; j++) {
+							this.tiles.push(_this.rows[this.y + i].tiles[this.x + j]);
 						}
-						this.tiles[i - nl] = _this.rows[y].tiles[x + cols];
 					}
+
+					_this._textSync(lines, this.x, this.y);
 
 					for (let tile of this.tiles) {
 						// when a tile in the button is clicked, do button action
@@ -488,7 +521,7 @@ $(() => {
 			if (typeof txt != 'string') txt += '';
 
 			if (this.charAt(x, y) != ' ' || this.charAt(x + w - 1, y + h) != ' ') {
-				await this.erase(x, y, w, h);
+				await this.eraseRect(x, y, w, h);
 			}
 			let th;
 			if (this.level > 0) {
@@ -524,7 +557,7 @@ $(() => {
 					erasing = true;
 					if (this.level != 0) okayBtn.erase();
 					document.removeEventListener('keydown', onKeyDown);
-					await _this.erase(x, y, w, h + th);
+					await _this.eraseRect(x, y, w, h + th);
 				};
 
 				if (this.level == 0) return;
@@ -548,7 +581,7 @@ $(() => {
 			if (typeof txt != 'string') txt += '';
 
 			if (this.charAt(x, y) != ' ' || this.charAt(x + w - 1, y + h) != ' ') {
-				await this.erase(x, y, w, h);
+				await this.eraseRect(x, y, w, h);
 			}
 			let th;
 			if (this.level > 0) {
@@ -586,7 +619,7 @@ $(() => {
 					enterBtn.erase();
 					cancelBtn.erase();
 				}
-				await _this.erase(x, y, w, h + th);
+				await _this.eraseRect(x, y, w, h + th);
 			};
 			return new Promise(async (resolve, reject) => {
 				inp.onSubmit = async () => {
@@ -611,7 +644,7 @@ $(() => {
 			});
 		}
 
-		loadJS(src) {
+		async loadJS(src) {
 			const script = document.createElement('script');
 			script.async = false;
 			script.onload = function () {
@@ -626,29 +659,30 @@ $(() => {
 			};
 			// prevent page loading from the browser's cache
 			if (QuintOS.context == 'live') src += '?' + Date.now();
-			script.src = src;
+
+			script.innerHTML = await (await fetch(src)).text();
 			document.body.appendChild(script);
 		}
 
-		preloadData(game, dir) {
+		async preloadData(game, dir) {
 			dir = QuintOS.dir || dir || '.';
 			let src = `${dir}/${
 				game.slice(0, 1).toLowerCase() + game.slice(1)
 			}-preload.js`;
 
 			try {
-				this.loadJS(src);
+				await this.loadJS(src);
 			} catch (error) {
 				this.error(error);
 			}
 		}
 
-		loadGame(game, dir) {
+		async loadGame(game, dir) {
 			dir = dir || QuintOS.dir || '.';
 			let file = `${game.slice(0, 1).toLowerCase() + game.slice(1)}.js`;
 			let src = dir + '/' + file;
 			try {
-				this.loadJS(src);
+				await this.loadJS(src);
 			} catch (error) {
 				this.error(error);
 			}
@@ -680,14 +714,24 @@ $(() => {
 		}
 
 		async exit() {
-			await this.erase();
+			await this.eraseRect();
+
+			// run a simple eval based calculator program
 			if (this.level == 0) {
-				this.loadGame('Calculator', 'node_modules/quintos/roms');
-			} else {
-				let inp = this.input('', 0, 0, () => {
-					inp.y++;
-				});
+				let inp;
+				function calculate(value) {
+					let result = eval(value);
+					inp.erase();
+					inp = pc.input(result, 0, 0, calculate);
+				}
+				inp = pc.input('', 0, 0, calculate);
+				return;
 			}
+
+			// create an input the user can move around the screen
+			let inp = this.input('', 0, 0, () => {
+				inp.y++;
+			});
 		}
 	}
 

@@ -305,7 +305,7 @@ READY.
 
 	async function loadGame(game) {
 		if (pc.level < 5 || pc.level == 7) {
-			await pc.erase();
+			await pc.eraseRect();
 		}
 		pc.loadGame(game);
 	}
@@ -319,7 +319,7 @@ READY.
 				txt0 = txt0[txt0.length - 1] + txt0.slice(0, -1);
 				// txt1 = txt1.slice(1) + txt1[1];
 			}
-			await pc.erase();
+			await pc.eraseRect();
 		}
 		if (pc.level < 5 || pc.level == 7) {
 			for (let el of bootScreen) {
