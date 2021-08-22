@@ -658,9 +658,15 @@ $(() => {
 				);
 			};
 			// prevent page loading from the browser's cache
-			if (QuintOS.context == 'live') src += '?' + Date.now();
+			if (QuintOS.context == 'live') {
+				src += '?' + Date.now();
+			}
+			if (src.slice(0, 4) != 'http') {
+				script.src = src;
+			} else {
+				script.innerHTML = await (await fetch(src)).text();
+			}
 
-			script.innerHTML = await (await fetch(src)).text();
 			document.body.appendChild(script);
 		}
 
