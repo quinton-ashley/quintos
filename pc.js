@@ -694,6 +694,7 @@ $(() => {
 			}
 			let title =
 				'0' + this.level + '_' + game.slice(0, 1).toUpperCase() + game.slice(1);
+			if (QuintOS.username) title += ' by ' + QuintOS.username;
 			$('head title').text(title);
 			if (this.level >= 5) {
 				return;
@@ -1071,6 +1072,11 @@ $(() => {
 		$('body').append(gameboiHTML);
 		$('body').addClass('gameboi');
 	}
+
+	let footer = 'Created using ';
+	if (QuintOS.username) footer = 'Created by ' + QuintOS.username + ' using ';
+
+	$('body').append(footer);
 
 	window.PC = PC;
 });

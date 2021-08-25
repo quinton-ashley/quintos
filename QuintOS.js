@@ -360,29 +360,30 @@ READY.
 			$('canvas').css('width', '96vmin');
 			$('canvas').css('height', '60vmin');
 
-			let logo = spriteArt(
+			await pc.text(
 				`
-.www.................www...ww
-w...w.w.w.w.www.www.w...w.w..
-w.w.w.w.w.w.w.w..w..w...w..ww
-.www..www.w.w.w..w...www..www
-....w........................`,
-				6
+┏━━┓ ┏┓ ┏┓┏━┳━━┓
+┃┏┓┣┳╋╋━┫┗┫┃┃━━┫
+┃┗┛┃┃┃┃┃┃┏┫┃┣━━┃
+┗━┓┣━┻┻┻┻━┻━┻━━┛
+  ┗┛`,
+				14,
+				10
 			);
+
 			let wasDrawn = false;
-			window.draw = () => {
-				if (!wasDrawn) {
-					image(
-						logo,
-						320 - logo.width / 2,
-						200 - logo.height / 2,
-						logo.width,
-						logo.height
-					);
-					wasDrawn = true;
-				}
-			};
+
+			await new Promise((resolve) => {
+				window.draw = () => {
+					if (!wasDrawn) {
+						wasDrawn = true;
+						resolve();
+					}
+				};
+			});
+
 			await delay(500);
+			await pc.erase();
 		}
 	}
 
