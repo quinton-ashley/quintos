@@ -1,8 +1,8 @@
 # QuintOS
 
-Use the template project to get started making your own retro games with QuintOS!
+Learn how to make games with QuintOS by taking Quinton's [IntroToJS](https://github.com/quinton-ashley/IntroToJS/blob/main/README.md) course. Contact me <mailto:qashto@gmail.com> for JavaScript lessons!
 
-https://github.com/quinton-ashley/quintos-template
+Use the QuintOS [template project](https://github.com/quinton-ashley/quintos-template) to get started making your own retro games.
 
 ## alert window
 

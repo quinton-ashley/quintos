@@ -1,5 +1,6 @@
 .terminal #screen0 {
 	margin-top: 50px;
+	height: 570px;
 }
 
 .terminal .center {
@@ -48,7 +49,13 @@
 }
 
 .terminal .screenEffect {
-	background: repeating-linear-gradient(to bottom, #171717, #171717 3.6px, #121212 3.6px, #121212 7.2px);
+	background: repeating-linear-gradient(
+		to bottom,
+		#171717,
+		#171717 3.6px,
+		#121212 3.6px,
+		#121212 7.2px
+	);
 }
 
 .terminal .terminalScreen {
@@ -63,16 +70,28 @@
 }
 
 .terminal .terminalScreen {
-	background: radial-gradient(circle, rgba(23, 23, 23, 1) 20%, rgba(30, 30, 30, 1) 100%);
+	background: radial-gradient(
+		circle,
+		rgba(23, 23, 23, 1) 20%,
+		rgba(30, 30, 30, 1) 100%
+	);
 }
 
 .terminal.lvl02 .terminalScreen {
-	background: radial-gradient(circle, rgba(23, 23, 23, 1) 20%, rgba(38, 59, 2, 1) 100%);
+	background: radial-gradient(
+		circle,
+		rgba(23, 23, 23, 1) 20%,
+		rgba(38, 59, 2, 1) 100%
+	);
 }
 
 .terminal.lvl03 .terminalScreen,
 .terminal.lvl04 .terminalScreen {
-	background: radial-gradient(circle, rgba(23, 23, 23, 1) 20%, rgba(39, 24, 7, 1) 100%);
+	background: radial-gradient(
+		circle,
+		rgba(23, 23, 23, 1) 20%,
+		rgba(39, 24, 7, 1) 100%
+	);
 }
 
 .terminal.lvl03 .frame,
@@ -104,7 +123,13 @@
 
 .terminal .fan {
 	position: absolute;
-	background: repeating-linear-gradient(to right, white, white 10.8px, #333333 10.8px, #333333 21.6px);
+	background: repeating-linear-gradient(
+		to right,
+		white,
+		white 10.8px,
+		#333333 10.8px,
+		#333333 21.6px
+	);
 	width: 259.2px;
 	height: 100%;
 }
@@ -147,13 +172,13 @@
 }
 
 .terminal .lightOn {
-	background-color: #1BCF60;
-	filter: drop-shadow(0 0 12px #1BCF60);
+	background-color: #1bcf60;
+	filter: drop-shadow(0 0 12px #1bcf60);
 }
 
 .terminal .lightOff {
-	background-color: #FA4646;
-	filter: drop-shadow(0 0 12px #FA4646);
+	background-color: #fa4646;
+	filter: drop-shadow(0 0 12px #fa4646);
 }
 
 .terminal .screenFoot {
@@ -186,7 +211,13 @@
 .terminal .computerFan1,
 .terminal .computerFan2 {
 	position: absolute;
-	background: repeating-linear-gradient(to right, white, white 10.8px, #333333 10.8px, #333333 21.6px);
+	background: repeating-linear-gradient(
+		to right,
+		white,
+		white 10.8px,
+		#333333 10.8px,
+		#333333 21.6px
+	);
 	height: 77.4px;
 	width: 288px;
 	top: 25.2px;
@@ -197,7 +228,7 @@
 	top: 127.8px;
 }
 
-.terminal div[class^=screw] {
+.terminal div[class^='screw'] {
 	position: absolute;
 	width: 28.8px;
 	height: 28.8px;
@@ -255,7 +286,7 @@
 	background-color: black;
 }
 
-.terminal div[class^=socket] {
+.terminal div[class^='socket'] {
 	position: absolute;
 	width: 217.8px;
 	height: 43.2px;
@@ -311,7 +342,7 @@
 	width: 45%;
 	height: 28.8px;
 	top: 7.2px;
-	background-color: #FA4646;
+	background-color: #fa4646;
 	cursor: pointer;
 }
 

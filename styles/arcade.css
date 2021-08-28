@@ -1,9 +1,9 @@
-.c64 :root {
+.arcade :root {
 	background-color: #111;
 	background-image: radial-gradient(circle, #222, #111);
 }
 
-body.c64 {
+body.arcade {
 	width: 100vw;
 	height: 100vh;
 	display: flex;
@@ -12,11 +12,11 @@ body.c64 {
 	flex-direction: column;
 }
 
-.c64 #pc {
+.arcade #pc {
 	margin-top: -100px;
 }
 
-.c64 #case {
+.arcade #case {
 	position: relative;
 	padding: 3vmin 3vmin;
 	background-color: #d7c8be;
@@ -26,7 +26,7 @@ body.c64 {
 	box-shadow: inset 0 1vmin 2vmin #b0937f;
 }
 
-.c64 #bezel {
+.arcade #bezel {
 	border-radius: 0.5vmin;
 	background-image: linear-gradient(to right, #262524, #333230, #383735, #333230, #262524);
 	padding: 8vmin;
@@ -38,7 +38,7 @@ body.c64 {
 	box-shadow: 0 -1vmin 0.25vmin 0.5vmin #baa08f, 0 1vmin 0 0.5vmin #eae3de;
 }
 
-.c64 #bezel::before {
+.arcade #bezel::before {
 	content: "";
 	position: absolute;
 	top: 3vmin;
@@ -52,7 +52,7 @@ body.c64 {
 	box-shadow: inset 0 -1.5vmin 2vmin -0.05vmin #191817, inset 0 1.5vmin 2vmin -0.05vmin #191817;
 }
 
-.c64 #tube {
+.arcade #tube {
 	box-shadow: 0 -3px 2px #1e1d1c, 0 2px 0 -1px #827f7a, 0 3px #4d4c49;
 	color: #887ecb;
 	background-color: #50459b;
@@ -66,18 +66,18 @@ body.c64 {
 	cursor: none;
 }
 
-.c64 #tube.clear {
+.arcade #tube.clear {
 	background-color: #222;
 	border: none;
 }
 
-.c64 canvas {
+.arcade canvas {
 	position: relative;
 	border-radius: 2vmin;
 	z-index: 0;
 }
 
-.c64 #tube::before, .c64 #tube::after {
+.arcade #tube::before, .arcade #tube::after {
 	border-radius: 2vmin;
 	position: absolute;
 	content: "";
@@ -87,7 +87,7 @@ body.c64 {
 	bottom: -6vmin;
 }
 
-.c64 #tube.clear::before, .c64 #tube.clear::after {
+.arcade #tube.clear::before, .arcade #tube.clear::after {
 	border-radius: 2vmin;
 	position: absolute;
 	content: "";
@@ -97,7 +97,7 @@ body.c64 {
 	bottom: 0;
 }
 
-/* .c64 #tube::before {
+/* .arcade #tube::before {
 	z-index: 20;
 	animation: scanlines 16ms infinite steps(4, start);
 	/* mix-blend-mode: overlay; */
@@ -115,17 +115,17 @@ background-image: linear-gradient(to bottom, transparent 2.7px, rgba(40, 35, 78,
 	}
 }
 
-/* .c64 #tube::after {
+/* .arcade #tube::after {
 	box-shadow: inset 0 0 1vmin 0.25vmin rgba(0, 0, 0, 0.85), 0 0 10vmin -2vmin #50459b, 0 0 10vmin -5vmin #2c2654;
 	background-blend-mode: multiply, normal, screen;
 	background-image: radial-gradient(ellipse closest-corner, transparent 70%, rgba(80, 69, 155, 0.7)), linear-gradient(85deg, rgba(44, 38, 84, 0.2) 0%, rgba(255, 255, 255, 0) 64.5%, rgba(174, 172, 191, 0.05) 74.5%, rgba(243, 242, 250, 0.05) 75%, rgba(213, 210, 229, 0.07) 85%, rgba(255, 255, 255, 0) 85.5%);
 } */
-/* .c64 #tube.clear::after {
+/* .arcade #tube.clear::after {
 	box-shadow: inset 0 0 1vmin 0.25vmin rgba(0, 0, 0, 0.85), 0 0 10vmin -2vmin #666, 0 0 10vmin -5vmin #333;
 	background-blend-mode: multiply, normal, screen;
 	background-image: radial-gradient(ellipse closest-corner, transparent 70%, rgba(90, 90, 90, 0.7)), linear-gradient(85deg, rgba(64, 68, 64, 0.2) 0%, rgba(255, 255, 255, 0) 64.5%, rgba(174, 172, 191, 0.05) 74.5%, rgba(243, 242, 250, 0.05) 75%, rgba(213, 210, 229, 0.07) 85%, rgba(255, 255, 255, 0) 85.5%);
 } */
-.c64 #bootScreen {
+.arcade #bootScreen {
 	display: block;
 	width: 80vmin;
 	height: 51.75vmin;
@@ -135,7 +135,7 @@ background-image: linear-gradient(to bottom, transparent 2.7px, rgba(40, 35, 78,
 	overflow: hidden;
 }
 
-.c64 #bottom-panel {
+.arcade #bottom-panel {
 	position: absolute;
 	top: 100.9%;
 	left: 1vmin;
@@ -149,7 +149,7 @@ background-image: linear-gradient(to bottom, transparent 2.7px, rgba(40, 35, 78,
 	perspective: 12in;
 }
 
-.c64 #badge {
+.arcade #badge {
 	position: absolute;
 	z-index: 1;
 	top: -1vmin;
@@ -161,19 +161,19 @@ background-image: linear-gradient(to bottom, transparent 2.7px, rgba(40, 35, 78,
 	border-right: 0.25vmin solid #d7c8be;
 }
 
-.c64 #badge #logo {
+.arcade #badge #logo {
 	position: absolute;
 	top: 55%;
 	left: .3vmin;
 	transform: translate(0, -50%);
 }
 
-.c64 #badge img {
+.arcade #badge img {
 	width: 7vmin;
 	filter: grayscale() contrast(.7) brightness(4);
 }
 
-.c64 #badge #brand {
+.arcade #badge #brand {
 	position: absolute;
 	top: 55%;
 	left: 7.6vmin;
@@ -183,7 +183,7 @@ background-image: linear-gradient(to bottom, transparent 2.7px, rgba(40, 35, 78,
 	transform: translate(0, -50%);
 }
 
-.c64 #badge::after {
+.arcade #badge::after {
 	content: "";
 	position: absolute;
 	top: 0.5vmin;
@@ -194,7 +194,7 @@ background-image: linear-gradient(to bottom, transparent 2.7px, rgba(40, 35, 78,
 	background-image: linear-gradient(to bottom, red 0%, red 15%, transparent 15%, transparent 21.25%, orange 21.25%, orange 36.25%, transparent 36.25%, transparent 42.5%, yellow 42.5%, yellow 57.5%, transparent 57.5%, transparent 63.75%, limegreen 63.75%, limegreen 78.75%, transparent 78.75%, transparent 85%, cyan 85%, cyan 100%);
 }
 
-.c64 #badge #power {
+.arcade #badge #power {
 	position: absolute;
 	right: 2vmin;
 	top: 0;
@@ -207,7 +207,7 @@ background-image: linear-gradient(to bottom, transparent 2.7px, rgba(40, 35, 78,
 	line-height: 11vmin;
 }
 
-.c64 #ident {
+.arcade #ident {
 	line-height: 1.5;
 	position: absolute;
 	top: 1vmin;
@@ -230,7 +230,7 @@ background-image: linear-gradient(to bottom, transparent 2.7px, rgba(40, 35, 78,
 	transform: skewx(3.5deg);
 }
 
-.c64 #door {
+.arcade #door {
 	position: absolute;
 	bottom: 0;
 	left: 0;
@@ -240,7 +240,7 @@ background-image: linear-gradient(to bottom, transparent 2.7px, rgba(40, 35, 78,
 	border-right: 2px groove #e1d5ce;
 }
 
-.c64 #video, #audio {
+.arcade #video, #audio {
 	font: normal 1vmin system-ui, sans-serif;
 	color: #5d4739;
 	position: absolute;
@@ -255,7 +255,7 @@ background-image: linear-gradient(to bottom, transparent 2.7px, rgba(40, 35, 78,
 	box-shadow: inset -0.5vmin -0.5vmin 0.5vmin -0.5vmin white, inset -1vmin -1vmin 2vmin -1vmin #eae3de, inset 0.5vmin 0.5vmin 0.5vmin -0.5vmin rgba(0, 0, 0, 0.5), inset 1vmin 1vmin 1vmin #8c6c56;
 }
 
-.c64 #video::before, #audio::before {
+.arcade #video::before, #audio::before {
 	content: "";
 	position: absolute;
 	top: 0.75vmin;
@@ -268,7 +268,7 @@ background-image: linear-gradient(to bottom, transparent 2.7px, rgba(40, 35, 78,
 	background-image: radial-gradient(circle at 50% 45%, rgba(0, 0, 0, 0) 64%, rgba(0, 0, 0, 0.4) 70%), radial-gradient(circle 3.75vmin at 50% 85%, rgba(255, 255, 255, 0) 64%, rgba(255, 255, 255, 0.4) 70%), radial-gradient(circle, rgba(0, 0, 0, 0.8), rgba(0, 0, 0, 0.8) 15%, rgba(0, 0, 0, 0) 40%, rgba(0, 0, 0, 0) 45%, #a7a7a7 45%, silver 50%, black);
 }
 
-.c64 #video::after, #audio::after {
+.arcade #video::after, #audio::after {
 	position: absolute;
 	bottom: -2em;
 	left: 0;
@@ -276,31 +276,31 @@ background-image: linear-gradient(to bottom, transparent 2.7px, rgba(40, 35, 78,
 	text-align: center;
 }
 
-.c64 #video {
+.arcade #video {
 	right: 15vmin;
 }
 
-.c64 #video::before {
+.arcade #video::before {
 	background-color: yellow;
 }
 
-.c64 #video::after {
+.arcade #video::after {
 	content: "VIDEO";
 }
 
-.c64 #audio {
+.arcade #audio {
 	right: 9vmin;
 }
 
-.c64 #audio::before {
+.arcade #audio::before {
 	background-color: white;
 }
 
-.c64 #audio::after {
+.arcade #audio::after {
 	content: "AUDIO";
 }
 
-.c64 #power-btn {
+.arcade #power-btn {
 	font: normal 1vmin system-ui, sans-serif;
 	color: #9c7860;
 	position: absolute;
@@ -312,7 +312,7 @@ background-image: linear-gradient(to bottom, transparent 2.7px, rgba(40, 35, 78,
 	border: 1px solid #a6856f;
 }
 
-.c64 #power-btn::before {
+.arcade #power-btn::before {
 	content: "";
 	position: absolute;
 	top: 2px;
@@ -328,7 +328,7 @@ background-image: linear-gradient(to bottom, transparent 2.7px, rgba(40, 35, 78,
 	border-left: 1px solid #6a645f;
 }
 
-.c64 #power-btn::after {
+.arcade #power-btn::after {
 	content: "POWER";
 	position: absolute;
 	top: calc(100% + 0.5vmin);

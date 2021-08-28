@@ -57,22 +57,26 @@ $(async () => {
 		],
 		PickAPath: [
 			{
-				name: 'bg',
-				x: 1,
-				y: 1,
-				speed: 1,
+				name: 'boot',
+				x: 0,
+				y: 0,
+				speed: 2,
 				txt: `
 *** QUINTOS JAVASCRIPT 0.0 ***
 
  2902 BYTES FREE
 
-READY`
+READY
+.
+.
+.
+.`.slice(1)
 			},
 			{
 				name: 'h1',
 				x: 5,
-				y: 10,
-				speed: 5,
+				y: 8,
+				speed: 3,
 				txt: `
  ██████                          █████   █████
 ██    ██ ██  ██ ██  ████  █████ ██   ██ ██    
@@ -82,47 +86,18 @@ READY`
 			{
 				name: 'h1-b',
 				x: 5,
-				y: 14,
+				y: 12,
 				speed: 2,
 				txt: `
  ██████   ████  ██ ██  ██  ██    █████  █████
-     ▀`
-			}
-		],
-		SketchBook: [
+     ▀                                       `
+			},
 			{
 				name: 'bg',
-				x: 1,
-				y: 1,
-				speed: 10,
-				txt: `
-31743 Bytes free
-Ok`
-			},
-			{
-				name: 'h1',
 				x: 0,
-				y: 12,
-				speed: 20,
-				txt: `
-                         ████◣             ██◣ ██◣
-────────────────▄▄───▐█  █    █             █  █ █
-────▄▄▄───▄██▄──█▀───█─▄ █    █ █ █▐▌██◣██◣ █  █ █    
-──▄██▀█▌─██▄▄──▐█▀▄─▐█▀  █    █ █ █▐▌█ █ █  █  █ ◥██◣
-─▐█▀▀▌───▄▀▌─▌─█─▌──▌─▌  █    █ █ █▐▌█ █ █  █  █    █
-─▌▀▄─▐──▀▄─▐▄─▐▄▐▄─▐▄─▐▄ █  ▗ █ ██◤▐▌█ █ █  █  █    █
-                         ◥████◤             ◥██◤ ◥██◤
-                              ▘`
-			},
-			{
-				name: 'info',
-				x: 20,
-				y: 31,
-				speed: 1,
-				txt: `
-JavaScript READY
-QuintOS version 0.1
-CopyLeft 1977`
+				y: 13,
+				speed: 5,
+				txt: '.\n'.repeat(21)
 			}
 		],
 		Hangman: [
@@ -283,22 +258,78 @@ Copyleft © 1983 QUiNT Systems Corp`
 READY.
 10 PRINT CHR$(205.5+RND(1)); : GOTO 10
   RUN\n`.slice(1)
+			},
+			{
+				name: 'logo',
+				x: 12,
+				y: 9,
+				speed: 2,
+				txt: `
+┏━━┓ ┏┓ ┏┓┏━┳━━┓
+┃┏┓┣┳╋╋━┫┗┫┃┃━━┫
+┃┗┛┃┃┃┃┃┃┏┫┃┣━━┃
+┗━┓┣━┻┻┻┻━┻━┻━━┛
+  ┗┛`
+			}
+		],
+		SketchBook: [
+			{
+				name: 'boot',
+				txt: `
+  **** QUINTOS 05 JAVASCRIPT ES12 ****
+
+  64GB RAM SYSTEM 38911 GIGABYTES FREE
+
+READY.
+10 PRINT CHR$(205.5+RND(1)); : GOTO 10
+  RUN\n`.slice(1)
+			},
+			{
+				name: 'h1',
+				x: 6,
+				y: 3,
+				speed: 2,
+				txt: `
+  ────────────────▄▄───▐█
+  ────▄▄▄───▄██▄──█▀───█─▄
+  ──▄██▀█▌─██▄▄──▐█▀▄─▐█▀
+  ─▐█▀▀▌───▄▀▌─▌─█─▌──▌─▌
+  ─▌▀▄─▐──▀▄─▐▄─▐▄▐▄─▐▄─▐▄
+
+████◣             ██◣ ██◣
+█    █             █  █ █
+█    █ █ █▐▌██◣██◣ █  █ █
+█    █ █ █▐▌█ █ █  █  █ ◥██◣
+█    █ █ █▐▌█ █ █  █  █    █
+█  ▗ █ ██◤▐▌█ █ █  █  █    █
+◥████◤             ◥██◤ ◥██◤
+	    ▘`
+			},
+			{
+				name: 'info',
+				x: 20,
+				y: 31,
+				speed: 1,
+				txt: `
+JavaScript READY
+QuintOS version 0.1
+CopyLeft 1977`
 			}
 		],
 		Snake: [
 			{
 				name: 'logo',
-				txt: 'QuintOS',
 				x: 0,
 				y: 0,
-				speed: 1
+				speed: 1,
+				txt: 'QuintOS'
 			},
 			{
 				name: 'version',
-				txt: 'v7',
 				x: 0,
 				y: 1,
-				speed: 1
+				speed: 1,
+				txt: 'v7'
 			}
 		]
 	};
@@ -360,16 +391,8 @@ READY.
 			$('canvas').css('width', '96vmin');
 			$('canvas').css('height', '60vmin');
 
-			await pc.text(
-				`
-┏━━┓ ┏┓ ┏┓┏━┳━━┓
-┃┏┓┣┳╋╋━┫┗┫┃┃━━┫
-┃┗┛┃┃┃┃┃┃┏┫┃┣━━┃
-┗━┓┣━┻┻┻┻━┻━┻━━┛
-  ┗┛`,
-				14,
-				10
-			);
+			let logo = bootScreen[1];
+			await pc.text(logo.txt, logo.x, logo.y);
 
 			let wasDrawn = false;
 
@@ -408,7 +431,7 @@ READY.
 		pc.preloadData(game);
 	}
 	if (pc.level >= 2 && pc.level < 5) {
-		await pc.frame(0, 0, screen.w, screen.h, 10);
+		await pc.frame();
 	}
 	let bootScreen = bootScreens[game] || bootScreens[games[pc.level]];
 	await displayBootscreen();
@@ -419,8 +442,9 @@ READY.
 		// Add the Clock
 		setInterval(() => {
 			let time = new Date($.now());
+			pc.text(Date.now(), 65, 29);
 			time = time.toString().split(' GMT')[0];
-			pc.text(time, 3, 29);
+			pc.text(time, 2, 29);
 		}, 1000);
 	}
 

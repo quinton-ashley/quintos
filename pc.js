@@ -82,11 +82,21 @@ $(() => {
 				this.rows[i].tiles = this.rows[i].childNodes;
 			}
 
-			let _tile = window.getComputedStyle($('#screen0 row tile').eq(0)[0]);
-			_tile.w = Number(_tile.width.slice(0, -2)); // slice  off px
-			_tile.h = Number(_tile.height.slice(0, -2));
-			screen0.style.width = w * _tile.w + 'px';
-			screen0.style.height = h * _tile.h + 'px';
+			$('body').append(`
+<style>
+row {
+	height: ${100 / this.h}%;
+}
+tile {
+	width: ${100 / this.w}%;
+}
+</style>`);
+
+			// let _tile = window.getComputedStyle($('#screen0 row tile').eq(0)[0]);
+			// _tile.w = Number(_tile.width.slice(0, -2)); // slice  off px
+			// _tile.h = Number(_tile.height.slice(0, -2));
+			// screen0.style.width = w * _tile.w + 'px';
+			// screen0.style.height = h * _tile.h + 'px';
 
 			if (level == 7) {
 				let lcdBG = document.getElementById('bitmapBG');
@@ -227,9 +237,14 @@ $(() => {
 		}
 
 		async frame(x, y, w, h, speed, c) {
+			x ??= 0;
+			y ??= 0;
+			w ??= this.w;
+			h ??= this.h;
 			if (this.level == 2) c = '*';
 			if (this.level == 5) c = '─';
-			return await this.rect(x, y, w, h, speed, c || '═');
+			await this.rect(x, y, w, h, speed, c || '═');
+			// if (this.level == 5) this.eraseRect(x, y + 1, w, h - 2);
 		}
 
 		/* ------------- Draws a rectangle with character or set ---------*/
@@ -356,8 +371,10 @@ $(() => {
 		}
 
 		button(txt, x, y, action) {
-			if (this.level > 0 && this.level < 2) txt += '←';
-			if (this.level == 2) txt = '<' + txt + '>';
+			if (y != 0) {
+				if (this.level > 0 && this.level < 2) txt += '←';
+				if (this.level == 2) txt = '<' + txt + '>';
+			}
 
 			let _this = this;
 			class Button {
@@ -672,9 +689,7 @@ $(() => {
 
 		async preloadData(game, dir) {
 			dir = QuintOS.dir || dir || '.';
-			let src = `${dir}/${
-				game.slice(0, 1).toLowerCase() + game.slice(1)
-			}-preload.js`;
+			let src = `${dir}/${game.slice(0, 1).toLowerCase() + game.slice(1)}-preload.js`;
 
 			try {
 				await this.loadJS(src);
@@ -692,18 +707,19 @@ $(() => {
 			} catch (error) {
 				this.error(error);
 			}
-			let title =
-				'0' + this.level + '_' + game.slice(0, 1).toUpperCase() + game.slice(1);
-			if (QuintOS.username) title += ' by ' + QuintOS.username;
+			let title = '0' + this.level + '_' + game.slice(0, 1).toUpperCase() + game.slice(1);
 			$('head title').text(title);
-			if (this.level >= 5) {
-				return;
-			}
-			if (this.level >= 2) {
-				this.frame(0, 0, this.w, this.h);
-			}
+			if (this.level >= 6) return;
+			if (this.level >= 2 && this.level <= 4) this.frame();
 			if (this.level > 0) {
-				this.text(title, 5, 0); // title
+				this.button(title, 2, 0, () => {
+					open(src);
+				});
+				if (!QuintOS.username) return;
+				this.text(' by ', 2 + title.length, 0);
+				this.button(QuintOS.username, 6 + title.length, 0, () => {
+					open('https://github.com/' + QuintOS.username);
+				});
 			}
 		}
 
@@ -712,9 +728,7 @@ $(() => {
 			if (e.stack) {
 				let stack = e.stack.split('\n')[0].split('/').pop().split(':');
 				stack = stack[0] + ' line ' + stack[1];
-				await this.alert(
-					'ERROR: ' + e.message + '\n\n' + stack + '\n' + e.stack
-				);
+				await this.alert('ERROR: ' + e.message + '\n\n' + stack + '\n' + e.stack);
 			} else {
 				await this.alert('ERROR: ' + e);
 			}
@@ -860,7 +874,7 @@ $(() => {
 			<div class="bottomFrame">
 				<div class="fan">
 				</div>
-				<img class="logo" src="node_modules/quintos/img/logo.png" />
+				<a href="https://github.com/quinton-ashley/quintos"><img class="logo" src="node_modules/quintos/img/logo.png" /></a>
 				<div class="powerButton">
 					<div class="powerIcon">
 					</div>
@@ -902,7 +916,7 @@ $(() => {
 </div>`;
 
 	const c64HTML = `
-<div id="pc" class="terminal">
+<div id="pc">
 	<div id="case">
 		<div id="bezel">
 			<div id="tube">
@@ -912,27 +926,17 @@ $(() => {
 		</div>
 		<div id="bottom-panel">
 			<div id="badge">
-				<svg xmlns="http://www.w3.org/2000/svg" viewbox="0 0 212.57 27.72">
-					<defs>
-						<linearGradient id="chrome" x1="0" y1="-5%" x2="100%" y2="5%">
-							<stop offset="0%" style="stop-color:#ccc;stop-opacity:1" />
-							<stop offset="33%" style="stop-color:#999;stop-opacity:1" />
-							<stop offset="33.5%" style="stop-color:#666;stop-opacity:1" />
-							<stop offset="60%" style="stop-color:#ccc;stop-opacity:1" />
-							<stop offset="60.5%" style="stop-color:#666;stop-opacity:1" />
-							<stop offset="65%" style="stop-color:#999;stop-opacity:1" />
-							<stop offset="100%" style="stop-color:#ccc;stop-opacity:1" />
-						</linearGradient>
-					</defs>
-					<path
-					 d="M187.25 7.67h-3.96v11.36h4.13v-5.94c0-1.55.95-2.33 2.67-2.33s2.15.52 2.24 1.98h3.88c0-3.87-.52-5.34-4.65-5.34-2.5 0-3.36.52-4.31 2.41V7.67zM24.73 14.5h-6.65v5.45h11.96l-5.31-5.45zm5.31-6.58H18.08v5.45h6.58l5.38-5.45zm176.24 8.87c-3.96 0-4.56-.35-4.56-2.33h10.85c-.17-5.51-.17-6.8-7.49-6.8-6.2 0-7.58 1.12-7.58 6.03 0 4.56 1.81 5.68 6.8 5.77 5.6 0 8.27-.26 8.27-3.96h-4.05c-.17.87-.51 1.29-2.24 1.29zm-4.65-4.73c.17-1.21.52-1.64 3.27-1.64 3.02 0 3.45.17 3.62 1.64h-6.89zm-153.97.43h4.13c-.34-3.88-1.46-4.82-7.23-4.82-6.54 0-8.01 1.03-8.01 5.86 0 4.82 1.38 5.94 7.49 5.94 6.46 0 7.75-.86 7.75-4.91h-4.13c0 1.12-.43 1.64-3.62 1.64-2.76 0-3.36-.69-3.36-2.93 0-2.15.6-2.15 3.88-2.15 2.41-.01 2.84.25 3.1 1.37zm96.02.69c0-4.65-1.38-5.6-8.01-5.6-7.15 0-8.01 1.2-8.01 6.03 0 4.82 1.2 5.86 8.01 5.86 7.23 0 8.01-1.21 8.01-6.29zm-11.8.26c0-2.33.52-2.58 3.53-2.58 3.36 0 3.96.08 3.96 2.58 0 2.33-.43 2.76-3.62 2.76-3.44-.01-3.87-.35-3.87-2.76zm48.91-.26c0-4.65-1.29-5.6-7.92-5.6-7.06 0-7.92 1.12-7.92 5.94 0 4.91 1.2 5.94 7.92 5.94 7.23.01 7.92-1.2 7.92-6.28zm-11.71.26c0-2.33.52-2.58 3.53-2.58 3.36 0 3.96.08 3.96 2.58 0 2.33-.43 2.76-3.62 2.76-3.44-.01-3.87-.35-3.87-2.76zm-98.94-.26c0-4.65-1.29-5.6-7.92-5.6-7.15 0-8.01 1.12-8.01 5.94 0 4.91 1.21 5.94 8.01 5.94 7.23.01 7.92-1.2 7.92-6.28zm-11.63.26c0-2.33.52-2.58 3.45-2.58 3.36 0 3.96.08 3.96 2.58 0 2.33-.43 2.76-3.62 2.76-3.36-.01-3.79-.35-3.79-2.76zm99.55-10.6v6.63c-.95-1.29-1.81-1.98-5.25-1.98-5.51 0-6.54 1.46-6.54 5.94 0 4.57 1.46 5.85 6.8 5.85 3.36 0 4.39-.86 5.17-2.32v2.06h4.13V2.83l-4.31.01zm-3.02 7.93c2.32 0 3.1.34 3.1 2.15 0 2.76-.17 3.02-3.44 3.02s-4.13-.09-4.13-2.41c0-2.68 1.03-2.76 4.47-2.76zM17.71 7.55V.53C16.29.16 15.32.01 13.9.01 6.5.01 0 6.21 0 13.91c0 7.92 6.57 13.82 13.97 13.82 1.35 0 2.09-.15 3.74-.6v-7.17c-1.64.82-2.46 1.05-3.81 1.05-4.11 0-7.25-3.44-7.25-7.25 0-3.96 3.06-7.32 7.17-7.32 1.42-.01 2.62.36 3.89 1.11zm58.97.12h-3.87v11.36h4.13v-5.86c0-1.72.86-2.32 3.19-2.32 2.15 0 2.76.77 2.76 2.93v5.25h4.22V13c0-1.64 1.29-2.15 3.27-2.15 1.9 0 2.76.52 2.76 2.15v6.03h4.13v-6.72c0-3.36-2.07-4.91-5.85-4.91-3.27 0-4.48 1.21-4.91 2.5-.86-1.46-2.07-2.5-5.34-2.5-3.1 0-3.96 1.03-4.48 2.93l-.01-2.66zm27.82 0h-3.88v11.36h4.13v-5.86c0-1.72 1.03-2.32 3.1-2.32 2.15 0 2.76.69 2.76 2.93v5.25h4.22V13c0-1.64 1.21-2.15 3.19-2.15 1.89 0 2.84.6 2.84 2.15v6.03h4.13v-6.72c0-3.36-2.07-4.91-5.85-4.91-3.27 0-4.39 1.12-4.91 2.5-.86-1.46-2.07-2.5-5.34-2.5-3.01 0-3.79 1.03-4.39 2.93V7.67z"
-					 fill="url(#chrome)" />
-				</svg>
+				<a id="logo" href="https://github.com/quinton-ashley/quintos">
+					<img class="logo" src="node_modules/quintos/img/logo.png" />
+				</a>
+				<a id="brand" href="https://github.com/quinton-ashley/quintos">
+					<h1>QuintOS</h1>
+				</a>
 				<div id="power">POWER</div>
 			</div>
 			<div id="ident">
-				<div>Video Monitor</div>
-				<div>Model 1702</div>
+				<div>Created using</div>
+				<div><a href="https://github.com/quinton-ashley/quintos">QuintOS</a></div>
 			</div>
 			<div id="power-btn"></div>
 			<div id="door"></div>
@@ -958,6 +962,37 @@ $(() => {
 		<div id="bitmap" style="--grid-size:20; --grid-columns:28; --grid-rows:20;"></div>
   </div>
 </div>
+</div>`;
+
+	const arcadeHTML = `
+<div id="pc">
+	<div id="case">
+		<div id="bezel">
+			<div id="tube">
+				<div id="screen0" class="screen"></div>
+				<code id='bootScreen'></code>
+			</div>
+		</div>
+		<div id="bottom-panel">
+			<div id="badge">
+				<a id="logo" href="https://github.com/quinton-ashley/quintos">
+					<img class="logo" src="node_modules/quintos/img/logo.png" />
+				</a>
+				<a id="brand" href="https://github.com/quinton-ashley/quintos">
+					<h1>QuintOS</h1>
+				</a>
+				<div id="power">POWER</div>
+			</div>
+			<div id="ident">
+				<div>Created using</div>
+				<div><a href="https://github.com/quinton-ashley/quintos">QuintOS</a></div>
+			</div>
+			<div id="power-btn"></div>
+			<div id="door"></div>
+			<div id="video"></div>
+			<div id="audio"></div>
+		</div>
+	</div>
 </div>`;
 
 	if (typeof QuintOS.level != 'undefined') {
@@ -991,18 +1026,24 @@ $(() => {
 			}
 		});
 	} else if (QuintOS.level < 5) {
-		// fetch('terminal.html')
-		// 	.then(response => response.text())
-		// 	.then(terminalHTML => {
 		$('main').remove();
 		$('body').append(terminalHTML);
 		$('body').addClass('terminal');
-		// });
 	} else if (QuintOS.level == 5) {
 		$('body').append(c64HTML);
 		$('body').addClass('c64');
 		$('main').css('display', 'none');
+	} else if (QuintOS.level == 7) {
+		$('main').remove();
+		$('body').append(gameboiHTML);
+		$('body').addClass('gameboi');
+	} else if (QuintOS.level == 8) {
+		$('body').append(arcadeHTML);
+		$('body').addClass('arcade');
+		$('main').css('display', 'none');
+	}
 
+	if (QuintOS.level == 5 || QuintOS.level >= 8) {
 		let _palette = {
 			' ': '',
 			'.': '',
@@ -1025,7 +1066,7 @@ $(() => {
 		};
 
 		function color16(c, palette) {
-			palette = palette || _palette;
+			palette ??= _palette;
 			c = palette[c];
 			if (!c) return color(0, 0, 0, 0);
 			return color(c);
@@ -1033,8 +1074,8 @@ $(() => {
 		window.color16 = color16;
 
 		function spriteArt(txt, scale, palette) {
-			scale = scale || 2;
-			palette = palette || _palette;
+			scale ??= QuintOS.level == 5 ? 2 : 1;
+			palette ??= _palette;
 			let lines = txt; // accepts 2D arrays of characters
 			if (txt.includes('\n')) {
 				txt = txt.replace(/\t/g, '');
@@ -1067,16 +1108,7 @@ $(() => {
 			return img; // return the p5 graphics object
 		}
 		window.spriteArt = spriteArt;
-	} else if (QuintOS.level == 7) {
-		$('main').remove();
-		$('body').append(gameboiHTML);
-		$('body').addClass('gameboi');
 	}
-
-	let footer = 'Created using ';
-	if (QuintOS.username) footer = 'Created by ' + QuintOS.username + ' using ';
-
-	$('body').append(footer);
 
 	window.PC = PC;
 });
