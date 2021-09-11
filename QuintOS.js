@@ -8,9 +8,7 @@ $(async () => {
 	const log = console.log;
 
 	if (typeof QuintOS.level == 'undefined') {
-		alert(
-			'ERROR: load.js not found! Create this file and write:\nQuintOS.level = 0;'
-		);
+		alert('ERROR: load.js not found! Create this file and write:\nQuintOS.level = 0;');
 		return; // exit
 	}
 
@@ -31,8 +29,11 @@ $(async () => {
 		screen.w = 80;
 		screen.h = 30;
 	} else if (QuintOS.level == 7) {
-		screen.w = 20;
+		screen.w = 16;
 		screen.h = 2;
+	} else if (QuintOS.level == 8) {
+		screen.w = 28;
+		screen.h = 34;
 	}
 	window.pc = new PC(screen.w, screen.h, QuintOS.level);
 	window.prompt = async (msg) => {
@@ -326,10 +327,32 @@ CopyLeft 1977`
 			},
 			{
 				name: 'version',
-				x: 0,
+				x: 1,
 				y: 1,
 				speed: 1,
 				txt: 'v7'
+			}
+		],
+		SuperJump: [
+			{
+				name: 'version',
+				x: 1,
+				y: 1,
+				speed: 1,
+				txt: 'QuintOS v8'
+			},
+			{
+				name: 'logo',
+				x: 7,
+				y: 13,
+				speed: 2,
+				txt: `
+┏━┓ ┏┓ ┏┓┏━┳━┓
+┃┃┣┳╋╋━┫┗┫┃┃━┫
+┃┃┃┃┃┃┃┃┏┫┃┃ ┃
+┃┃┃┃┃┃┃┃┃┫┃┣━┃
+┗┓┣━┻┻┻┻━┻━┻━┛
+ ┗┛`
 			}
 		]
 	};
@@ -342,6 +365,8 @@ CopyLeft 1977`
 	}
 
 	async function displayBootscreen() {
+		console.log('QuintOS v' + pc.level + ' size: ' + pc.w + 'x' + pc.h);
+
 		if (pc.level == 0 || pc.level == 7) {
 			let txt0 = "'-.⎽⎽.-'⎺⎺".repeat(3);
 			for (let i = 0; i < 30 * (pc.level == 7 ? 0.5 : 1); i++) {
@@ -352,13 +377,28 @@ CopyLeft 1977`
 			}
 			await pc.eraseRect();
 		}
+
 		if (pc.level < 5 || pc.level == 7) {
 			for (let el of bootScreen) {
 				let txt = el.txt.charAt(0) == '/n' ? el.txt.slice(1) : el.txt;
 				await pc.text(txt, el.x, el.y, 0, 0, el.speed);
 			}
 			if (pc.level == 7) await delay(500);
-		} else if (pc.level == 5) {
+		}
+
+		if (pc.level < 5) return;
+
+		let waitForDraw = new Promise((resolve) => {
+			let wasDrawn = false;
+			window.draw = () => {
+				if (!wasDrawn) {
+					wasDrawn = true;
+					resolve();
+				}
+			};
+		});
+
+		if (pc.level == 8) {
 			// support
 			const stdout = document.getElementById('bootScreen');
 			const PRINT = (str) => {
@@ -381,8 +421,15 @@ CopyLeft 1977`
 				}
 			}
 
-			await Promise.race([makeMaze(), delay(1000)]);
+			await Promise.all([Promise.race([makeMaze(), delay(1000)]), waitForDraw]);
 
+			// if (camera?.off) camera.off();
+		}
+
+		if (pc.level == 8) {
+		}
+
+		if (pc.level == 5 || pc.level >= 8) {
 			$('#bootScreen').remove();
 			$('#tube').addClass('clear');
 			$('#tube').append($('main'));
@@ -391,19 +438,11 @@ CopyLeft 1977`
 			$('canvas').css('width', '96vmin');
 			$('canvas').css('height', '60vmin');
 
+			if (pc.level == 8) {
+				resizeCanvas(640, 800);
+			}
 			let logo = bootScreen[1];
 			await pc.text(logo.txt, logo.x, logo.y);
-
-			let wasDrawn = false;
-
-			await new Promise((resolve) => {
-				window.draw = () => {
-					if (!wasDrawn) {
-						wasDrawn = true;
-						resolve();
-					}
-				};
-			});
 
 			await delay(500);
 			await pc.erase();
@@ -428,6 +467,7 @@ CopyLeft 1977`
 		game = QuintOS.gameSelect;
 	}
 	if (QuintOS.preload) {
+		QuintOS.dir += '/' + game;
 		pc.preloadData(game);
 	}
 	if (pc.level >= 2 && pc.level < 5) {

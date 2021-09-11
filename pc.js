@@ -1,7 +1,10 @@
+// promise based delay function
 window.delay = (millisec) => {
+	// if no input arg given, delay waits for the next possible animation frame
 	if (!millisec) {
 		return new Promise(requestAnimationFrame);
 	} else {
+		// else it wraps setTimeout in a Promise
 		return new Promise((resolve) => {
 			setTimeout(() => {
 				resolve('');
@@ -11,24 +14,20 @@ window.delay = (millisec) => {
 };
 
 $(() => {
-	let log = console.log;
+	let log = console.log; // log becomes a shortcut for console.log
 
+	/* PC functions are used to create text based user interfaces */
 	class PC {
 		constructor(w, h, level) {
 			this.w = w;
 			this.h = h;
-			this.width = w;
-			this.height = h;
+			this.width = w; // columns
+			this.height = h; // rows
 			this.level = level;
 			this.gpu = [];
 
+			// default values for alerts and prompts for each level
 			this.popup = {
-				default: {
-					x: 3,
-					y: 2,
-					w: 50,
-					h: 4
-				},
 				0: {
 					x: 0,
 					y: 0,
@@ -47,9 +46,21 @@ $(() => {
 					w: 51,
 					h: 4
 				},
+				3: {
+					x: 3,
+					y: 2,
+					w: 50,
+					h: 4
+				},
 				5: {
-					x: 10,
+					x: 15,
 					y: 10,
+					w: 20,
+					h: 4
+				},
+				8: {
+					x: 4,
+					y: 16,
 					w: 20,
 					h: 4
 				}
@@ -64,15 +75,14 @@ $(() => {
 				}
 				return;
 			}
-			// if (level > 5) return;
-			//create rows
+			// create rows
 			for (let i = 0; i < h; i++) {
 				let row = document.createElement('row');
 				screen0.appendChild(row);
 			}
 			this.rows = screen0.childNodes;
 
-			//tiles
+			// create single character text tiles
 			for (let i = 0; i < h; i++) {
 				for (let j = 0; j < w; j++) {
 					let tile = document.createElement('tile');
@@ -81,7 +91,8 @@ $(() => {
 				}
 				this.rows[i].tiles = this.rows[i].childNodes;
 			}
-
+			// the rows will all have the same height
+			// the tiles will all have the same width
 			$('body').append(`
 <style>
 row {
@@ -92,31 +103,27 @@ tile {
 }
 </style>`);
 
-			// let _tile = window.getComputedStyle($('#screen0 row tile').eq(0)[0]);
-			// _tile.w = Number(_tile.width.slice(0, -2)); // slice  off px
-			// _tile.h = Number(_tile.height.slice(0, -2));
-			// screen0.style.width = w * _tile.w + 'px';
-			// screen0.style.height = h * _tile.h + 'px';
+			if (level != 7) return;
 
-			if (level == 7) {
-				let lcdBG = document.getElementById('bitmapBG');
-				for (let i = 0; i < 560; i++) {
-					let div = document.createElement('div');
-					div.classList.add('null');
-					// div.appendChild(document.createTextNode('⩀⪽⪾'));
-					lcdBG.appendChild(div);
-				}
-
-				let lcd = document.getElementById('bitmap');
-				for (let i = 0; i < 560; i++) {
-					let div = document.createElement('div');
-					// div.appendChild(document.createTextNode(' '));
-					lcd.appendChild(div);
-				}
-				this.bitmap = lcd.childNodes;
+			// setup the level 7 bitmap lcd
+			let lcdBG = document.getElementById('bitmapBG');
+			for (let i = 0; i < 560; i++) {
+				let div = document.createElement('div');
+				div.classList.add('null');
+				// div.appendChild(document.createTextNode('⩀⪽⪾'));
+				lcdBG.appendChild(div);
 			}
+
+			let lcd = document.getElementById('bitmap');
+			for (let i = 0; i < 560; i++) {
+				let div = document.createElement('div');
+				// div.appendChild(document.createTextNode(' '));
+				lcd.appendChild(div);
+			}
+			this.bitmap = lcd.childNodes;
 		}
-		/* -------------Adds a Character at the given y and xumn------------*/
+
+		/* Display the text character at a position */
 		drawChar(x, y, char) {
 			// out of bounds check
 			if (x >= 0 && y >= 0 && x < this.w && y < this.h) {
@@ -125,11 +132,14 @@ tile {
 			}
 		}
 
+		/* Get the value of a character */
 		charAt(x, y) {
-			// if (x >= 0 && y >= 0 && x < this.w && y < this.h) {
-			if (this.level == 0 && y == 1 && x > 4) return;
+			if (x < 0 || y < 0 || x >= this.w || y >= this.h || (this.level == 0 && y == 1 && x > 4)) {
+				this.error(
+					`Out of bounds error! Could not retreive character at: ${x},${y}\nThe size of this screen is: ${this.w}x${this.h}`
+				);
+			}
 			return this.rows[y].tiles[x].childNodes[0].nodeValue;
-			// }
 		}
 
 		_textSync(lines, x, y) {
@@ -141,13 +151,16 @@ tile {
 			}
 		}
 
+		/* Display text with a characters per frame speed limit to mimic old computers */
 		async _textAsync(lines, x, y, speed) {
 			let chars = 0;
 			let frames = 1;
 			let _speed = speed;
+			// checks the accuracy of the speed every four frames
+			// adjusts speed to try to take a consistent amount of real time, since
+			// some user's computers are not powerful enough to render all these frames in time
 			let interval = setInterval(() => {
 				if (!chars) return;
-				// checks the accuracy of the speed every four frames
 				speed = Math.max(1, _speed + (_speed * frames - chars));
 				frames += 4;
 			}, 64);
@@ -155,7 +168,7 @@ tile {
 			for (let i = 0; i < lines.length; i++) {
 				let line = lines[i];
 				for (let j = 0; j < line.length; j++) {
-					if (chars % speed == 0) await delay();
+					if (chars % speed == 0) await delay(); // wait till the next animation frame is drawn
 					this.drawChar(x + j, y + i, line[j]);
 					chars++;
 				}
@@ -164,6 +177,7 @@ tile {
 			clearInterval(interval);
 		}
 
+		/* Display text in one frame */
 		_text(txt, x, y, w, h, speed) {
 			x ??= 0;
 			y ??= 0;
@@ -204,6 +218,7 @@ tile {
 			return { lines, x, y, speed };
 		}
 
+		/* Display text */
 		async text(txt, x, y, w, h, speed) {
 			txt = this._text(txt, x, y, w, h, speed);
 			if (txt.speed) {
@@ -214,7 +229,8 @@ tile {
 			return txt.lines.length; // returns the height
 		}
 
-		lcd(block, x, y, direction, name) {
+		/* Displays a block on the lcd bitmap */
+		lcd(block, x, y, direction) {
 			let idx = y * 28 + x;
 			this.bitmap[idx].className = '';
 			if (!block || block == 'none') {
@@ -229,25 +245,19 @@ tile {
 			}
 		}
 
-		// applies hover effect to all tiles which belong to an object
-		hovered(object) {
-			for (let tile of object.tiles) {
-				$(tile).addClass('hovered');
-			}
-		}
-
+		/* Display an application window frame */
 		async frame(x, y, w, h, speed, c) {
 			x ??= 0;
 			y ??= 0;
 			w ??= this.w;
 			h ??= this.h;
 			if (this.level == 2) c = '*';
-			if (this.level == 5) c = '─';
+			if (this.level == 5 || this.level >= 8) c = '─';
 			await this.rect(x, y, w, h, speed, c || '═');
 			// if (this.level == 5) this.eraseRect(x, y + 1, w, h - 2);
 		}
 
-		/* ------------- Draws a rectangle with character or set ---------*/
+		/* Display a rectangle with character or character set */
 		async rect(x, y, w, h, speed, c) {
 			if (!c || c == '─') {
 				c = {
@@ -305,12 +315,13 @@ tile {
 			}
 		}
 
+		/* Display a line between two points using a character (diagonal lines not supported yet) */
 		line(x1, y1, x2, y2, c) {
 			if (y1 == y2) {
-				c = c || '-';
+				c ??= '-';
 				this.text(c.repeat(Math.abs(x1 - x2)), x1, y1);
 			} else if (x1 == x2) {
-				c = c || '|';
+				c ??= '|';
 				this.text((c + '\n').repeat(Math.abs(y1 - y2)), x1, y1);
 			}
 		}
@@ -331,13 +342,28 @@ tile {
 		}
 
 		erase() {
-			let w = this.w - 2;
-			let h = this.h - 2;
-			let lines = [];
-			for (let i = 0; i < h; i++) {
-				lines.push(' '.repeat(w));
+			let eraser = {
+				x: 1,
+				y: this.level != 8 ? 1 : 2,
+				w: this.w - 2,
+				h: this.h - 2
+			};
+			for (let i = 0; i < this.gpu.length; i++) {
+				let el = this.gpu[i];
+				if (this.level == 0 || this.overlap(el, eraser)) {
+					el.erase();
+					i--;
+				}
 			}
-			this._textSync(lines, 1, 1);
+			if (this.level == 0) {
+				this._textSync([' '.repeat(this.w), ' '.repeat(4)], 0, 0);
+				return;
+			}
+			let lines = [];
+			for (let i = 0; i < eraser.h; i++) {
+				lines.push(' '.repeat(eraser.w));
+			}
+			this._textSync(lines, eraser.x, eraser.y);
 		}
 
 		async eraseRect(x, y, w, h, speed) {
@@ -529,7 +555,7 @@ tile {
 
 		async alert(txt, x, y, w, h) {
 			let pu = this.popup[this.level];
-			if (!pu) pu = this.popup.default;
+			pu ??= this.popup[3];
 			x = x || pu.x;
 			y = y || pu.y;
 			w = w || pu.w;
@@ -537,7 +563,9 @@ tile {
 
 			if (typeof txt != 'string') txt += '';
 
-			if (this.charAt(x, y) != ' ' || this.charAt(x + w - 1, y + h) != ' ') {
+			if (this.level == 0) {
+				this.erase();
+			} else if (this.charAt(x, y) != ' ' || this.charAt(x + w - 1, y + h) != ' ') {
 				await this.eraseRect(x, y, w, h);
 			}
 			let th;
@@ -597,7 +625,9 @@ tile {
 
 			if (typeof txt != 'string') txt += '';
 
-			if (this.charAt(x, y) != ' ' || this.charAt(x + w - 1, y + h) != ' ') {
+			if (this.level == 0) {
+				this.erase();
+			} else if (this.charAt(x, y) != ' ' || this.charAt(x + w - 1, y + h) != ' ') {
 				await this.eraseRect(x, y, w, h);
 			}
 			let th;
@@ -709,7 +739,7 @@ tile {
 			}
 			let title = '0' + this.level + '_' + game.slice(0, 1).toUpperCase() + game.slice(1);
 			$('head title').text(title);
-			if (this.level >= 6) return;
+			if (this.level == 6 || this.level == 7) return;
 			if (this.level >= 2 && this.level <= 4) this.frame();
 			if (this.level > 0) {
 				this.button(title, 2, 0, () => {
@@ -717,7 +747,9 @@ tile {
 				});
 				if (!QuintOS.username) return;
 				this.text(' by ', 2 + title.length, 0);
-				this.button(QuintOS.username, 6 + title.length, 0, () => {
+				let x = this.level != 8 ? 6 + title.length : 2;
+				let y = this.level != 8 ? 0 : 1;
+				this.button(QuintOS.username, x, y, () => {
 					open('https://github.com/' + QuintOS.username);
 				});
 			}
@@ -973,25 +1005,6 @@ tile {
 				<code id='bootScreen'></code>
 			</div>
 		</div>
-		<div id="bottom-panel">
-			<div id="badge">
-				<a id="logo" href="https://github.com/quinton-ashley/quintos">
-					<img class="logo" src="node_modules/quintos/img/logo.png" />
-				</a>
-				<a id="brand" href="https://github.com/quinton-ashley/quintos">
-					<h1>QuintOS</h1>
-				</a>
-				<div id="power">POWER</div>
-			</div>
-			<div id="ident">
-				<div>Created using</div>
-				<div><a href="https://github.com/quinton-ashley/quintos">QuintOS</a></div>
-			</div>
-			<div id="power-btn"></div>
-			<div id="door"></div>
-			<div id="video"></div>
-			<div id="audio"></div>
-		</div>
 	</div>
 </div>`;
 
@@ -1043,6 +1056,16 @@ tile {
 		$('main').css('display', 'none');
 	}
 
+	function play(sound) {
+		return new Promise((resolve, reject) => {
+			sound.play();
+			sound.onended(() => {
+				resolve();
+			});
+		});
+	}
+	window.play = play;
+
 	if (QuintOS.level == 5 || QuintOS.level >= 8) {
 		let _palette = {
 			' ': '',
@@ -1074,7 +1097,7 @@ tile {
 		window.color16 = color16;
 
 		function spriteArt(txt, scale, palette) {
-			scale ??= QuintOS.level == 5 ? 2 : 1;
+			scale ??= QuintOS.level < 9 ? 2 : 1;
 			palette ??= _palette;
 			let lines = txt; // accepts 2D arrays of characters
 			if (txt.includes('\n')) {

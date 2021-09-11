@@ -120,6 +120,47 @@ C64 Pro Mono https://style64.org/petscii/
 casio_fx_9860gii https://www.dafont.com/casio-fx-9860gii.font  
 Digital7 https://www.dafont.com/digital-7.font?text=digital7
 
+### Pixel Art
+
+SuperJump:
+https://www.gamedevmarket.net/asset/slime-pack-4-slime-variants/
+https://www.gamedevmarket.net/asset/ancient-city/
+
+Sokoban:
+8bit assets
+https://www.gamedevmarket.net/asset/oracle-1-bit-asset/
+
+"Hi! That's wonderful! Glad that you liked my assets. Looking forward to seeing some projects using my art! Have a great day!"
+
+- blueapollo\_ Sep 9, 2021, 7:21 PM
+
+https://www.gamedevmarket.net/asset/platform-dirt-rock-tileset-pack-1bit-16x16-8x8-bonus-characters-items/
+
+16bit assets
+https://www.gamedevmarket.net/asset/rpg-dungeon-crawl-tileset/
+https://www.gamedevmarket.net/asset/pixel-art-adventurer-sprites/
+
+16bit alt assets
+https://www.gamedevmarket.net/asset/dungeon-mini-tileset-6382/
+https://www.gamedevmarket.net/asset/pixel-tribe-man-2/
+
+OneBit:
+https://www.gamedevmarket.net/asset/1bit-house/
+https://www.gamedevmarket.net/asset/platform-dirt-rock-tileset-pack-1bit-16x16-8x8-bonus-characters-items/
+
+PigeonSimulator:
+https://www.gamedevmarket.net/asset/pigeons-2d-pixel-asset-pack/
+https://www.gamedevmarket.net/asset/tiny-tiny-heroes-animals/
+https://www.gamedevmarket.net/asset/pixel-sidescroller-background-city/
+
+## Sounds
+
+SpeakAndSpell:
+https://sha.nnoncarey.com/
+
+8 Bit sounds:
+https://www.gamedevmarket.net/asset/retro-8-bit-sounds-9524/
+
 ### Codepens
 
 Calculator https://codepen.io/wiljav/pen/zYrBYKb  
