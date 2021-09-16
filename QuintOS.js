@@ -333,7 +333,7 @@ CopyLeft 1977`
 				txt: 'v7'
 			}
 		],
-		SuperJump: [
+		Sokoban: [
 			{
 				name: 'version',
 				x: 1,
@@ -458,7 +458,6 @@ CopyLeft 1977`
 		'Pong',
 		'SpeakAndSpell',
 		'Snake',
-		'BubbleBlasters',
 		'Sokoban'
 	];
 
@@ -466,13 +465,9 @@ CopyLeft 1977`
 	if (typeof QuintOS.gameSelect != 'undefined') {
 		game = QuintOS.gameSelect;
 	}
-	if (QuintOS.preload) {
-		QuintOS.dir += '/' + game;
-		pc.preloadData(game);
-	}
-	if (pc.level >= 2 && pc.level < 5) {
-		await pc.frame();
-	}
+	QuintOS.dir += '/' + game;
+	if (QuintOS.preload) pc.preloadData(game);
+	if (pc.level >= 2 && pc.level < 5) await pc.frame();
 	let bootScreen = bootScreens[game] || bootScreens[games[pc.level]];
 	await displayBootscreen();
 	if (pc.level == 0) await delay(1000);

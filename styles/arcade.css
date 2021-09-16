@@ -12,16 +12,14 @@ body.arcade {
 	flex-direction: column;
 }
 
-.arcade #pc {
-	margin-top: -100px;
-}
-
 .arcade #case {
 	position: relative;
 	padding: 9vmin 9vmin 0 9vmin;
 	background-color: #802e2e;
 	border-radius: 1vmin;
 	border: 3vmin solid #a16060;
+	border-top: none;
+	border-bottom: none;
 	perspective: 100vmin;
 }
 
@@ -30,13 +28,14 @@ body.arcade {
 	background-image: linear-gradient(to right, #262524, #333230, #383735, #333230, #262524);
 	padding: 8vmin;
 	position: relative;
+	margin-top: -15vh;
 	border-left: 2px solid #0c0b0b;
 	border-right: 2px solid #0c0b0b;
 	border-top: 1px solid #a16060;
 	border-bottom: 3px solid #0c0b0b;
 	box-shadow: 0.5vmin #ba8f8f;
-	transform-style: preserve-3d;
-	transform: rotateX(20deg);
+	/* transform-style: preserve-3d; */
+	/* transform: rotateX(10deg); */
 }
 
 .arcade #bezel::before {

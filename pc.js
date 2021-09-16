@@ -705,9 +705,9 @@ tile {
 				);
 			};
 			// prevent page loading from the browser's cache
-			if (QuintOS.context == 'live') {
-				src += '?' + Date.now();
-			}
+			// if (QuintOS.context == 'live') {
+			// 	src += '?' + Date.now();
+			// }
 			if (src.slice(0, 4) != 'http') {
 				script.src = src;
 			} else {
@@ -722,10 +722,21 @@ tile {
 			let src = `${dir}/${game.slice(0, 1).toLowerCase() + game.slice(1)}-preload.js`;
 
 			try {
+				await this.ensureP5PlayIsLoaded();
 				await this.loadJS(src);
 			} catch (error) {
 				this.error(error);
 			}
+		}
+
+		async ensureP5PlayIsLoaded() {
+			// wait until p5.play loads by checking if the allSprites group
+			// is available yet
+			for (let attempt = 0; typeof allSprites == 'undefined'; attempt++) {
+				await delay(100);
+				if (attempt > 20) throw 'Could not load p5.play'; // throw an error
+			}
+			await delay(100);
 		}
 
 		async loadGame(game, dir) {
@@ -1131,6 +1142,21 @@ tile {
 			return img; // return the p5 graphics object
 		}
 		window.spriteArt = spriteArt;
+
+		function loadAni(sprite, img, name, width, height, frameCount, line, frameDelay) {
+			let frames = [];
+			for (let i = 0; i < frameCount; i++) {
+				frames.push({
+					frame: { x: width * i, y: height * line, width: width, height: height }
+				});
+			}
+			let ani = loadAnimation(new SpriteSheet(img, frames));
+			if (typeof frameDelay != 'undefined') {
+				ani.frameDelay = frameDelay;
+			}
+			sprite.addAnimation(name, ani);
+		}
+		window.loadAni = loadAni;
 	}
 
 	window.PC = PC;
