@@ -691,30 +691,33 @@ tile {
 			});
 		}
 
-		async loadJS(src) {
-			const script = document.createElement('script');
-			script.async = false;
-			script.onload = function () {
-				log('loaded: ' + src);
-			};
-			script.onerror = () => {
-				throw (
-					'Failed to load file: \n\n' +
-					src +
-					'\n\nCheck the Javascript console for more info. To open the console use control+shift+i or command+option+i then click the Console tab.'
-				);
-			};
-			// prevent page loading from the browser's cache
-			// if (QuintOS.context == 'live') {
-			// 	src += '?' + Date.now();
-			// }
-			if (src.slice(0, 4) != 'http') {
-				script.src = src;
-			} else {
-				script.innerHTML = await (await fetch(src)).text();
-			}
+		loadJS(src) {
+			return new Promise(async (resolve, reject) => {
+				const script = document.createElement('script');
+				script.async = false;
+				script.onload = function () {
+					log('loaded: ' + src);
+					resolve();
+				};
+				script.onerror = () => {
+					reject(`
+Failed to load file: \n\n${src}\n\n
+Check the Javascript console for more info.
+To open the console use control+shift+i or
+command+option+i then click the Console tab.`);
+				};
+				// prevent page loading from the browser's cache
+				// if (QuintOS.context == 'live') {
+				// 	src += '?' + Date.now();
+				// }
+				if (src.slice(0, 4) != 'http') {
+					script.src = src;
+				} else {
+					script.innerHTML = await (await fetch(src)).text();
+				}
 
-			document.body.appendChild(script);
+				document.body.appendChild(script);
+			});
 		}
 
 		async preloadData(game, dir) {
@@ -746,7 +749,15 @@ tile {
 			try {
 				await this.loadJS(src);
 			} catch (error) {
-				this.error(error);
+				try {
+					dir = dir.split('/');
+					dir.pop();
+					dir = dir.join('/');
+					src = dir + '/' + file;
+					await this.loadJS(src);
+				} catch (ror) {
+					this.error(error);
+				}
 			}
 			let title = '0' + this.level + '_' + game.slice(0, 1).toUpperCase() + game.slice(1);
 			$('head title').text(title);
