@@ -726,6 +726,7 @@ command+option+i then click the Console tab.`);
 
 			try {
 				await this.ensureP5PlayIsLoaded();
+				camera.position.y = 400;
 				await this.loadJS(src);
 			} catch (error) {
 				this.error(error);
