@@ -51,7 +51,7 @@ await pc.rect(x, y, w, h, speed, c);
 ## erase a specific area
 
 ```js
-await pc.eraseRect(x, y, w, h);
+await pc.eraseRect(x, y, w, h, speed);
 ```
 
 ## create an input
@@ -108,6 +108,22 @@ color16(c, palette);
 ```
 
 - `c` is the color letter
+- `palette` is the color palette that should be used, C64 palatte object by default
+
+## easy way to load an animation
+
+```js
+loadAni(sprite, img, name, width, height, frameCount, line, frameDelay);
+```
+
+- `sprite` the p5.play sprite object
+- `img` image path
+- `name` name of the animation
+- `width` width of the animation
+- `height` width of the animation
+- `frameCount` is the amount of frames in the animation
+- `line` is the line that the animation is on in the sprite sheet
+- `frameDelay` is the delay between frames when the animation is played
 
 ## Credits
 

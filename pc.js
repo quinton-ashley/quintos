@@ -368,8 +368,8 @@ tile {
 
 		async eraseRect(x, y, w, h, speed) {
 			if (this.level == 0 && (typeof h == 'undefined' || h > 1)) {
-				await this.eraseRect(0, 0, this.w, 1);
-				await this.eraseRect(0, 1, 4, 1);
+				await this.eraseRect(0, 0, this.w, 1, speed);
+				await this.eraseRect(0, 1, 4, 1, speed);
 				return;
 			}
 			x = x || 0;
