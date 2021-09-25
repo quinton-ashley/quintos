@@ -39,7 +39,7 @@ body.c64 {
 }
 
 .c64 #bezel::before {
-	content: "";
+	content: '';
 	position: absolute;
 	top: 3vmin;
 	left: 3vmin;
@@ -64,6 +64,8 @@ body.c64 {
 	border-radius: 2vmin;
 	user-select: none;
 	cursor: none;
+	width: 96vmin !important;
+	height: 60vmin !important;
 }
 
 .c64 #tube.clear {
@@ -75,22 +77,26 @@ body.c64 {
 	position: relative;
 	border-radius: 2vmin;
 	z-index: 0;
+	width: 96vmin !important;
+	height: 60vmin !important;
 }
 
-.c64 #tube::before, .c64 #tube::after {
+.c64 #tube::before,
+.c64 #tube::after {
 	border-radius: 2vmin;
 	position: absolute;
-	content: "";
+	content: '';
 	top: -6vmin;
 	left: -6vmin;
 	right: -6vmin;
 	bottom: -6vmin;
 }
 
-.c64 #tube.clear::before, .c64 #tube.clear::after {
+.c64 #tube.clear::before,
+.c64 #tube.clear::after {
 	border-radius: 2vmin;
 	position: absolute;
-	content: "";
+	content: '';
 	top: 0;
 	left: 0;
 	right: 0;
@@ -100,12 +106,12 @@ body.c64 {
 /* .c64 #tube::before {
 	z-index: 20;
 	animation: scanlines 16ms infinite steps(4, start);
-	/* mix-blend-mode: overlay; */
-background-size: 1vw 3px;
-background-image: linear-gradient(to bottom, transparent 2.7px, rgba(40, 35, 78, 0.6) 2px, rgba(40, 35, 78, 0.9) 3px);
-}
+	mix-blend-mode: overlay;
+  background-size: 1vw 3px;
+	background-image: linear-gradient(to bottom, transparent 2.7px, rgba(40, 35, 78, 0.6) 2px, rgba(40, 35, 78, 0.9) 3px);
+} */
 
-*/ @keyframes scanlines {
+@keyframes scanlines {
 	from {
 		background-position: 0 0px;
 	}
@@ -125,6 +131,7 @@ background-image: linear-gradient(to bottom, transparent 2.7px, rgba(40, 35, 78,
 	background-blend-mode: multiply, normal, screen;
 	background-image: radial-gradient(ellipse closest-corner, transparent 70%, rgba(90, 90, 90, 0.7)), linear-gradient(85deg, rgba(64, 68, 64, 0.2) 0%, rgba(255, 255, 255, 0) 64.5%, rgba(174, 172, 191, 0.05) 74.5%, rgba(243, 242, 250, 0.05) 75%, rgba(213, 210, 229, 0.07) 85%, rgba(255, 255, 255, 0) 85.5%);
 } */
+
 .c64 #bootScreen {
 	display: block;
 	width: 80vmin;
@@ -145,7 +152,13 @@ background-image: linear-gradient(to bottom, transparent 2.7px, rgba(40, 35, 78,
 	border-radius-bottom-left: 1rem;
 	border-left: 0.25vmin solid #cdbbae;
 	border-right: 0.25vmin solid #cdbbae;
-	background-image: linear-gradient(to bottom, #7c604d 0%, #f4f0ed 1.25vmin, #eae3de 6.5vmin, rgba(215, 200, 190, 0) 7.25vmin);
+	background-image: linear-gradient(
+		to bottom,
+		#7c604d 0%,
+		#f4f0ed 1.25vmin,
+		#eae3de 6.5vmin,
+		rgba(215, 200, 190, 0) 7.25vmin
+	);
 	perspective: 12in;
 }
 
@@ -164,34 +177,54 @@ background-image: linear-gradient(to bottom, transparent 2.7px, rgba(40, 35, 78,
 .c64 #badge #logo {
 	position: absolute;
 	top: 55%;
-	left: .3vmin;
+	left: 0.3vmin;
 	transform: translate(0, -50%);
 }
 
 .c64 #badge img {
 	width: 7vmin;
-	filter: grayscale() contrast(.7) brightness(4);
+	filter: grayscale() contrast(0.7) brightness(4);
 }
 
 .c64 #badge #brand {
 	position: absolute;
 	top: 55%;
 	left: 7.6vmin;
-	background:linear-gradient(#262626,#eaeaea,#262626);
-  background-clip: text;
-  color:transparent;
+	background: linear-gradient(#262626, #eaeaea, #262626);
+	background-clip: text;
+	color: transparent;
 	transform: translate(0, -50%);
 }
 
 .c64 #badge::after {
-	content: "";
+	content: '';
 	position: absolute;
 	top: 0.5vmin;
 	bottom: 0.5vmin;
 	right: 8vmin;
 	width: 10vmin;
 	opacity: 0.5;
-	background-image: linear-gradient(to bottom, red 0%, red 15%, transparent 15%, transparent 21.25%, orange 21.25%, orange 36.25%, transparent 36.25%, transparent 42.5%, yellow 42.5%, yellow 57.5%, transparent 57.5%, transparent 63.75%, limegreen 63.75%, limegreen 78.75%, transparent 78.75%, transparent 85%, cyan 85%, cyan 100%);
+	background-image: linear-gradient(
+		to bottom,
+		red 0%,
+		red 15%,
+		transparent 15%,
+		transparent 21.25%,
+		orange 21.25%,
+		orange 36.25%,
+		transparent 36.25%,
+		transparent 42.5%,
+		yellow 42.5%,
+		yellow 57.5%,
+		transparent 57.5%,
+		transparent 63.75%,
+		limegreen 63.75%,
+		limegreen 78.75%,
+		transparent 78.75%,
+		transparent 85%,
+		cyan 85%,
+		cyan 100%
+	);
 }
 
 .c64 #badge #power {
@@ -216,7 +249,7 @@ background-image: linear-gradient(to bottom, transparent 2.7px, rgba(40, 35, 78,
 	display: flex;
 	flex-direction: column;
 	justify-content: center;
-	font-family: "Syncopate", sans-serif;
+	font-family: 'Syncopate', sans-serif;
 	font-size: 1.25vmin;
 	font-weight: 700;
 	text-transform: uppercase;
@@ -240,7 +273,8 @@ background-image: linear-gradient(to bottom, transparent 2.7px, rgba(40, 35, 78,
 	border-right: 2px groove #e1d5ce;
 }
 
-.c64 #video, #audio {
+.c64 #video,
+#audio {
 	font: normal 1vmin system-ui, sans-serif;
 	color: #5d4739;
 	position: absolute;
@@ -252,11 +286,13 @@ background-image: linear-gradient(to bottom, transparent 2.7px, rgba(40, 35, 78,
 	border: 1px solid black;
 	border-color: #e1d5ce #c4ad9e #c4ad9e #e1d5ce;
 	background-image: radial-gradient(circle, #8c6c56, rgba(0, 0, 0, 0));
-	box-shadow: inset -0.5vmin -0.5vmin 0.5vmin -0.5vmin white, inset -1vmin -1vmin 2vmin -1vmin #eae3de, inset 0.5vmin 0.5vmin 0.5vmin -0.5vmin rgba(0, 0, 0, 0.5), inset 1vmin 1vmin 1vmin #8c6c56;
+	box-shadow: inset -0.5vmin -0.5vmin 0.5vmin -0.5vmin white, inset -1vmin -1vmin 2vmin -1vmin #eae3de,
+		inset 0.5vmin 0.5vmin 0.5vmin -0.5vmin rgba(0, 0, 0, 0.5), inset 1vmin 1vmin 1vmin #8c6c56;
 }
 
-.c64 #video::before, #audio::before {
-	content: "";
+.c64 #video::before,
+#audio::before {
+	content: '';
 	position: absolute;
 	top: 0.75vmin;
 	left: 0.75vmin;
@@ -265,10 +301,22 @@ background-image: linear-gradient(to bottom, transparent 2.7px, rgba(40, 35, 78,
 	border-radius: 50%;
 	box-sizing: border-box;
 	box-shadow: 0 0.25vmin 0.1vmin rgba(0, 0, 0, 0.4), 0 0 0.75vmin #3d2f26;
-	background-image: radial-gradient(circle at 50% 45%, rgba(0, 0, 0, 0) 64%, rgba(0, 0, 0, 0.4) 70%), radial-gradient(circle 3.75vmin at 50% 85%, rgba(255, 255, 255, 0) 64%, rgba(255, 255, 255, 0.4) 70%), radial-gradient(circle, rgba(0, 0, 0, 0.8), rgba(0, 0, 0, 0.8) 15%, rgba(0, 0, 0, 0) 40%, rgba(0, 0, 0, 0) 45%, #a7a7a7 45%, silver 50%, black);
+	background-image: radial-gradient(circle at 50% 45%, rgba(0, 0, 0, 0) 64%, rgba(0, 0, 0, 0.4) 70%),
+		radial-gradient(circle 3.75vmin at 50% 85%, rgba(255, 255, 255, 0) 64%, rgba(255, 255, 255, 0.4) 70%),
+		radial-gradient(
+			circle,
+			rgba(0, 0, 0, 0.8),
+			rgba(0, 0, 0, 0.8) 15%,
+			rgba(0, 0, 0, 0) 40%,
+			rgba(0, 0, 0, 0) 45%,
+			#a7a7a7 45%,
+			silver 50%,
+			black
+		);
 }
 
-.c64 #video::after, #audio::after {
+.c64 #video::after,
+#audio::after {
 	position: absolute;
 	bottom: -2em;
 	left: 0;
@@ -285,7 +333,7 @@ background-image: linear-gradient(to bottom, transparent 2.7px, rgba(40, 35, 78,
 }
 
 .c64 #video::after {
-	content: "VIDEO";
+	content: 'VIDEO';
 }
 
 .c64 #audio {
@@ -297,7 +345,7 @@ background-image: linear-gradient(to bottom, transparent 2.7px, rgba(40, 35, 78,
 }
 
 .c64 #audio::after {
-	content: "AUDIO";
+	content: 'AUDIO';
 }
 
 .c64 #power-btn {
@@ -313,7 +361,7 @@ background-image: linear-gradient(to bottom, transparent 2.7px, rgba(40, 35, 78,
 }
 
 .c64 #power-btn::before {
-	content: "";
+	content: '';
 	position: absolute;
 	top: 2px;
 	left: 1px;
@@ -329,7 +377,7 @@ background-image: linear-gradient(to bottom, transparent 2.7px, rgba(40, 35, 78,
 }
 
 .c64 #power-btn::after {
-	content: "POWER";
+	content: 'POWER';
 	position: absolute;
 	top: calc(100% + 0.5vmin);
 	left: 0;

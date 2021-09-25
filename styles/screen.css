@@ -92,11 +92,13 @@ row {
 
 .lvl05 .screen {
 	font-family: C64, monospace;
-	font-size: 1.23em;
+	font-size: 1.2em;
 	position: absolute;
 	z-index: 1;
-	width: 99.5%;
-	height: 98.5%;
+	top: 1%;
+	left: 1%;
+	width: 99%;
+	height: 98%;
 }
 
 .lvl08 .screen {
@@ -104,6 +106,8 @@ row {
 	font-size: 1.12em;
 	position: absolute;
 	z-index: 1;
+	top: 1%;
+	left: 1%;
 	width: 99%;
 	height: 99%;
 }

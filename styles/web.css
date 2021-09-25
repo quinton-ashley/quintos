@@ -1,3 +1,99 @@
-.web {
-	display: none;
+body {
+	background: white;
+	display: flex;
+	justify-content: center;
+	font-family: 'VT323', monospace;
+	font-size: 1em;
+	margin: 0;
+	padding: 2em;
+}
+
+#frame0 {
+	background-color: white;
+	border: 0.1em solid black;
+	box-shadow: 0.1em 0.1em black;
+	max-width: 60em;
+}
+
+#titlebar {
+	text-align: center;
+	border-bottom: 0.1em solid black;
+	/* thirteenths, emulate System 6 titlbars' five black lines */
+	background: linear-gradient(
+		white,
+		white 15.38%,
+		black 15.38%,
+		black 23.08%,
+		white 23.08%,
+		white 30.77%,
+		black 30.77%,
+		black 38.46%,
+		white 38.46%,
+		white 46.15%,
+		black 46.15%,
+		black 53.85%,
+		white 53.85%,
+		white 61.54%,
+		black 61.54%,
+		black 69.23%,
+		white 69.23%,
+		white 76.92%,
+		black 76.92%,
+		black 84.62%,
+		white 84.62%
+	);
+}
+
+#titlebar-edge-left {
+	width: 0.2em;
+	height: 1.2em; /* same as h1 */
+	float: left;
+	background-color: white;
+}
+
+#titlebar-edge-right {
+	width: 0.2em;
+	height: 1.2em; /* same as h1 */
+	float: right;
+	background-color: white;
+}
+
+#title {
+	text-transform: uppercase;
+	font-size: 1.2em;
+	margin: 0em;
+	padding: 0 0.2em 0 0.2em;
+	display: inline;
+	background-color: white;
+}
+
+article {
+	padding: 1em;
+	padding-top: 0;
+}
+
+form label {
+	display: block;
+	padding-bottom: 1em;
+}
+
+input {
+	border: 0.1em solid black;
+}
+
+::placeholder {
+	font-family: 'VT323', monospace;
+}
+
+select {
+	font-family: 'VT323', monospace;
+	border: 0.1em solid black;
+	background-color: white;
+}
+
+button {
+	font-family: 'VT323', monospace;
+	border: 0.1em solid red;
+	background-color: black;
+	color: white;
 }

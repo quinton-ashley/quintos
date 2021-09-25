@@ -398,7 +398,7 @@ CopyLeft 1977`
 			};
 		});
 
-		if (pc.level == 8) {
+		if (pc.level == 5 || pc.level == 8) {
 			// support
 			const stdout = document.getElementById('bootScreen');
 			const PRINT = (str) => {
@@ -411,9 +411,9 @@ CopyLeft 1977`
 			PRINT(bootScreen[0].txt);
 
 			async function makeMaze() {
-				for (let i = 0; i < 50; i++) {
+				for (let i = 0; i < pc.h; i++) {
 					let txt = '';
-					for (let j = 0; j < 20; j++) {
+					for (let j = 0; j < pc.w; j++) {
 						txt += STR$(205.5 + RND(1));
 					}
 					PRINT(txt);
@@ -426,21 +426,16 @@ CopyLeft 1977`
 			// if (camera?.off) camera.off();
 		}
 
-		if (pc.level == 8) {
-		}
-
 		if (pc.level == 5 || pc.level >= 8) {
 			$('#bootScreen').remove();
 			$('#tube').addClass('clear');
 			$('#tube').append($('main'));
-
 			$('main').css('display', 'block');
-			$('canvas').css('width', '96vmin');
-			$('canvas').css('height', '60vmin');
 
 			if (pc.level == 8) {
 				resizeCanvas(640, 800);
 			}
+
 			let logo = bootScreen[1];
 			await pc.text(logo.txt, logo.x, logo.y);
 

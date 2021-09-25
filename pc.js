@@ -53,7 +53,7 @@ $(() => {
 					h: 4
 				},
 				5: {
-					x: 15,
+					x: 10,
 					y: 10,
 					w: 20,
 					h: 4
@@ -721,6 +721,10 @@ command+option+i then click the Console tab.`);
 		}
 
 		async preloadData(game, dir) {
+			if (QuintOS?.preload && typeof QuintOS.preload != 'boolean') {
+				await QuintOS.preload();
+				return;
+			}
 			dir = QuintOS.dir || dir || '.';
 			let src = `${dir}/${game.slice(0, 1).toLowerCase() + game.slice(1)}-preload.js`;
 
@@ -744,6 +748,10 @@ command+option+i then click the Console tab.`);
 		}
 
 		async loadGame(game, dir) {
+			if (QuintOS.game) {
+				await QuintOS.game();
+				return;
+			}
 			dir = dir || QuintOS.dir || '.';
 			let file = `${game.slice(0, 1).toLowerCase() + game.slice(1)}.js`;
 			let src = dir + '/' + file;
