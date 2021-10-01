@@ -563,16 +563,19 @@ tile {
 
 			if (typeof txt != 'string') txt += '';
 
-			if (this.level == 0) {
-				this.erase();
-			} else if (this.charAt(x, y) != ' ' || this.charAt(x + w - 1, y + h) != ' ') {
-				await this.eraseRect(x, y, w, h);
-			}
 			let th;
 			if (this.level > 0) {
-				th = await this.text(txt, x + 2, y + 1, w - 4);
+				let _txt = this._text(txt, x + 2, y + 1, w - 4);
+				th = _txt.lines.length;
+				await this.eraseRect(x, y, w, h + th);
+				if (_txt.speed) {
+					await this._textAsync(_txt.lines, _txt.x, _txt.y, _txt.speed);
+				} else {
+					this._textSync(_txt.lines, _txt.x, _txt.y);
+				}
 				await this.rect(x, y, w, h + th);
 			} else {
+				this.erase();
 				th = await this.text(txt, x, y, w);
 				await this.text('OKAY', 0, 1);
 			}
@@ -625,16 +628,19 @@ tile {
 
 			if (typeof txt != 'string') txt += '';
 
-			if (this.level == 0) {
-				this.erase();
-			} else if (this.charAt(x, y) != ' ' || this.charAt(x + w - 1, y + h) != ' ') {
-				await this.eraseRect(x, y, w, h);
-			}
 			let th;
 			if (this.level > 0) {
-				th = await this.text(txt, x + 2, y + 1, w - 4);
+				let _txt = this._text(txt, x + 2, y + 1, w - 4);
+				th = _txt.lines.length;
+				await this.eraseRect(x, y, w, h + th);
+				if (_txt.speed) {
+					await this._textAsync(_txt.lines, _txt.x, _txt.y, _txt.speed);
+				} else {
+					this._textSync(_txt.lines, _txt.x, _txt.y);
+				}
 				await this.rect(x, y, w, h + th);
 			} else {
+				this.erase();
 				th = await this.text(txt, x, y, w);
 			}
 			let inX = x + 2;
@@ -915,10 +921,13 @@ command+option+i then click the Console tab.`);
 <div class="out" aria-hidden="true"></div>
   <div class="casio">
       <div class="speaker"></div>
-      <H1><span><p class="logo">QuintOS</p>
-            <p class="type">PROGRAMMABLE CALCULATOR</p>
-            <p class="model">FX-702P</p>
-      </span></H1>
+      <h1>
+				<span>
+					<p class="logo">QuintOS</p>
+          <p class="type">PROGRAMMABLE CALCULATOR</p>
+          <p class="model">FX-702P</p>
+      	</span>
+			</h1>
   </div>
 </div>
 </div>`;
@@ -937,7 +946,9 @@ command+option+i then click the Console tab.`);
 			<div class="bottomFrame">
 				<div class="fan">
 				</div>
-				<a href="https://github.com/quinton-ashley/quintos"><img class="logo" src="node_modules/quintos/img/logo.png" /></a>
+				<a href="https://github.com/quinton-ashley/quintos">
+					<img class="logo" src="https://raw.githubusercontent.com/quinton-ashley/quintos/main/img/logo.png" />
+				</a>
 				<div class="powerButton">
 					<div class="powerIcon">
 					</div>
@@ -990,7 +1001,7 @@ command+option+i then click the Console tab.`);
 		<div id="bottom-panel">
 			<div id="badge">
 				<a id="logo" href="https://github.com/quinton-ashley/quintos">
-					<img class="logo" src="node_modules/quintos/img/logo.png" />
+					<img class="logo" src="https://raw.githubusercontent.com/quinton-ashley/quintos/main/img/logo.png" />
 				</a>
 				<a id="brand" href="https://github.com/quinton-ashley/quintos">
 					<h1>QuintOS</h1>
@@ -1038,6 +1049,170 @@ command+option+i then click the Console tab.`);
 		</div>
 	</div>
 </div>`;
+
+	const webHTML = `
+<div class="container">
+	<div class="mac">
+		<div class="screen-frame">
+			<div class="screen">
+				<div class="contain">
+					<div class="bg" id="bg">
+						<div class="menu">
+							<div class="click apple"><img ondragstart="return false;" src="https://raw.githubusercontent.com/quinton-ashley/quintos/main/img/favicon.png"/>
+								<div class="dropdown"><a href="#">
+										<p>About QuintOS...</p>
+										<li></li></a></div>
+							</div>
+							<div class="click">
+								<p>File</p>
+								<div class="dropdown"><a href="#">
+										<p>New Window</p>
+										<li>&#x2318;N</li></a><a href="#">
+										<p>Open File...</p>
+										<li>&#x2318;O</li></a><a href="#">
+										<p>Print</p>
+										<li>&#x2318;P</li></a><a href="#">
+										<p>Close Window</p>
+										<li>&#8679;&#x2318;W</li></a></div>
+							</div>
+							<div class="click">
+								<p>Edit</p>
+								<div class="dropdown"><a href="#">
+										<p>Undo</p>
+										<li>&#x2318;Z</li></a><a href="#">
+										<p>Redo</p>
+										<li>&#8679;&#x2318;Z</li></a><a href="#">
+										<p>Cut</p>
+										<li>&#x2318;X</li></a><a href="#">
+										<p>Copy</p>
+										<li>&#x2318;C</li></a><a href="#">
+										<p>Paste</p>
+										<li>&#x2318;V</li></a></div>
+							</div>
+							<div class="click">
+								<p>View</p>
+								<div class="dropdown"><a href="#">
+										<p>Bookmarks</p>
+										<li>&#x2318;B</li></a><a href="#">
+										<p>History</p>
+										<li>&#8679;&#x2318;H</li></a></div>
+							</div>
+							<div class="click">
+								<p>Special</p>
+								<div class="dropdown"><a href="#">
+										<p>Downloads</p>
+										<li>&#x2318;J</li></a><a href="#">
+										<p>Open Console</p>
+										<li>&#8679;&#x2318;I</li></a></div>
+							</div>
+							<div class="time">
+								<p></p>
+							</div>
+						</div>
+						<figure class="icon trash click"><img src="https://dl.dropboxusercontent.com/s/c5w4rhgk2g34de7/icon_trash.png?dl=0" alt=""/>
+							<figcaption>Trash</figcaption>
+						</figure>
+						<figure class="icon doc click"><img src="https://dl.dropboxusercontent.com/s/2xofo03j79asxsy/icon_doc.png?dl=0" alt=""/>
+							<figcaption>Document</figcaption>
+						</figure>
+						<figure class="icon mail click"><img src="https://dl.dropboxusercontent.com/s/graxq4qm8larlia/icon_mail.png?dl=0" alt=""/>
+							<figcaption>Mail</figcaption>
+						</figure>
+						<div class="desktop">
+							<div class="window">
+								<div class="bar title">
+									<h1>Netscape</h1>
+									<nav>
+										<ul>
+											<li class="close"></li>
+											<li class="maximize"></li>
+										</ul>
+									</nav>
+								</div>
+								<div class="bar info">
+									<ul>
+										<li>
+											<div class="emoji">⬅</div>
+											<p>Back</p>
+										</li>
+										<li>
+											<div class="emoji">➡</div>
+											<p>Forward</p>
+										</li>
+										<li>
+											<div class="emoji">🔄</div>
+											<p>Reload</p>
+										</li>
+										<li>
+											<div class="emoji">🏠</div>
+											<p>Home</p>
+										</li>
+										<li>
+											<div class="emoji">✉</div>
+											<p>Mail</p>
+										</li>
+										<li>
+											<div class="emoji">🖼</div>
+											<p>Images</p>
+										</li>
+										<li>
+											<div class="emoji">📂</div>
+											<p>Open</p>
+										</li>
+										<li>
+											<div class="emoji">🖨</div>
+											<p>Print</p>
+										</li>
+										<li>
+											<div class="emoji">🔍</div>
+											<p>Find</p>
+										</li>
+										<li>
+											<div class="emoji">🛑</div>
+											<p>Stop</p>
+										</li>
+									</ul>
+								</div>
+								<div class="bar links">
+									<ul>
+										<li>Welcome</li>
+										<li>What's New</li>
+										<li>What's Cool</li>
+										<li>Questions</li>
+										<li>Net Search</li>
+										<li>Net Directory</li>
+									</ul>
+								</div>
+								<iframe src="https://web.archive.org/web/19991128125537/http://www.geocities.com/Heartland/Bluffs/4157/hampdance.html"></iframe>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+		<div class="floppy">
+			<div class="sec-1"></div>
+			<div class="sec-2"></div>
+		</div>
+		<div class="logo"><img src="https://raw.githubusercontent.com/quinton-ashley/quintos/main/img/logo.png" height="100%"/></div>
+	</div>
+</div>`;
+
+	// setInterval(() => {
+	// 	$('.time p').text(
+	// 		new Date().toLocaleTimeString('en-US', {
+	// 			hour12: false,
+	// 			hour: 'numeric',
+	// 			minute: 'numeric',
+	// 			second: 'numeric'
+	// 		})
+	// 	);
+	// }, 1000);
+
+	// $('.window').draggable({
+	// 	handle: '.title.bar'
+	// });
+	// $('.window').resizable();
 
 	if (typeof QuintOS.level != 'undefined') {
 		let lvl = QuintOS.level.toString();

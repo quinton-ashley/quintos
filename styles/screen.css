@@ -48,6 +48,11 @@ body {
 }
 
 @font-face {
+	font-family: Pixel7;
+	src: url('../fonts/cyrillic_pixel-7.ttf');
+}
+
+@font-face {
 	font-family: Orbitron;
 	font-style: normal;
 	font-weight: 400;
@@ -79,6 +84,10 @@ row {
 	height: 100%;
 	font-size: 16px;
 	font-family: monospace;
+}
+
+tile {
+	text-align: center;
 }
 
 .lvl00 .screen {
@@ -124,12 +133,12 @@ row {
 
 .lvl03 .screen,
 .lvl04 .screen {
-	font-family: VT323, monospace;
+	font-family: VT323, Pixel7, monospace;
 	font-size: 1.13em;
 }
 
 .lvl07 .screen {
-	font-family: VT323, monospace;
+	font-family: VT323, Pixel7, monospace;
 }
 
 .lvl01 tile {
