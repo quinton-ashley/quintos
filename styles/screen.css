@@ -128,7 +128,8 @@ tile {
 
 .lvl02 .screen {
 	font-family: Apple2, monospace;
-	font-size: 1.16em;
+	font-size: 1.48em;
+	width: 92%;
 }
 
 .lvl03 .screen,
