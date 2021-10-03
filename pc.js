@@ -727,16 +727,17 @@ command+option+i then click the Console tab.`);
 		}
 
 		async preloadData(game, dir) {
+			await this.ensureP5PlayIsLoaded();
+			camera.position.y = 400;
+			frameRate(60);
+
 			if (QuintOS?.preload && typeof QuintOS.preload != 'boolean') {
 				await QuintOS.preload();
 				return;
 			}
 			dir = QuintOS.dir || dir || '.';
 			let src = `${dir}/${game.slice(0, 1).toLowerCase() + game.slice(1)}-preload.js`;
-
 			try {
-				await this.ensureP5PlayIsLoaded();
-				camera.position.y = 400;
 				await this.loadJS(src);
 			} catch (error) {
 				this.error(error);
@@ -1362,10 +1363,10 @@ command+option+i then click the Console tab.`);
 					y = height * pos;
 				} else {
 					// pos is the location of the animation line
-					// given as a coordinate pair of distances in tiles
+					// given as a [row,column] coordinate pair of distances in tiles
 					// from the top left corner of the image
-					x = width * (i + pos[0]);
-					y = height * pos[1];
+					x = width * (i + pos[1]); // column
+					y = height * pos[0]; // row
 				}
 
 				frames.push({
@@ -1373,10 +1374,34 @@ command+option+i then click the Console tab.`);
 				});
 			}
 			let ani = loadAnimation(new SpriteSheet(spriteSheetImg, frames));
-			ani.frameDelay ??= frameDelay;
+			if (typeof frameDelay != 'undefined') ani.frameDelay = frameDelay;
 			return ani;
 		}
 		window.loadAni = loadAni;
+
+		class Tiles {
+			constructor(rows, cols, tileSize, x, y) {
+				this.rows = rows;
+				this.cols = cols;
+				this.tileSize = tileSize;
+				this.x = x;
+				this.y = y;
+			}
+
+			add(row, col, ani, group) {
+				row += 0.5;
+				col += 0.5;
+				let sprite = createSprite(
+					this.x + (col * this.tileSize) / 2,
+					this.y + (row * this.tileSize) / 2,
+					this.tileSize,
+					this.tileSize
+				);
+				sprite.addAnimation('default', ani);
+				sprite.addToGroup(group);
+			}
+		}
+		window.Tiles = Tiles;
 	}
 
 	window.PC = PC;
