@@ -1338,14 +1338,19 @@ command+option+i then click the Console tab.`);
 		}
 		window.spriteArt = spriteArt;
 
-		function loadAni(sprite, img, name, width, height, frameCount, line, frameDelay) {
+		function loadAni(sprite, spriteSheetImg, name, width, height, frameCount, pos, frameDelay) {
+			let x, y;
+			if (typeof pos != 'number') {
+				x = pos[0];
+				y = pos[1];
+			}
 			let frames = [];
 			for (let i = 0; i < frameCount; i++) {
 				frames.push({
-					frame: { x: width * i, y: height * line, width: width, height: height }
+					frame: { x: x || width * i, y: y || height * line, width: width, height: height }
 				});
 			}
-			let ani = loadAnimation(new SpriteSheet(img, frames));
+			let ani = loadAnimation(new SpriteSheet(spriteSheetImg, frames));
 			if (typeof frameDelay != 'undefined') {
 				ani.frameDelay = frameDelay;
 			}
