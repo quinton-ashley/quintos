@@ -1338,26 +1338,43 @@ command+option+i then click the Console tab.`);
 		}
 		window.spriteArt = spriteArt;
 
-		function loadAni(sprite, spriteSheetImg, name, width, height, frameCount, pos, frameDelay) {
+		function loadAni(spriteSheetImg, size, pos, frameCount, frameDelay) {
+			let width, height;
+			if (typeof size == 'number') {
+				width = size;
+				height = size;
+			} else {
+				width = size[0];
+				height = size[1];
+			}
+
+			// add all the frames in the animation to the frames array
 			let frames = [];
+			frameCount ??= 1; // set frameCount to 1 by default
 			for (let i = 0; i < frameCount; i++) {
 				let x, y;
-				if (typeof pos != 'number') {
-					x = pos[0];
-					y = pos[1];
-				} else {
+				// if pos is a number, that means it's just a line number
+				// and the animation's first frame is at x = 0
+				// the line number is the location of the animation line
+				// given as a distance in tiles from the top of the image
+				if (typeof pos == 'number') {
 					x = width * i;
 					y = height * pos;
+				} else {
+					// pos is the location of the animation line
+					// given as a coordinate pair of distances in tiles
+					// from the top left corner of the image
+					x = width * (i + pos[0]);
+					y = height * pos[1];
 				}
+
 				frames.push({
 					frame: { x: x, y: y, width: width, height: height }
 				});
 			}
 			let ani = loadAnimation(new SpriteSheet(spriteSheetImg, frames));
-			if (typeof frameDelay != 'undefined') {
-				ani.frameDelay = frameDelay;
-			}
-			sprite.addAnimation(name, ani);
+			ani.frameDelay ??= frameDelay;
+			return ani;
 		}
 		window.loadAni = loadAni;
 	}
