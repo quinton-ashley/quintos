@@ -1339,15 +1339,18 @@ command+option+i then click the Console tab.`);
 		window.spriteArt = spriteArt;
 
 		function loadAni(sprite, spriteSheetImg, name, width, height, frameCount, pos, frameDelay) {
-			let x, y;
-			if (typeof pos != 'number') {
-				x = pos[0];
-				y = pos[1];
-			}
 			let frames = [];
 			for (let i = 0; i < frameCount; i++) {
+				let x, y;
+				if (typeof pos != 'number') {
+					x = pos[0];
+					y = pos[1];
+				} else {
+					x = width * i;
+					y = height * pos;
+				}
 				frames.push({
-					frame: { x: x || width * i, y: y || height * line, width: width, height: height }
+					frame: { x: x, y: y, width: width, height: height }
 				});
 			}
 			let ani = loadAnimation(new SpriteSheet(spriteSheetImg, frames));
