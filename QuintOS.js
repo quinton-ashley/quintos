@@ -7,6 +7,8 @@ window.addEventListener('keydown', function (e) {
 $(async () => {
 	const log = console.log;
 
+	$('canvas').removeAttr('style');
+
 	if (typeof QuintOS.level == 'undefined') {
 		alert('ERROR: load.js not found! Create this file and write:\nQuintOS.level = 0;');
 		return; // exit
@@ -433,7 +435,9 @@ CopyLeft 1977`
 
 			if (pc.level == 8) {
 				resizeCanvas(640, 800);
+				frameRate(60);
 			}
+			$('canvas').removeAttr('style');
 
 			let logo = bootScreen[1];
 			await pc.text(logo.txt, logo.x, logo.y);
@@ -460,6 +464,7 @@ CopyLeft 1977`
 		game = QuintOS.gameSelect;
 	}
 	QuintOS.dir += '/' + game[0].toUpperCase() + game.slice(1);
+	if (QuintOS.level > 5) QuintOS.preload = true;
 	if (QuintOS.preload) pc.preloadData(game);
 	if (pc.level >= 2 && pc.level < 5) await pc.frame();
 	let bootScreen = bootScreens[game] || bootScreens[games[pc.level]];

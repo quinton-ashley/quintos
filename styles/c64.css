@@ -64,8 +64,8 @@ body.c64 {
 	border-radius: 2vmin;
 	user-select: none;
 	cursor: none;
-	width: 96vmin !important;
-	height: 60vmin !important;
+	width: 96vmin;
+	height: 60vmin;
 }
 
 .c64 #tube.clear {
