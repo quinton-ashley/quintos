@@ -747,7 +747,7 @@ command+option+i then click the Console tab.`);
 		async ensureP5PlayIsLoaded() {
 			// wait until p5.play loads by checking if the allSprites group
 			// is available yet
-			for (let attempt = 0; typeof allSprites == 'undefined'; attempt++) {
+			for (let attempt = 0; typeof Group == 'undefined' || typeof allSprites == 'undefined'; attempt++) {
 				await delay(100);
 				if (attempt > 20) throw 'Could not load p5.play'; // throw an error
 			}
@@ -1380,25 +1380,111 @@ command+option+i then click the Console tab.`);
 		window.loadAni = loadAni;
 
 		class Tiles {
-			constructor(rows, cols, tileSize, x, y) {
+			constructor(rows, cols, layers, tileSize, x, y) {
 				this.rows = rows;
 				this.cols = cols;
+				this.layers = layers;
 				this.tileSize = tileSize;
 				this.x = x;
 				this.y = y;
+				this.tiles = [];
+				for (let row = 0; row < rows; row++) {
+					this.tiles.push([]);
+					for (let col = 0; col < cols; col++) {
+						this.tiles[row].push([]);
+						for (let layer = 0; layer < layers; layer++) {
+							this.tiles[row][col].push(null);
+						}
+					}
+				}
 			}
 
-			add(row, col, ani, group) {
-				row += 0.5;
-				col += 0.5;
+			/*
+			 * add(row, col, layer, ani, group)
+			 * layer is optional, defaults to zero
+			 */
+			add(row, col, layer, ani, group) {
 				let sprite = createSprite(
-					this.x + (col * this.tileSize) / 2,
-					this.y + (row * this.tileSize) / 2,
+					this.x + (col + 0.5) * this.tileSize,
+					this.y + (row + 0.5) * this.tileSize,
 					this.tileSize,
 					this.tileSize
 				);
-				sprite.addAnimation('default', ani);
-				sprite.addToGroup(group);
+				sprite.row = row;
+				sprite.col = col;
+				sprite.destRow = row;
+				sprite.destCol = col;
+				sprite.layer = layer;
+				sprite.depth = layer;
+				// always start animations at frame 0
+				// if false, by default p5.play will save which frame an animation is on
+				// when the animation is changed so if the animation hadn't finished
+				// when the sprite uses that animation again it will continue at the frame
+				// it was at before, this is not ideal for most use cases idk why it's
+				// the default so I added this boolean flag for changing that behavior
+				sprite.autoResetAnimations = true;
+				if (ani) sprite.addAnimation('default', ani);
+				if (group) sprite.addToGroup(group);
+				this.tiles[row][col][layer] = sprite;
+				return sprite;
+			}
+
+			/*
+			 * move(sprite | group, speed, direction | destinationRow, destinationcol)
+			 * Moves the sprite/group in a direction by one tile
+			 * or to a destination row, col
+			 */
+			move(sprite, speed, destRow, destCol) {
+				let { row, col, layer } = sprite;
+				if (layer == 0) {
+					throw 'QuintOS Error: Only sprites on layer 1 and higher can be moved';
+				}
+				if (typeof destRow == 'string') {
+					let direction = destRow;
+					destRow = sprite.destRow;
+					destCol = sprite.destCol;
+					if (direction == 'up') destRow--;
+					if (direction == 'down') destRow++;
+					if (direction == 'left') destCol--;
+					if (direction == 'right') destCol++;
+				}
+				sprite.destRow = destRow;
+				sprite.destCol = destCol;
+				if (sprite.isMoving) return;
+				sprite.isMoving = true;
+				sprite.attractionPoint(
+					speed,
+					this.x + (destCol + 0.5) * this.tileSize,
+					this.y + (destRow + 0.5) * this.tileSize
+				);
+			}
+
+			/*
+			 * update()
+			 * Updates the row col position of each sprite
+			 */
+			update() {
+				for (let r = 0; r < this.tiles.length; r++) {
+					for (let c = 0; c < this.tiles[r].length; c++) {
+						for (let l = 1; l < this.tiles[r][c].length; l++) {
+							let sprite = this.tiles[r][c][l];
+							if (!sprite?.isMoving) continue;
+							let row = (sprite.position.y - this.y - 0.5 * this.tileSize) / this.tileSize;
+							let col = (sprite.position.x - this.x - 0.5 * this.tileSize) / this.tileSize;
+							if (row % 1 > 0.1 || col % 1 > 0.1) continue;
+							row = Math.round(row);
+							col = Math.round(col);
+							if (sprite.destRow != row || sprite.destCol != col) continue;
+							sprite.velocity.x = 0;
+							sprite.velocity.y = 0;
+							sprite.row = row;
+							sprite.col = col;
+							sprite.position.y = this.y + (row + 0.5) * this.tileSize;
+							sprite.position.x = this.x + (col + 0.5) * this.tileSize;
+							sprite.isMoving = false;
+						}
+					}
+				}
 			}
 		}
 		window.Tiles = Tiles;
