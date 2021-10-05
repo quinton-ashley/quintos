@@ -112,7 +112,7 @@ tile {
 
 .lvl08 .screen {
 	font-family: C64, monospace;
-	font-size: 1.12em;
+	font-size: 2.8vmin;
 	position: absolute;
 	z-index: 1;
 	top: 1%;

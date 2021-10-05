@@ -1468,7 +1468,7 @@ command+option+i then click the Console tab.`);
 					for (let c = 0; c < this.tiles[r].length; c++) {
 						for (let l = 1; l < this.tiles[r][c].length; l++) {
 							let sprite = this.tiles[r][c][l];
-							if (!sprite?.isMoving) continue;
+							if (!sprite) continue;
 							let row = (sprite.position.y - this.y - 0.5 * this.tileSize) / this.tileSize;
 							let col = (sprite.position.x - this.x - 0.5 * this.tileSize) / this.tileSize;
 							if (row % 1 > 0.1 || col % 1 > 0.1) continue;
