@@ -757,22 +757,22 @@ command+option+i then click the Console tab.`);
 		async loadGame(game, dir) {
 			if (QuintOS.game) {
 				await QuintOS.game();
-				return;
-			}
-			dir = dir || QuintOS.dir || '.';
-			let file = `${game.slice(0, 1).toLowerCase() + game.slice(1)}.js`;
-			let src = dir + '/' + file;
-			try {
-				await this.loadJS(src);
-			} catch (error) {
+			} else {
+				dir = dir || QuintOS.dir || '.';
+				let file = `${game.slice(0, 1).toLowerCase() + game.slice(1)}.js`;
+				let src = dir + '/' + file;
 				try {
-					dir = dir.split('/');
-					dir.pop();
-					dir = dir.join('/');
-					src = dir + '/' + file;
 					await this.loadJS(src);
-				} catch (ror) {
-					this.error(error);
+				} catch (error) {
+					try {
+						dir = dir.split('/');
+						dir.pop();
+						dir = dir.join('/');
+						src = dir + '/' + file;
+						await this.loadJS(src);
+					} catch (ror) {
+						this.error(error);
+					}
 				}
 			}
 			let title = '0' + this.level + '_' + game.slice(0, 1).toUpperCase() + game.slice(1);
