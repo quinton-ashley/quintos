@@ -756,7 +756,7 @@ command+option+i then click the Console tab.`);
 
 		async loadGame(game, dir) {
 			if (QuintOS.game) {
-				await QuintOS.game();
+				QuintOS.game();
 			} else {
 				dir = dir || QuintOS.dir || '.';
 				let file = `${game.slice(0, 1).toLowerCase() + game.slice(1)}.js`;
@@ -781,7 +781,13 @@ command+option+i then click the Console tab.`);
 			if (this.level >= 2 && this.level <= 4) this.frame();
 			if (this.level > 0) {
 				this.button(title, 2, 0, () => {
-					open(src);
+					if (!QuintOS.game) {
+						// open the javascript source in new tab
+						open(src);
+					} else {
+						// open the Javascript editor in codepen
+						window.location.href += '?editors=0011';
+					}
 				});
 				if (!QuintOS.username) return;
 				this.text(' by ', 2 + title.length, 0);

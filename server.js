@@ -14,7 +14,7 @@ let server = http.createServer((req, res) => {
 		if (dev) {
 			url = '../../web/quintos-games' + url;
 		} else {
-			url = '..' + url.slice(9);
+			url = '..' + url.slice(13);
 		}
 	} else if (url.slice(1, 5) == 'load' || /games/i.test(url)) {
 		if (dev) {
