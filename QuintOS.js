@@ -464,7 +464,7 @@ CopyLeft 1977`
 		game = QuintOS.gameSelect;
 	}
 	QuintOS.dir += '/' + game[0].toUpperCase() + game.slice(1);
-	if (QuintOS.level > 5) QuintOS.preload = true;
+	if (QuintOS.level > 5 && !QuintOS?.preload) QuintOS.preload = true;
 	if (QuintOS.preload) pc.preloadData(game);
 	if (pc.level >= 2 && pc.level < 5) await pc.frame();
 	let bootScreen = bootScreens[game] || bootScreens[games[pc.level]];

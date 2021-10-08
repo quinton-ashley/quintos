@@ -785,8 +785,8 @@ command+option+i then click the Console tab.`);
 						// open the javascript source in new tab
 						open(src);
 					} else {
-						// open the Javascript editor in codepen
-						window.location.href += '?editors=0011';
+						// open the Javascript editor and console in codepen
+						open(window.location.href + '?editors=0011');
 					}
 				});
 				if (!QuintOS.username) return;

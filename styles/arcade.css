@@ -170,7 +170,6 @@ body.arcade {
 	right: 1vmin;
 	height: 16vmin;
 	background-color: #d7c8be;
-	border-radius-bottom-left: 1rem;
 	border-left: 0.25vmin solid #cdbbae;
 	border-right: 0.25vmin solid #cdbbae;
 	background-image: linear-gradient(
