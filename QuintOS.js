@@ -10,7 +10,7 @@ $(async () => {
 	$('canvas').removeAttr('style');
 
 	if (typeof QuintOS.level == 'undefined') {
-		alert('ERROR: load.js not found! Create this file and write:\nQuintOS.level = 0;');
+		console.error('ERROR: There was an error in your game file or QuintOS.level is not defined.');
 		return; // exit
 	}
 
@@ -456,7 +456,8 @@ CopyLeft 1977`
 		'Pong',
 		'SpeakAndSpell',
 		'Snake',
-		'Sokoban'
+		'Sokoban',
+		'WorldWideWeb'
 	];
 
 	let game = games[pc.level];

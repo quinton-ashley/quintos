@@ -1060,8 +1060,8 @@ command+option+i then click the Console tab.`);
 	const webHTML = `
 <div class="container">
 	<div class="mac">
-		<div class="screen-frame">
-			<div class="screen">
+		<div class="monitor-frame">
+			<div class="monitor">
 				<div class="contain">
 					<div class="bg" id="bg">
 						<div class="menu">
@@ -1116,15 +1116,6 @@ command+option+i then click the Console tab.`);
 								<p></p>
 							</div>
 						</div>
-						<figure class="icon trash click"><img src="https://dl.dropboxusercontent.com/s/c5w4rhgk2g34de7/icon_trash.png?dl=0" alt=""/>
-							<figcaption>Trash</figcaption>
-						</figure>
-						<figure class="icon doc click"><img src="https://dl.dropboxusercontent.com/s/2xofo03j79asxsy/icon_doc.png?dl=0" alt=""/>
-							<figcaption>Document</figcaption>
-						</figure>
-						<figure class="icon mail click"><img src="https://dl.dropboxusercontent.com/s/graxq4qm8larlia/icon_mail.png?dl=0" alt=""/>
-							<figcaption>Mail</figcaption>
-						</figure>
 						<div class="desktop">
 							<div class="window">
 								<div class="bar title">
@@ -1191,6 +1182,7 @@ command+option+i then click the Console tab.`);
 									</ul>
 								</div>
 								<iframe src="https://web.archive.org/web/19991128125537/http://www.geocities.com/Heartland/Bluffs/4157/hampdance.html"></iframe>
+								<div id="screen0" class="screen"></div>
 							</div>
 						</div>
 					</div>
@@ -1205,21 +1197,15 @@ command+option+i then click the Console tab.`);
 	</div>
 </div>`;
 
-	// setInterval(() => {
-	// 	$('.time p').text(
-	// 		new Date().toLocaleTimeString('en-US', {
-	// 			hour12: false,
-	// 			hour: 'numeric',
-	// 			minute: 'numeric',
-	// 			second: 'numeric'
-	// 		})
-	// 	);
-	// }, 1000);
-
-	// $('.window').draggable({
-	// 	handle: '.title.bar'
-	// });
-	// $('.window').resizable();
+	// `<figure class="icon trash click"><img src="https://dl.dropboxusercontent.com/s/c5w4rhgk2g34de7/icon_trash.png?dl=0" alt=""/>
+	// 	<figcaption>Trash</figcaption>
+	// </figure>
+	// <figure class="icon doc click"><img src="https://dl.dropboxusercontent.com/s/2xofo03j79asxsy/icon_doc.png?dl=0" alt=""/>
+	// 	<figcaption>Document</figcaption>
+	// </figure>
+	// <figure class="icon mail click"><img src="https://dl.dropboxusercontent.com/s/graxq4qm8larlia/icon_mail.png?dl=0" alt=""/>
+	// 	<figcaption>Mail</figcaption>
+	// </figure>`;
 
 	if (typeof QuintOS.level != 'undefined') {
 		let lvl = QuintOS.level.toString();
@@ -1267,6 +1253,25 @@ command+option+i then click the Console tab.`);
 		$('body').append(arcadeHTML);
 		$('body').addClass('arcade');
 		$('main').css('display', 'none');
+	} else if (QuintOS.level == 9) {
+		$('main').remove();
+		$('body').append(webHTML);
+		$('body').addClass('web');
+
+		setInterval(() => {
+			$('.time p').text(
+				new Date().toLocaleTimeString('en-US', {
+					hour12: false,
+					hour: 'numeric',
+					minute: 'numeric',
+					second: 'numeric'
+				})
+			);
+		}, 1000);
+		$('.window').draggable({
+			handle: '.title.bar'
+		});
+		$('.window').resizable();
 	}
 
 	function play(sound) {

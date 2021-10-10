@@ -20,7 +20,7 @@
 	height: 136vmin;
 	width: 100vmin;
 }
-.web .mac .screen-frame {
+.web .mac .monitor-frame {
 	background: #ede1c1;
 	box-shadow: inset 0 0 17vmin rgba(255, 255, 255, 0.3);
 	border-top: 7vmin solid #e7d7ad;
@@ -79,7 +79,7 @@
 	background: rgba(0, 0, 0, 0.1);
 }
 
-.web .screen {
+.web .monitor {
 	background: black;
 	border-radius: 2vmin;
 	height: 67vmin;
@@ -88,7 +88,7 @@
 	width: 100%;
 }
 
-/* screen bg */
+/* monitor bg */
 
 .web .contain {
 	background-color: white;
