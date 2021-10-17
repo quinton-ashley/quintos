@@ -336,23 +336,16 @@ CopyLeft 1977`
 		],
 		Sokoban: [
 			{
-				name: 'version',
-				x: 1,
-				y: 1,
-				speed: 1,
-				txt: 'QuintOS v8'
-			},
-			{
 				name: 'logo',
-				x: 7,
+				x: 6,
 				y: 13,
-				speed: 2,
+				speed: 1,
 				txt: `
-┏━┓ ┏┓ ┏┓┏━┳━┓
-┃┃┣┳╋╋━┫┗┫┃┃━┫
-┃┃┃┃┃┃┃┃┏┫┃┃ ┃
-┃┃┃┃┃┃┃┃┃┫┃┣━┃
-┗┓┣━┻┻┻┻━┻━┻━┛
+┏━┓ ┏┓ ┏┓┏━┳━┓┏━┓
+┃┃┣┳╋╋━┫┗┫┃┃━┫┃┃┃
+┃┃┃┃┃┃┃┃┏┫┃┃ ┃┃ ┃
+┃┃┃┃┃┃┃┃┃┫┃┣━┃┃┃┃
+┗┓┣━┻┻┻┻━┻━┻━┛┗━┛
  ┗┛`
 			}
 		]
@@ -400,16 +393,8 @@ CopyLeft 1977`
 		});
 
 		if (pc.level == 5 || pc.level == 8) {
-			// support
-			const stdout = document.getElementById('bootScreen');
-			const PRINT = (str) => {
-				stdout.innerHTML += str;
-				stdout.scrollTop = stdout.scrollHeight;
-			};
 			const STR$ = (val) => String.fromCodePoint((9380 + val) >>> 0);
 			const RND = (range) => Math.random() * range;
-
-			PRINT(bootScreen[0].txt);
 
 			async function makeMaze() {
 				for (let i = 0; i < pc.h; i++) {
@@ -417,18 +402,15 @@ CopyLeft 1977`
 					for (let j = 0; j < pc.w; j++) {
 						txt += STR$(205.5 + RND(1));
 					}
-					PRINT(txt);
+					pc._textSync([txt], 0, i);
 					await delay();
 				}
 			}
 
 			await Promise.all([Promise.race([makeMaze(), delay(1000)]), waitForDraw]);
-
-			// if (camera?.off) camera.off();
 		}
 
 		if (pc.level == 5 || pc.level >= 8) {
-			$('#bootScreen').remove();
 			$('#tube').addClass('clear');
 			$('#tube').append($('main'));
 			$('main').css('display', 'block');
@@ -436,14 +418,19 @@ CopyLeft 1977`
 			if (pc.level == 8) {
 				resizeCanvas(640, 800);
 				frameRate(60);
+				camera.position.y = 320;
+				camera.position.y = 400;
+			} else {
+				camera.position.x = 320;
+				camera.position.y = 200;
 			}
 			$('canvas').removeAttr('style');
 
-			let logo = bootScreen[1];
+			let logo = bootScreen[0];
 			await pc.text(logo.txt, logo.x, logo.y);
 
 			await delay(500);
-			await pc.erase();
+			await pc.eraseRect();
 		}
 	}
 

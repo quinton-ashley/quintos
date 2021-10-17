@@ -155,8 +155,10 @@ body.arcade {
 }
 .arcade #bootScreen {
 	display: block;
-	width: 67vmin;
-	height: 82vmin;
+	top: 1%;
+	left: 1%;
+	width: 99%;
+	height: 99%;
 	font-family: C64;
 	white-space: pre-wrap;
 	word-wrap: break-word;

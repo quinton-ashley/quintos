@@ -728,7 +728,36 @@ command+option+i then click the Console tab.`);
 
 		async preloadData(game, dir) {
 			await this.ensureP5PlayIsLoaded();
-			camera.position.y = 400;
+
+			let _createSprite = createSprite;
+
+			createSprite = (x, y, w, h) => {
+				let sprite = _createSprite(x, y, w, h);
+
+				sprite.w = w;
+				sprite.h = h;
+
+				sprite.ani = function (name, start, end) {
+					return new Promise((resolve, reject) => {
+						this.changeAnimation(name);
+						if (start) this.animation.changeFrame(start);
+						if (end) this.animation.goToFrame(end);
+						this.animation.onComplete = () => {
+							resolve();
+						};
+					});
+				};
+
+				sprite.loadAni = function (name, atlas) {
+					let { size, pos, line, frames, delay } = atlas;
+					size ??= [this.w / this.scale, this.h / this.scale];
+					pos ??= line || 0;
+					this.addAnimation(name, loadAni(this.spriteSheet, size, pos, frames, delay));
+				};
+
+				return sprite;
+			};
+
 			frameRate(60);
 
 			if (QuintOS?.preload && typeof QuintOS.preload != 'boolean') {
@@ -1002,7 +1031,6 @@ command+option+i then click the Console tab.`);
 		<div id="bezel">
 			<div id="tube">
 				<div id="screen0" class="screen"></div>
-				<code id='bootScreen'></code>
 			</div>
 		</div>
 		<div id="bottom-panel">
@@ -1051,7 +1079,6 @@ command+option+i then click the Console tab.`);
 		<div id="bezel">
 			<div id="tube">
 				<div id="screen0" class="screen"></div>
-				<code id='bootScreen'></code>
 			</div>
 		</div>
 	</div>
@@ -1410,34 +1437,56 @@ command+option+i then click the Console tab.`);
 				}
 			}
 
-			/*
-			 * add(row, col, layer, ani, group)
-			 * layer is optional, defaults to zero
-			 */
-			add(row, col, layer, ani, group) {
-				let sprite = createSprite(
-					this.x + (col + 0.5) * this.tileSize,
-					this.y + (row + 0.5) * this.tileSize,
-					this.tileSize,
-					this.tileSize
-				);
-				sprite.row = row;
-				sprite.col = col;
-				sprite.destRow = row;
-				sprite.destCol = col;
-				sprite.layer = layer;
-				sprite.depth = layer;
-				// always start animations at frame 0
-				// if false, by default p5.play will save which frame an animation is on
-				// when the animation is changed so if the animation hadn't finished
-				// when the sprite uses that animation again it will continue at the frame
-				// it was at before, this is not ideal for most use cases idk why it's
-				// the default so I added this boolean flag for changing that behavior
-				sprite.autoResetAnimations = true;
-				if (ani) sprite.addAnimation('default', ani);
-				if (group) sprite.addToGroup(group);
-				this.tiles[row][col][layer] = sprite;
-				return sprite;
+			tile(row, col, layer, ani) {
+				this.addGroup('default');
+				return this.default.tile(row, col, layer, ani);
+			}
+
+			addGroup(group) {
+				let _this = this;
+				if (_this[group]) return;
+				_this[group] = new Group();
+				_this[group].animations = [];
+				_this[group].loadAni = function (name, atlas) {
+					let { size, pos, line, frames, delay } = atlas;
+					size ??= _this.tileSize;
+					pos ??= line || 0;
+					let sheet = this.spriteSheet || _this.spriteSheet;
+					this.animations[name] = loadAni(sheet, size, pos, frames, delay);
+				};
+				/*
+				 * tile(row, col, layer, ani)
+				 * layer is optional, defaults to zero
+				 */
+				_this[group].tile = function (row, col, layer, ani) {
+					if (typeof layer != 'number') {
+						ani = layer;
+						layer = 0;
+					}
+					let sprite = createSprite(
+						_this.x + (col + 0.5) * _this.tileSize,
+						_this.y + (row + 0.5) * _this.tileSize,
+						_this.tileSize,
+						_this.tileSize
+					);
+					sprite.row = row;
+					sprite.col = col;
+					sprite.destRow = row;
+					sprite.destCol = col;
+					sprite.layer = layer;
+					sprite.depth = layer;
+					// always start animations at frame 0
+					// if false, by default p5.play will save which frame an animation is on
+					// when the animation is changed so if the animation hadn't finished
+					// when the sprite uses that animation again it will continue at the frame
+					// it was at before, this is not ideal for most use cases idk why it's
+					// the default so I added this boolean flag for changing that behavior
+					sprite.autoResetAnimations = true;
+					if (ani) sprite.addAnimation(ani, this.animations[ani] || _this.animations[ani]);
+					sprite.addToGroup(this);
+					_this.tiles[row][col][layer] = sprite;
+					return sprite;
+				};
 			}
 
 			/*
@@ -1446,10 +1495,10 @@ command+option+i then click the Console tab.`);
 			 * or to a destination row, col
 			 */
 			move(sprite, speed, destRow, destCol) {
-				let { row, col, layer } = sprite;
-				if (layer == 0) {
+				if (sprite.layer == 0) {
 					throw 'QuintOS Error: Only sprites on layer 1 and higher can be moved';
 				}
+				// if destRow is actually the direction
 				if (typeof destRow == 'string') {
 					let direction = destRow;
 					destRow = sprite.destRow;
