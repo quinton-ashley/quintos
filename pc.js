@@ -649,11 +649,7 @@ tile {
 				inX = 0;
 				inY = 1;
 			}
-			let inp = this.input('', inX, inY, async () => {
-				if (erasing) return;
-				await erase();
-				resolve(inp.value);
-			});
+			let inp = this.input('', inX, inY);
 			let enterBtn;
 			let cancelBtn;
 			if (this.level != 0) {
@@ -678,16 +674,14 @@ tile {
 				inp.onSubmit = async () => {
 					if (erasing) return;
 					await erase();
-					resolve(inp.value);
+					let val = inp.value;
+					val = isNaN(val) ? val : Number(val);
+					resolve(val);
 				};
 
 				if (this.level == 0) return;
 
-				enterBtn.action = async () => {
-					if (erasing) return;
-					await erase();
-					resolve(inp.value);
-				};
+				enterBtn.action = inp.onSubmit;
 
 				cancelBtn.action = async () => {
 					if (erasing) return;

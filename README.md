@@ -16,7 +16,7 @@ await pc.alert(txt, x, y, w, h, speed);
 await pc.prompt(txt, x, y, w, h, speed);
 ```
 
-returns a string with the user's input or `null` if the user pressed cancel
+returns the user's input, if the user entered a number it will return a number, otherwise it will return a string, if the user pressed cancel `null` will be returned
 
 ## display text
 
