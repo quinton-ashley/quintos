@@ -721,15 +721,57 @@ command+option+i then click the Console tab.`);
 		}
 
 		async preloadData(game, dir) {
-			await this.ensureP5PlayIsLoaded();
+			if (QuintOS?.preload && typeof QuintOS.preload != 'boolean') {
+				await QuintOS.preload();
+				return;
+			}
+			dir = QuintOS.dir || dir || '.';
+			let src = `${dir}/${game.slice(0, 1).toLowerCase() + game.slice(1)}-preload.js`;
+			try {
+				await this.loadJS(src);
+			} catch (error) {
+				this.error(error);
+			}
+		}
+
+		p5PlayMod() {
+			// // wait until p5.play loads by checking if the allSprites group
+			// // is available yet
+			// for (let attempt = 0; typeof Group == 'undefined' || typeof allSprites == 'undefined'; attempt++) {
+			// 	await delay(100);
+			// 	if (attempt > 20) throw 'Could not load p5.play'; // throw an error
+			// }
+			// await delay(100);
 
 			let _createSprite = createSprite;
 
 			createSprite = (x, y, w, h) => {
+				let img;
+				log(typeof x);
+				if (typeof x != 'number') {
+					img = x;
+					x = 0;
+				}
+				x ??= width / 2;
+				y ??= height / 2;
+
 				let sprite = _createSprite(x, y, w, h);
 
-				sprite.w = w;
-				sprite.h = h;
+				if (img) sprite.addImage(img);
+
+				// prettier-ignore
+				Object.defineProperty(sprite, 'x', {
+					get: function () { return this.position.x },
+					set: function (x) { this.position.x = x }
+				});
+				// prettier-ignore
+				Object.defineProperty(sprite, 'y', {
+					get: function () { return this.position.y },
+					set: function (y) { this.position.y = y }
+				});
+
+				sprite.w = sprite.width;
+				sprite.h = sprite.height;
 
 				sprite.ani = function (name, start, end) {
 					return new Promise((resolve, reject) => {
@@ -753,28 +795,6 @@ command+option+i then click the Console tab.`);
 			};
 
 			frameRate(60);
-
-			if (QuintOS?.preload && typeof QuintOS.preload != 'boolean') {
-				await QuintOS.preload();
-				return;
-			}
-			dir = QuintOS.dir || dir || '.';
-			let src = `${dir}/${game.slice(0, 1).toLowerCase() + game.slice(1)}-preload.js`;
-			try {
-				await this.loadJS(src);
-			} catch (error) {
-				this.error(error);
-			}
-		}
-
-		async ensureP5PlayIsLoaded() {
-			// wait until p5.play loads by checking if the allSprites group
-			// is available yet
-			for (let attempt = 0; typeof Group == 'undefined' || typeof allSprites == 'undefined'; attempt++) {
-				await delay(100);
-				if (attempt > 20) throw 'Could not load p5.play'; // throw an error
-			}
-			await delay(100);
 		}
 
 		async loadGame(game, dir) {
@@ -1306,6 +1326,8 @@ command+option+i then click the Console tab.`);
 	window.play = play;
 
 	if (QuintOS.level == 5 || QuintOS.level >= 8) {
+		pixelDensity(1);
+
 		let _palette = {
 			' ': '',
 			'.': '',
@@ -1336,14 +1358,13 @@ command+option+i then click the Console tab.`);
 		window.color16 = color16;
 
 		function spriteArt(txt, scale, palette) {
-			scale ??= QuintOS.level < 9 ? 2 : 1;
+			scale ??= 1;
 			palette ??= _palette;
 			let lines = txt; // accepts 2D arrays of characters
-			if (txt.includes('\n')) {
-				txt = txt.replace(/\t/g, '');
+			if (typeof txt == 'string') {
+				txt = txt.replace(/^[\n\t]+|\s+$/g, ''); // trim newlines
 				lines = txt.split('\n');
 			}
-			if (lines[0] == '') lines.splice(0, 1);
 			let x = 0;
 			let y = 0;
 			let w = 0;
@@ -1355,13 +1376,11 @@ command+option+i then click the Console tab.`);
 			img.loadPixels();
 
 			for (let i = 0; i < lines.length; i++) {
-				let line = lines[i];
-				for (let j = 0; j < w; j++) {
+				for (let j = 0; j < lines[i].length; j++) {
 					for (let sX = 0; sX < scale; sX++) {
 						for (let sY = 0; sY < scale; sY++) {
-							let c = '.';
-							if (j < line.length) c = line[j];
-							img.set(j * scale + sX, i * scale + sY, color16(c, palette));
+							let c = color16(lines[i][j], palette);
+							img.set(j * scale + sX, i * scale + sY, c);
 						}
 					}
 				}

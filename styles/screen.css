@@ -17,6 +17,10 @@ body {
 	display: none;
 }
 
+canvas {
+	image-rendering: pixelated;
+}
+
 @font-face {
 	font-family: Casio;
 	src: url('../fonts/casio-fx-9860gii.ttf');
