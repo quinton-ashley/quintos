@@ -217,7 +217,7 @@ body.c64 {
 	);
 }
 
-.c64 #badge #power {
+.c64 #badge #refreshLbl {
 	position: absolute;
 	right: 2vmin;
 	top: 0;
@@ -338,7 +338,7 @@ body.c64 {
 	content: 'AUDIO';
 }
 
-.c64 #power-btn {
+.c64 #refresh {
 	font: normal 1vmin system-ui, sans-serif;
 	color: #9c7860;
 	position: absolute;
@@ -350,7 +350,7 @@ body.c64 {
 	border: 1px solid #a6856f;
 }
 
-.c64 #power-btn::before {
+.c64 #refresh::before {
 	content: '';
 	position: absolute;
 	top: 2px;
@@ -366,8 +366,8 @@ body.c64 {
 	border-left: 1px solid #6a645f;
 }
 
-.c64 #power-btn::after {
-	content: 'POWER';
+.c64 #refresh::after {
+	content: 'REFRESH';
 	position: absolute;
 	top: calc(100% + 0.5vmin);
 	left: 0;

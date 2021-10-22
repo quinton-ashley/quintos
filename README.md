@@ -134,10 +134,11 @@ Quinton Ashley (quinton-ashley) is the creator of QuintOS
 Apple2 https://www.kreativekorp.com/software/fonts/apple2.shtml  
 C64 Pro Mono https://style64.org/petscii/  
 casio_fx_9860gii https://www.dafont.com/casio-fx-9860gii.font  
-Digital7 https://www.dafont.com/digital-7.font?text=digital7
-ZX Spectrum https://www.dafont.com/zx-spectrum-7.font
-basis33 https://www.1001fonts.com/basis33-font.html
-Cyrillic Pixel 7 https://www.1001fonts.com/cyrillic-pixel-7-font.html
+Digital7 https://www.dafont.com/digital-7.font?text=digital7  
+ZX Spectrum https://www.dafont.com/zx-spectrum-7.font  
+basis33 https://www.1001fonts.com/basis33-font.html  
+Cyrillic Pixel 7 https://www.1001fonts.com/cyrillic-pixel-7-font.html  
+Press Start 2P https://fonts.google.com/specimen/Press+Start+2P#standard-styles
 
 ### Pixel Art
 
