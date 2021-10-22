@@ -2064,8 +2064,13 @@ CopyLeft 1977`
 	];
 
 	let game = games[pc.level];
+
+	// deprecated
 	if (typeof QuintOS.gameSelect != 'undefined') {
 		game = QuintOS.gameSelect;
+	}
+	if (typeof QuintOS.gameTitle != 'undefined') {
+		game = QuintOS.gameTitle;
 	}
 	QuintOS.dir += '/' + game[0].toUpperCase() + game.slice(1);
 
