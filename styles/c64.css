@@ -12,6 +12,27 @@ body.c64 {
 	flex-direction: column;
 }
 
+.c64 .screen {
+	font-family: C64, monospace;
+	font-size: 1.2em;
+	position: absolute;
+	z-index: 1;
+	top: 1%;
+	left: 1%;
+	width: 99%;
+	height: 98%;
+	color: #fff;
+}
+
+.c64 #screen0 {
+	margin-top: 0;
+}
+
+.c64 .hovered {
+	color: black;
+	background-color: #eee;
+}
+
 .c64 #pc {
 	margin-top: -100px;
 }

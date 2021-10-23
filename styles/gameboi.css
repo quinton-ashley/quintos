@@ -1,303 +1,417 @@
-.gameboi h1 {
-	margin: 0;
-}
+@import url('https://fonts.googleapis.com/css?family=Lato|Press+Start+2P');
+@import url('http://db.onlinewebfonts.com/c/487390d5558cff7a17ce35d7d92a0540?family=Pretendo');
 
-.gameboi #container {
+/* Layout */
+.gameboi body {
+	background-color: #000;
+	background-image: repeating-linear-gradient(
+			132deg,
+			#000 0% 10%,
+			transparent 10% 11%,
+			#000 11% 21%,
+			transparent 21% 22%
+		),
+		linear-gradient(50deg, #7e2e52 30%, #513a8d 60%);
 	display: flex;
 	flex-direction: column;
 	align-items: center;
-	justify-content: center;
+	height: 98vh;
+}
+
+.gameboi h1 {
+	font-family: 'Press Start 2P', sans-serif;
+	margin-bottom: 2em;
+	text-align: center;
+	max-width: 160vw;
+	line-height: 130%;
+	color: #8bac0f;
+	text-shadow: 0.31vw 0.31vw 0 #fff;
 	margin: 0;
-	padding: 0;
-	height: 100%;
-	width: 100%;
-	text-transform: uppercase;
-	font-family: "VT323", monospace;
-	/* perspective: 1000px; */
 }
 
-.gameboi #container #bitmap-container,
-.gameboi #container #bitmapBG-container {
-	border-radius: 8px;
-	margin: 20px;
-	padding: 20px 20px 10px 20px;
-	box-shadow: 0 2px 3px rgba(0, 0, 0, 0.1);
-	background-color: white;
-	background-image: radial-gradient(farthest-corner at 10px 10px, #7ca256 0%, #799f54 100%);
-	transform: rotateX(0deg);
-	transform-style: preserve-3d;
+.gameboi h1 + p {
+	font-family: Lato, sans-serif;
+	font-size: 3.2vw;
+	color: #fff;
+	margin-bottom: 2em;
+}
+.gameboi p a {
+	color: #c78dff;
 }
 
-.gameboi #container #bitmap-container {
-	background: transparent;
-	box-shadow: none;
+.gameboi .wrapper {
+	--gameboy-width: 75vw;
+	--gameboy-height: 125vw;
+
+	width: var(--gameboy-width);
+	height: var(--gameboy-height);
+	position: relative;
 }
 
-.gameboi #container #bitmap-container #bitmap {
-	/*! border-radius: 5px; */
-	/*! border: solid 1px #212121; */
-	transform: translateZ(30px);
+/* GameBoy console body */
+.gameboi .gameboy {
+	background: #d3ccd3 linear-gradient(#d3ccd3 95%, #999 98%, #777 99%);
+	overflow: hidden;
+	border-radius: 2.4vw 2.4vw 15vw 2.4vw;
+	box-shadow: 0 0 2vw rgba(0, 0, 0, 0.5), 0 0 3vw rgba(0, 0, 0, 0.75) inset;
+	display: flex;
+	flex-direction: column;
+	justify-content: space-between;
+	position: relative;
 }
 
-.gameboi #container #bitmapBG-container .shine-container {
+.gameboi .power {
+	width: 6vw;
+	height: 3vw;
+	border-radius: 50%;
+	background: linear-gradient(to right, #eee 10%, #d3ccd3 30% 70%, #eee 90%);
+	box-shadow: 0 0 0.8vw rgba(0, 0, 0, 0.5) inset;
 	position: absolute;
-	top: 0;
-	left: 0;
-	right: 0;
-	bottom: 0;
-	border-radius: 8px;
+	top: -1.4vw;
+	left: 10vw;
+	cursor: pointer;
+}
+
+.gameboi .power.on {
+	left: 15vw;
+}
+
+.gameboi .gameboy > .top {
+	display: flex;
+	padding-bottom: 1vw;
+	margin-bottom: 1vw;
+	border-bottom: 0.31vw solid rgba(0, 0, 0, 0.1);
+}
+
+.gameboi .gameboy > .top .corner {
+	width: 5vw;
+	height: 4vw;
+}
+
+.gameboi .gameboy > .top .corner.left {
+	margin-right: 1vw;
+}
+
+.gameboi .gameboy > .top .corner.right {
+	margin-left: 1vw;
+}
+
+.gameboi .gameboy > .top .top {
+	width: 100%;
+}
+
+.gameboi .gameboy > .top > div {
+	border-radius: 0 0 0.4vw 0.4vw;
+	border: 0.31vw solid rgba(0, 0, 0, 0.1);
+	box-shadow: 0.31vw 0.31vw 0.6vw rgba(0, 0, 0, 0.25);
+}
+
+.gameboi .gameboy > .top > div span {
+	font-family: Arial, sans-serif;
+	font-size: 2.4vw;
+	box-shadow: 0.4vw 0.4vw 0.4vw rgba(0, 0, 0, 0.5) inset;
+	text-shadow: 0.4vw 0.31vw 0.4vw rgba(0, 0, 0, 1);
+	color: #eee;
+	border-radius: 3vw;
+	margin: 0 1.2vw;
+	padding: 0.4vw 1vw;
+	opacity: 0.25;
+}
+
+/* GameBoy complete screen (gray + green) */
+.gameboi .screen {
+	background: #767189;
+	width: calc(var(--gameboy-height) / 2);
+	box-shadow: 0 0 0.4vw #514c65;
+	border-radius: 2vw 2vw 7vw 2vw;
+	height: 50vw;
+	margin: 0.1em auto;
+}
+.gameboi .screen span {
+	font-family: Arial, sans-serif;
+	font-size: 2vw;
+	color: #fff;
+}
+.gameboi .screen .top {
+	margin: 0 3vw;
+	height: 6vw;
+	background: linear-gradient(
+		transparent 2vw,
+		#7d1a4a 2vw 2.4vw,
+		transparent 2.4vw 3.2vw,
+		#35224e 3.2vw 3.6vw,
+		transparent 18px
+	);
+	position: relative;
+}
+.gameboi .screen .top span {
+	padding: 0 1.6vw;
+	background: #767189;
+
+	position: absolute;
+	right: 6vw;
+	top: 1.6vw;
+}
+.gameboi .screen .bottom {
+	display: flex;
+}
+.gameboi .screen .bottom .led {
+	width: 2vw;
+	height: 2vw;
+	background: #4a4748;
+	border-radius: 50%;
+	margin: 1.2vw;
+}
+.gameboi .screen .bottom .led.on {
+	background: #d81e07;
+	box-shadow: 0 0 1vw #d81e07;
+}
+.gameboi .screen .bottom .battery {
+	padding: 0 2vw;
+	display: flex;
+	flex-direction: column;
+	justify-content: center;
+	align-items: flex-start;
+}
+
+/* Game Screen (only green screen) */
+.gameboi .gamescreen {
+	background: #9ca04c;
+	width: 40vw;
+	height: 38vw;
+	box-shadow: 1vw 1vw 2vw rgba(0, 0, 0, 0.5) inset, -0.4vw -0.4vw 2vw rgba(0, 0, 0, 0.25) inset;
+
+	display: flex;
+	justify-content: center;
+	align-items: flex-start;
 	overflow: hidden;
 }
-
-.gameboi #container #bitmapBG-container .shine-container .shine {
-	position: absolute;
-	top: -40px;
-	left: -40px;
-	right: -40px;
-	bottom: -40px;
-	background: linear-gradient(45deg, rgba(255, 255, 255, 0.75) 0%, rgba(255, 255, 255, 0) 60%);
+.gameboi .gamescreen span {
+	display: none;
+	font-family: 'Press Start 2P';
+	font-weight: bold;
+	font-size: 3.6vw;
+	letter-spacing: -0.31vw;
+	color: #0f380f;
+}
+.gameboi .gamescreen span sup {
+	font-weight: normal;
+	font-size: 2.4vw;
+}
+.gameboi .gamescreen.startup span {
+	display: block;
+	-webkit-animation: startup 2s linear forwards;
+	animation: startup 2s linear forwards;
+	transform: translate(0, -25px);
 }
 
-.gameboi #container #bitmapBG-container .info-container {
-	height: 100%;
-	width: 100%;
-	min-height: 50px;
-	margin-top: 5px;
+@keyframes startup {
+	0% {
+		transform: translate(0, -25px);
+	}
+	100% {
+		transform: translate(0, 80px);
+	}
+}
+
+/* Brand Nintendo GameBoy text */
+.gameboi .brand {
+	margin: 1vw 6vw;
+}
+.gameboi .brand span {
+	font-family: Pretendo, sans-serif;
+	font-size: 3vw;
+	color: #302058;
+}
+.gameboi .brand span:nth-child(2) {
+	font-family: Lato, sans-serif;
+	font-weight: bold;
+	font-style: italic;
+	font-size: 4.4vw;
+	margin-left: 1vw;
+}
+
+/* Main controls: Cross and A/B buttons */
+.gameboi .controls {
 	display: flex;
-	flex-direction: row;
-	align-content: center;
 	justify-content: space-between;
-	transform: translateZ(20px);
 }
 
-.gameboi #container #bitmapBG-container .info-container .label {
-	margin: 5px 5px 0 0;
-}
-
-.gameboi #container #bitmapBG-container .info-container #screen0 {
-	font-size: 3em;
-	font-weight: 300;
-	padding: 10px 20px;
-}
-
-.gameboi #container #bitmapBG-container .info-container .flex {
-	flex: 1;
-}
-
-.gameboi #container.PLAYING #bitmap-container {
-	box-shadow: 0 45px 100px rgba(0, 0, 0, 0.3);
-	transform: translateZ(40px);
-}
-
-.gameboi #container #start-button {
-	font-family: inherit;
-	text-transform: uppercase;
-	font-size: 1.5em;
-	background-color: transparent;
-	color: #212121;
-	padding: 10px 20px;
-	border: 0;
-	border-radius: 2px;
-	cursor: pointer;
-	outline: none;
-}
-
-.gameboi #container #start-button:hover {
-	color: white;
-	border-color: #7ca256;
-}
-
-.gameboi #container .state-driven {
-	display: none;
-}
-
-.gameboi #container.READY #start-button {
-	display: block;
-}
-
-.gameboi #container.ENDED #start-button {
-	display: block;
-}
-
-.gameboi #container.ENDED .re {
-	display: inline;
-}
-
-.gameboi #container .controls .keyboard {
-	display: inline;
-}
-
-.gameboi #container .controls .touch {
-	display: none;
-}
-
-.gameboi @media (any-hover: none) and (any-pointer: coarse) {
-	.gameboi #container .controls .keyboard {
-		display: none;
-	}
-
-	.gameboi #container .controls .touch {
-		display: inline;
-	}
-}
-
-.gameboi @-webkit-keyframes flash {
-	.gameboi 0% {
-		opacity: 1;
-	}
-
-	.gameboi 50% {
-		opacity: 0;
-	}
-}
-
-.gameboi @keyframes flash {
-	.gameboi 0% {
-		opacity: 1;
-	}
-
-	.gameboi 50% {
-		opacity: 0;
-	}
-}
-
-.gameboi #bitmapBG,
-.gameboi #bitmap {
-	--grid-columns: 0;
-	--grid-rows: 0;
-	--grid-size: 0;
-	width: calc(var(--grid-size) * var(--grid-columns) * 1px);
-	height: calc(var(--grid-size) * var(--grid-rows) * 1px);
-	display: grid;
-	grid-template-columns: repeat(var(--grid-columns), 1fr);
-	grid-template-rows: repeat(var(--grid-rows), 1fr);
-	font-family: serif;
-	border: solid;
-}
-
-.gameboi #bitmap-container {
-	position: absolute;
-	top: 0;
-}
-
-.gameboi #bitmapBG {
-	opacity: .2;
-}
-
-.gameboi #bitmap div,
-.gameboi #bitmapBG div {
-	background-color: transparent;
-	height: 20px;
-	width: 20px;
-	font-size: 20px;
-	/*! margin-left: 1px; */
-}
-
-.gameboi #bitmapBG div {
-	letter-spacing: -20px;
-}
-
-/* .gameboi #bitmap .snake.head.up {
-	transform: translate(3px, 0px);
-}
-
-.gameboi #bitmap .snake.head.right {
-	transform: rotateZ(90deg) translate(11px, -6px);
-}
-
-.gameboi #bitmap .snake.head.down {
-	transform: rotateZ(180deg) translate(5px, -14px);
-}
-
-.gameboi #bitmap .snake.head.left {
-	transform: rotateZ(270deg) translate(-3px, -8px);
-} */
-.gameboi #bitmap div.food, #bitmap div.snake {
-	box-shadow: 0px 0px 0px rgba(0, 0, 0, 0.1);
-}
-
-.gameboi #bitmap div.food {
-	background-color: #212121;
+.gameboi .cross {
+	background: linear-gradient(to bottom, #c4bfc6 -10%, #e2e0eb 130%);
 	border-radius: 50%;
-	margin: 1px;
+	padding: 2vw;
+	width: 20vw;
+	height: 20vw;
+	margin: 6vw;
+	display: grid;
+	grid-template-areas: '. up .' 'left center right' '. down .';
 }
 
-.gameboi #bitmap div.snake {
-	background-color: #212121;
+.gameboi .cross .cursor {
+	background: #040308;
+	border: 0.6vw solid #040308;
+	box-shadow: 0.4vw 0.8vw 0.6vw rgba(0, 0, 0, 0.6);
+	display: flex;
 }
 
-.gameboi #bitmap div.snake.head.up {
-	border-top-left-radius: 50%;
-	border-top-right-radius: 50%;
+.gameboi .cross .cursor.up,
+.gameboi .cross .cursor.left,
+.gameboi .cross .cursor.right {
+	border-top-color: #c5d8e1;
 }
 
-.gameboi #bitmap div.snake.head.down {
-	border-bottom-left-radius: 50%;
-	border-bottom-right-radius: 50%;
+.gameboi .cross .cursor .circle {
+	border: 0.31vw solid #111;
+	border-left: 0;
+	border-bottom: 0;
+	border-radius: 50%;
+	width: 100%;
+	height: 100%;
+	background: conic-gradient(transparent 0 30%, rgba(255, 255, 255, 0.5) 40% 60%, transparent 70%);
 }
 
-.gameboi #bitmap div.snake.head.left {
-	border-top-left-radius: 50%;
-	border-bottom-left-radius: 50%;
+.gameboi .cross .cursor.up {
+	grid-area: up;
 }
 
-.gameboi #bitmap div.snake.head.right {
-	border-top-right-radius: 50%;
-	border-bottom-right-radius: 50%;
+.gameboi .cross .cursor.left {
+	grid-area: left;
 }
 
-.gameboi #bitmap div.snake.tail.up {
-	border-bottom-left-radius: 50% 100%;
-	border-bottom-right-radius: 50% 100%;
+.gameboi .cross .cursor.center {
+	grid-area: center;
 }
 
-.gameboi #bitmap div.snake.tail.down {
-	border-top-left-radius: 50% 100%;
-	border-top-right-radius: 50% 100%;
+.gameboi .cross .cursor.right {
+	grid-area: right;
 }
 
-.gameboi #bitmap div.snake.tail.right {
-	border-bottom-left-radius: 100% 50%;
-	border-top-left-radius: 100% 50%;
+.gameboi .cross .cursor.down {
+	grid-area: down;
 }
 
-.gameboi #bitmap div.snake.tail.left {
-	border-bottom-right-radius: 100% 50%;
-	border-top-right-radius: 100% 50%;
+.gameboi .cross .cursor:active {
+	box-shadow: none;
+	border-color: #111;
 }
 
-.gameboi #bitmap div.snake.turn-left.up {
-	border-top-right-radius: 50%;
+.gameboi .cross .cursor.center:active {
+	border-color: #040308;
 }
 
-.gameboi #bitmap div.snake.turn-left.down {
-	border-bottom-right-radius: 50%;
+.gameboi .buttons {
+	background: linear-gradient(#b7acb1 -10%, #f1f3f2 130%);
+	border-radius: 8vw;
+	padding: 1vw;
+	height: 12vw;
+	display: flex;
+	align-items: center;
+	margin: 10vw 6vw 0 0;
+	transform: rotate(-30deg);
 }
 
-.gameboi #bitmap div.snake.turn-right.up {
-	border-top-left-radius: 50%;
+.gameboi .buttons .button {
+	width: 10vw;
+	height: 10vw;
+	box-shadow: -0.4vw 0.6vw 1vw rgba(0, 0, 0, 1), -0.6vw 0.8vw 0.6vw rgba(255, 255, 255, 0.25) inset;
+	margin: 0 1.2vw;
+	border-radius: 50%;
+	background: #6f001a;
 }
 
-.gameboi #bitmap div.snake.turn-right.down {
-	border-bottom-left-radius: 50%;
+.gameboi .buttons .button:active {
+	box-shadow: -0.6vw 0.8vw 0.6vw rgba(0, 0, 0, 0.25) inset, 0.4vw -0.4vw 0.6vw rgba(0, 0, 0, 0.25) inset;
 }
 
-.gameboi #bitmap div.snake.turn-up.left {
-	border-bottom-left-radius: 50%;
+.gameboi .buttons .button::after {
+	font-family: Pretendo, sans-serif;
+	font-size: 3.2vw;
+	color: #302058;
+	content: attr(data-button);
+	position: relative;
+	right: -3vw;
+	bottom: -13vw;
 }
 
-.gameboi #bitmap div.snake.turn-up.right {
-	border-bottom-right-radius: 50%;
+/* Secondary controls: Select & Start */
+.gameboi .gamecontrols {
+	display: flex;
+	justify-content: center;
+	margin-bottom: 10vw;
+}
+.gameboi .gamecontrols .gap {
+	background: linear-gradient(#b7acb1 -10%, #f1f3f2 130%);
+	transform: rotate(-28deg);
+	margin: 0 1vw;
+	border-radius: 3vw;
+}
+.gameboi .gamecontrols .button {
+	background: #9e9baf;
+	border-radius: 2vw;
+	box-shadow: -0.4vw -0.4vw 1vw rgba(0, 0, 0, 0.4) inset, 0.4vw 0.4vw 1vw rgba(255, 255, 255, 0.7) inset,
+		0.4vw 0.4vw 1.2vw rgba(0, 0, 0, 0.8);
+	width: 10vw;
+	height: 2.4vw;
+	margin: 1.2vw 1.6vw;
+}
+.gameboi .gamecontrols .button:active {
+	box-shadow: -0.4vw -0.4vw 1vw rgba(0, 0, 0, 0.4) inset, 0.4vw 0.4vw 1vw rgba(0, 0, 0, 0.7) inset;
+}
+.gameboi .gamecontrols .button::after {
+	font-family: Pretendo, sans-serif;
+	font-size: 2.4vw;
+	color: #302058;
+	content: attr(data-button);
+	position: relative;
+	right: 0;
+	bottom: -4vw;
 }
 
-.gameboi #bitmap div.snake.turn-down.left {
-	border-top-left-radius: 50%;
+/* Gameboy bottom body part */
+.gameboi .gameboy > .bottom {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	position: relative;
+	left: -4vw;
 }
 
-.gameboi #bitmap div.snake.turn-down.right {
-	border-top-right-radius: 50%;
+.gameboi .speaker {
+	display: flex;
+	width: 24vw;
+	justify-content: space-around;
+	position: absolute;
+	right: 3vw;
+	bottom: 7vw;
+	transform: rotate(-30deg);
 }
 
-.gameboi #bitmap div.food, #bitmap div.snake {
-	box-shadow: 0px 5px 0px 0px rgba(0, 0, 0, 0.1);
+.gameboi .speaker::after {
+	content: '';
+	width: 40vw;
+	height: 12vw;
+	position: absolute;
+	background: rgba(0, 0, 0, 0.1);
+	top: 10vw;
+}
+
+.gameboi .speaker .band {
+	width: 1.6vw;
+	height: 12vw;
+	border-radius: 1.6vw;
+	box-shadow: 0.6vw 1.2vw 0.31vw rgba(0, 0, 0, 0.6) inset;
+	background: rgba(0, 0, 0, 0.35);
+}
+
+.gameboi .phones {
+	font-family: Arial, sans-serif;
+	font-size: 2vw;
+	opacity: 0.5;
+	text-align: center;
+	border: 0.31vw solid #aaa;
+	border-radius: 8vw;
+	padding: 0.4vw 1.2vw;
+	box-shadow: 0 0 1vw rgba(0, 0, 0, 0.5) inset;
+	margin-bottom: 2vw;
 }

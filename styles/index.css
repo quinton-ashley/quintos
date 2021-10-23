@@ -1,0 +1,98 @@
+body {
+	margin: 0;
+	padding: 0;
+	background-color: #000;
+	font-size: 16px;
+	/* text-shadow: 0 0 20px rgba(255, 255, 255, 0.5); */
+}
+
+@media screen and (-webkit-min-device-pixel-ratio: 0) {
+	::-webkit-scrollbar {
+		display: none !important;
+	}
+}
+
+* {
+	scrollbar-width: none !important;
+}
+
+#p5_loading {
+	display: none;
+}
+
+canvas {
+	image-rendering: pixelated;
+}
+
+@font-face {
+	font-family: Casio;
+	src: url('../fonts/casio-fx-9860gii.ttf');
+}
+
+@font-face {
+	font-family: Digital7;
+	src: url('../fonts/Digital7.woff2');
+}
+
+@font-face {
+	font-family: C64;
+	src: url('../fonts/C64_Pro_Mono-STYLE.woff2');
+}
+
+@font-face {
+	font-family: Apple2;
+	src: url('../fonts/Apple2.ttf');
+}
+
+@font-face {
+	font-family: FSEX302;
+	src: url('../fonts/FSEX302.ttf');
+}
+
+@font-face {
+	font-family: VT323;
+	src: url('../fonts/VT323-Regular.ttf');
+}
+
+@font-face {
+	font-family: Pixel7;
+	src: url('../fonts/cyrillic_pixel-7.ttf');
+}
+
+@font-face {
+	font-family: Orbitron;
+	font-style: normal;
+	font-weight: 400;
+	font-display: swap;
+	src: url('../fonts/Orbitron.woff') format('woff');
+	unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+2000-206F, U+2074, U+20AC,
+		U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+
+row {
+	padding: 0;
+	margin: 0;
+	width: 100%;
+	display: flex;
+	height: 4%;
+}
+
+.screen {
+	width: 100%;
+	height: 100%;
+	font-size: 16px;
+	font-family: monospace;
+}
+
+#screen0 {
+	margin: 0 auto;
+	user-select: none;
+}
+
+tile {
+	text-align: center;
+}
+
+.hovered {
+	cursor: pointer;
+}

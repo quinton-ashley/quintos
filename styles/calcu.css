@@ -1,3 +1,7 @@
+.calcu .screen {
+	font-family: Casio, monospace;
+}
+
 .calcu {
 	user-select: none;
 }
@@ -17,11 +21,8 @@
 	border-radius: 4px;
 	background-color: #333;
 	background-image: linear-gradient(90deg, #e6ebee, #f0f0f0);
-	box-shadow: 0px 0px 0px 0px #b1b8c0 inset,
-		0px -10px 10px 10px #b1b8c0 inset,
-		0px 1px 0px 2px #b1b8c0 inset,
-		0 55px 10px -25px rgba(0, 0, 0, 0.1),
-		0 65px 30px -10px rgba(0, 0, 0, 0.5);
+	box-shadow: 0px 0px 0px 0px #b1b8c0 inset, 0px -10px 10px 10px #b1b8c0 inset, 0px 1px 0px 2px #b1b8c0 inset,
+		0 55px 10px -25px rgba(0, 0, 0, 0.1), 0 65px 30px -10px rgba(0, 0, 0, 0.5);
 	z-index: 1;
 	border-radius: 10px;
 }
@@ -47,11 +48,8 @@
 	position: absolute;
 	margin: 30px auto auto 30px;
 	border-radius: 3px;
-	box-shadow: 0 5px 20px .05px #130f0a inset,
-		5px 0 10px -4px #130f0a inset,
-		-0.5px 0 3px 1px #130f0a inset,
-		0 0 0 2px rgba(0, 0, 0, 1),
-		0 65px 50px -10px rgba(0, 0, 0, -0.05);
+	box-shadow: 0 5px 20px 0.05px #130f0a inset, 5px 0 10px -4px #130f0a inset, -0.5px 0 3px 1px #130f0a inset,
+		0 0 0 2px rgba(0, 0, 0, 1), 0 65px 50px -10px rgba(0, 0, 0, -0.05);
 }
 
 .calcu .lcd {
@@ -63,18 +61,15 @@
 	position: absolute;
 	margin: 50px auto auto 60px;
 	border-radius: 3px;
-	box-shadow: 0 5px 20px .05px #130f0a inset,
-		5px 0 10px -4px #130f0a inset,
-		-0.5px 0 3px 1px #130f0a inset,
-		0 0 0 2px rgba(0, 0, 0, 1),
-		0 65px 50px -10px rgba(0, 0, 0, -0.05);
+	box-shadow: 0 5px 20px 0.05px #130f0a inset, 5px 0 10px -4px #130f0a inset, -0.5px 0 3px 1px #130f0a inset,
+		0 0 0 2px rgba(0, 0, 0, 1), 0 65px 50px -10px rgba(0, 0, 0, -0.05);
 }
 
 .calcu .lcd p {
-	font-family: "Orbitron", sans-serif;
+	font-family: 'Orbitron', sans-serif;
 	display: inline-block;
-	opacity: .5;
-	font-size: .7em;
+	opacity: 0.5;
+	font-size: 0.7em;
 	margin-top: 0;
 }
 
@@ -111,7 +106,7 @@
 	display: block;
 	white-space: pre;
 	width: max-content;
-	opacity: .5;
+	opacity: 0.5;
 	font-family: Casio, monospace;
 	font-size: 30px;
 	margin-top: -9px;
@@ -145,11 +140,8 @@
 	position: absolute;
 	margin: 30px auto auto 860px;
 	border-radius: 3px;
-	box-shadow: 0 5px 20px .05px #130f0a inset,
-		5px 0 10px -4px #130f0a inset,
-		-0.5px 0 3px 1px #130f0a inset,
-		0 0 0 2px rgba(0, 0, 0, 1),
-		0 65px 50px -10px rgba(0, 0, 0, -0.05);
+	box-shadow: 0 5px 20px 0.05px #130f0a inset, 5px 0 10px -4px #130f0a inset, -0.5px 0 3px 1px #130f0a inset,
+		0 0 0 2px rgba(0, 0, 0, 1), 0 65px 50px -10px rgba(0, 0, 0, -0.05);
 }
 
 .calcu .onoffin {
@@ -160,12 +152,8 @@
 	height: 25px;
 	position: absolute;
 	margin: 30px auto auto 880px;
-	box-shadow: 3px 3px 3px 0 #102027 inset,
-		3px 5px 3px -5px #aeaeae inset,
-		3px 3px 0 1px #102027 inset,
-		10px 10px 5px 2px rgba(0, 0, 0, .7),
-		3px 3px 4px 3px rgba(0, 0, 0, 4),
-		0 0 50px -10px rgba(0, 0, 0, -0.05);
+	box-shadow: 3px 3px 3px 0 #102027 inset, 3px 5px 3px -5px #aeaeae inset, 3px 3px 0 1px #102027 inset,
+		10px 10px 5px 2px rgba(0, 0, 0, 0.7), 3px 3px 4px 3px rgba(0, 0, 0, 4), 0 0 50px -10px rgba(0, 0, 0, -0.05);
 }
 
 .calcu .onoffinline1 {
@@ -215,7 +203,7 @@
 	width: 1.5px;
 	height: 30px;
 	position: absolute;
-	margin: 30px auto auto 905px
+	margin: 30px auto auto 905px;
 }
 
 .calcu .casio {
@@ -230,13 +218,13 @@
 
 .calcu .logo {
 	font-family: sans-serif;
-	font-size: .8em;
+	font-size: 0.8em;
 	font-weight: 20px;
 	margin-bottom: 0;
 }
 
 .calcu .model {
-	font-family: "Audiowide", sans-serif;
+	font-family: 'Audiowide', sans-serif;
 	color: #a31746;
 	font-weight: 500;
 	font-size: 0.5em;
@@ -275,101 +263,66 @@
 }
 
 .calcu #keys div:active p {
-	transform: translate(-2px, -2px) scale(.96);
+	transform: translate(-2px, -2px) scale(0.96);
 }
 
 .calcu .white {
 	background-color: #edf1ff;
-	box-shadow: 2px 2px 3px 0 #c7c7c7 inset,
-		5px 5px 3px -1px #aeaeae inset,
-		2px 2px 0 2px #c7c7c7 inset,
-		0 0 0px 3px rgba(0, 0, 0, 4),
-		3px 3px 4px 3px rgba(0, 0, 0, 4),
-		0 0 50px -10px rgba(0, 0, 0, -0.05);
+	box-shadow: 2px 2px 3px 0 #c7c7c7 inset, 5px 5px 3px -1px #aeaeae inset, 2px 2px 0 2px #c7c7c7 inset,
+		0 0 0px 3px rgba(0, 0, 0, 4), 3px 3px 4px 3px rgba(0, 0, 0, 4), 0 0 50px -10px rgba(0, 0, 0, -0.05);
 }
 
 .calcu .white:active {
-	box-shadow:
-		2px 2px 3px -1px #aeaeae inset,
-		0 0 0px 3px rgba(0, 0, 0, 4),
-		3px 3px 4px .5px rgba(0, 0, 0, 4),
+	box-shadow: 2px 2px 3px -1px #aeaeae inset, 0 0 0px 3px rgba(0, 0, 0, 4), 3px 3px 4px 0.5px rgba(0, 0, 0, 4),
 		0 0 50px -10px rgba(0, 0, 0, -0.05);
 }
 
 .calcu .gray {
 	background-color: #c8d1d2;
-	box-shadow: 2px 2px 3px 0 #707070 inset,
-		5px 5px 3px -1px #aeaeae inset,
-		2px 2px 0 2px #102027 inset,
-		0 0 0px 3px rgba(0, 0, 0, 4),
-		3px 3px 4px 3px rgba(0, 0, 0, 4),
-		0 0 50px -10px rgba(0, 0, 0, -0.05);
+	box-shadow: 2px 2px 3px 0 #707070 inset, 5px 5px 3px -1px #aeaeae inset, 2px 2px 0 2px #102027 inset,
+		0 0 0px 3px rgba(0, 0, 0, 4), 3px 3px 4px 3px rgba(0, 0, 0, 4), 0 0 50px -10px rgba(0, 0, 0, -0.05);
 }
 
 .calcu .gray:active {
-	box-shadow:
-		2px 2px 3px -1px #aeaeae inset,
-		0 0 0px 3px rgba(0, 0, 0, 4),
-		3px 3px 4px 0px rgba(0, 0, 0, 4),
+	box-shadow: 2px 2px 3px -1px #aeaeae inset, 0 0 0px 3px rgba(0, 0, 0, 4), 3px 3px 4px 0px rgba(0, 0, 0, 4),
 		0 0 50px -10px rgba(0, 0, 0, -0.05);
 }
 
 .calcu .black {
 	background-color: black;
-	box-shadow: 3px 3px 3px 0 #102027 inset,
-		3px 5px 3px -5px #aeaeae inset,
-		3px 3px 0 1px #102027 inset,
-		0 0 0px 3px rgba(0, 0, 0, 4),
-		3px 3px 4px 3px rgba(0, 0, 0, 4),
-		0 0 50px -10px rgba(0, 0, 0, -0.05);
+	box-shadow: 3px 3px 3px 0 #102027 inset, 3px 5px 3px -5px #aeaeae inset, 3px 3px 0 1px #102027 inset,
+		0 0 0px 3px rgba(0, 0, 0, 4), 3px 3px 4px 3px rgba(0, 0, 0, 4), 0 0 50px -10px rgba(0, 0, 0, -0.05);
 }
 
 .calcu .black:active {
-	box-shadow:
-		2px 2px 3px -5px #aeaeae inset,
-		0 0 0px 3px rgba(0, 0, 0, 4),
-		3px 3px 4px 0px rgba(0, 0, 0, 4),
+	box-shadow: 2px 2px 3px -5px #aeaeae inset, 0 0 0px 3px rgba(0, 0, 0, 4), 3px 3px 4px 0px rgba(0, 0, 0, 4),
 		0 0 50px -10px rgba(0, 0, 0, -0.05);
 }
 
 .calcu .dark {
 	background-color: #333;
-	box-shadow: 3px 3px 3px 0 #333 inset,
-		3px 5px 3px -5px #aeaeae inset,
-		3px 3px 0 1px #4f5b62 inset,
-		0 0 0px 3px rgba(0, 0, 0, 4),
-		3px 3px 4px 3px rgba(0, 0, 0, 4),
-		0 0 50px -10px rgba(0, 0, 0, -0.05);
+	box-shadow: 3px 3px 3px 0 #333 inset, 3px 5px 3px -5px #aeaeae inset, 3px 3px 0 1px #4f5b62 inset,
+		0 0 0px 3px rgba(0, 0, 0, 4), 3px 3px 4px 3px rgba(0, 0, 0, 4), 0 0 50px -10px rgba(0, 0, 0, -0.05);
 }
 
 .calcu .dark:active {
-	box-shadow:
-		2px 2px 3px -5px #aeaeae inset,
-		0 0 0px 3px rgba(0, 0, 0, 4),
-		3px 3px 4px 0px rgba(0, 0, 0, 4),
+	box-shadow: 2px 2px 3px -5px #aeaeae inset, 0 0 0px 3px rgba(0, 0, 0, 4), 3px 3px 4px 0px rgba(0, 0, 0, 4),
 		0 0 50px -10px rgba(0, 0, 0, -0.05);
 }
 
 .calcu .orange {
 	background-color: #d84315;
-	box-shadow: 3px 3px 3px 0 #b91400 inset,
-		3px 5px 3px -5px #aeaeae inset,
-		3px 3px 0 1px #b91400 inset,
-		0 0 0px 3px rgba(0, 0, 0, 4),
-		3px 3px 4px 3px rgba(0, 0, 0, 4),
-		0 0 50px -10px rgba(0, 0, 0, -0.05);
+	box-shadow: 3px 3px 3px 0 #b91400 inset, 3px 5px 3px -5px #aeaeae inset, 3px 3px 0 1px #b91400 inset,
+		0 0 0px 3px rgba(0, 0, 0, 4), 3px 3px 4px 3px rgba(0, 0, 0, 4), 0 0 50px -10px rgba(0, 0, 0, -0.05);
 }
 
 .calcu .orange:active {
-	box-shadow:
-		2px 2px 3px -5px #aeaeae inset,
-		0 0 0px 3px rgba(0, 0, 0, 4),
-		3px 3px 4px 0px rgba(0, 0, 0, 4),
+	box-shadow: 2px 2px 3px -5px #aeaeae inset, 0 0 0px 3px rgba(0, 0, 0, 4), 3px 3px 4px 0px rgba(0, 0, 0, 4),
 		0 0 50px -10px rgba(0, 0, 0, -0.05);
 }
 
 .calcu .white p {
-	font-family: "Audiowide", sans-serif;
+	font-family: 'Audiowide', sans-serif;
 	color: #a31545;
 	margin: 10px auto auto 5px;
 	text-align: center;
@@ -381,7 +334,7 @@
 .calcu .black p,
 .calcu .orange p {
 	color: white;
-	font-family: "Archivo Narrow", sans-serif;
+	font-family: 'Archivo Narrow', sans-serif;
 	margin: auto;
 	padding: 7px 0;
 	text-align: center;
@@ -394,7 +347,7 @@
 }
 
 .calcu .black p {
-	font-size: .9em;
+	font-size: 0.9em;
 }
 
 .calcu #keys div:nth-child(2) p {
@@ -402,16 +355,20 @@
 }
 
 .calcu #keys div:nth-child(3) p {
-	font-family: "Balsamiq Sans", cursive;
-	font-size: .9em;
+	font-family: 'Balsamiq Sans', cursive;
+	font-size: 0.9em;
 	font-weight: 100;
 }
 
-.calcu #keys div:nth-child(4) p {}
+.calcu #keys div:nth-child(4) p {
+}
 
-.calcu #keys div:nth-child(5) p {}
+.calcu #keys div:nth-child(5) p {
+}
 
-.calcu #keys div:nth-child(4) p, .calcu #keys div:nth-child(6) p, .calcu #keys div:nth-child(7) p {
+.calcu #keys div:nth-child(4) p,
+.calcu #keys div:nth-child(6) p,
+.calcu #keys div:nth-child(7) p {
 	font-family: math;
 	font-size: 1.5em;
 	margin-top: -6px;

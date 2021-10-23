@@ -1,48 +1,90 @@
 let log = console.log; // log becomes a shortcut for console.log
 
+window.QuintOS = {
+	levels: [
+		/*00*/ ['GuessTheNumber', 'calcu'],
+		/*01*/ ['PickAPath', 'zx'], // TODO zx
+		/*02*/ ['Pong', 'c64'], // TODO arc
+		/*03*/ ['Hangman', 'a2'],
+		/*04*/ ['QuickClicks', 'gridc'],
+		/*05*/ ['ClickAPath', 'gridc'],
+		/*06*/ ['TicTacToe', 'gridc'],
+		/*07*/ ['WorldWideWeb', 'macin'],
+		/*08*/ ['WheelOfFortune', 'a2'],
+		/*09*/ ['Contain', 'c64'], // TODO arc
+		/*10*/ ['AIOs', 'gridc'],
+		/*11*/ ['SpeakAndSpell', 'calcu'], // TODO sas
+		/*12*/ ['Snake', 'arcv'], // TODO gameboi
+		/*13*/ ['Sketchbook', 'c64'],
+		/*14*/ ['SuperJump', 'arcv'],
+		/*15*/ ['Sokoban', 'arcv']
+	]
+};
+
+$('head').append('<link rel="icon" href="node_modules/quintos/img/favicon.png" />');
+
 /* PC functions are used to create text based user interfaces */
 class PC {
-	constructor(w, h, level) {
+	constructor() {
+		let w, h;
+		if (QuintOS.sys == 'calcu') {
+			w = 23;
+			h = 2;
+		} else if (QuintOS.sys == 'zx') {
+			w = 55;
+			h = 35;
+		} else if (QuintOS.sys == 'a2') {
+			w = 40;
+			h = 24;
+		} else if (QuintOS.sys == 'gridc') {
+			w = 80;
+			h = 30;
+		} else if (QuintOS.sys == 'c64') {
+			w = 40;
+			h = 25;
+		} else if (QuintOS.sys == 'arcv') {
+			w = 28;
+			h = 34;
+		}
 		this.w = w;
 		this.h = h;
 		this.width = w; // columns
 		this.height = h; // rows
-		this.level = level;
 		this.gpu = [];
 
-		// default values for alerts and prompts for each level
+		// default values for alerts and prompts for each system
 		this.popup = {
-			0: {
+			calcu: {
 				x: 0,
 				y: 0,
 				w: 23,
 				h: 1
 			},
-			1: {
+			zx: {
 				x: 0,
 				y: 2,
 				w: 55,
 				h: 4
 			},
-			2: {
+			a2: {
 				x: 2,
 				y: 2,
 				w: 36,
 				h: 4
 			},
-			3: {
+			gridc: {
 				x: 3,
 				y: 2,
 				w: 50,
 				h: 4
 			},
-			5: {
+			c64: {
 				x: 10,
 				y: 10,
 				w: 20,
 				h: 4
 			},
-			8: {
+			arcv: {
 				x: 4,
 				y: 16,
 				w: 20,
@@ -52,7 +94,7 @@ class PC {
 
 		let screen0 = document.getElementById('screen0');
 
-		if (level == 0) {
+		if (QuintOS.sys == 'calcu') {
 			this.rows = screen0.childNodes;
 			for (let i = 0; i < h; i++) {
 				this.rows[i].tiles = this.rows[i].childNodes;
@@ -87,38 +129,38 @@ tile {
 }
 </style>`);
 
-		if (level != 7) return;
+		// if ( != 7) return;
 
-		// setup the level 7 bitmap lcd
-		let lcdBG = document.getElementById('bitmapBG');
-		for (let i = 0; i < 560; i++) {
-			let div = document.createElement('div');
-			div.classList.add('null');
-			// div.appendChild(document.createTextNode('⩀⪽⪾'));
-			lcdBG.appendChild(div);
-		}
+		// // setup the bitmap lcd
+		// let lcdBG = document.getElementById('bitmapBG');
+		// for (let i = 0; i < 560; i++) {
+		// 	let div = document.createElement('div');
+		// 	div.classList.add('null');
+		// 	// div.appendChild(document.createTextNode('⩀⪽⪾'));
+		// 	lcdBG.appendChild(div);
+		// }
 
-		let lcd = document.getElementById('bitmap');
-		for (let i = 0; i < 560; i++) {
-			let div = document.createElement('div');
-			// div.appendChild(document.createTextNode(' '));
-			lcd.appendChild(div);
-		}
-		this.bitmap = lcd.childNodes;
+		// let lcd = document.getElementById('bitmap');
+		// for (let i = 0; i < 560; i++) {
+		// 	let div = document.createElement('div');
+		// 	// div.appendChild(document.createTextNode(' '));
+		// 	lcd.appendChild(div);
+		// }
+		// this.bitmap = lcd.childNodes;
 	}
 
 	/* Display the text character at a position */
 	drawChar(x, y, char) {
 		// out of bounds check
 		if (x >= 0 && y >= 0 && x < this.w && y < this.h) {
-			if (this.level == 0 && y == 1 && x > 4) return;
+			if (QuintOS.sys == 'calcu' && y == 1 && x > 4) return;
 			this.rows[y].tiles[x].childNodes[0].nodeValue = char;
 		}
 	}
 
 	/* Get the value of a character */
 	charAt(x, y) {
-		if (x < 0 || y < 0 || x >= this.w || y >= this.h || (this.level == 0 && y == 1 && x > 4)) {
+		if (x < 0 || y < 0 || x >= this.w || y >= this.h || (QuintOS.sys == 'calcu' && y == 1 && x > 4)) {
 			this.error(
 				`Out of bounds error! Could not retreive character at: ${x},${y}\nThe size of this screen is: ${this.w}x${this.h}`
 			);
@@ -167,17 +209,14 @@ tile {
 		y ??= 0;
 		if (typeof txt != 'string') txt += '';
 		w = w || this.w - x;
-		if (this.level != 3) {
-			speed ??= 10;
-		} else {
+		if (QuintOS.sys == 'gridc') {
 			speed ??= 0;
+		} else {
+			speed ??= 10;
 		}
-
-		// if (this.level == 0) txt = txt.toUpperCase();
-		if (this.level <= 1) txt = txt.replace(/\t/g, '  ');
+		txt = txt.replace(/\t/g, '  ');
 		txt = txt.split('\n');
 		let lines = [];
-
 		for (let i = 0; i < txt.length; i++) {
 			let line = txt[i];
 			if (line.length > w) {
@@ -235,10 +274,10 @@ tile {
 		y ??= 0;
 		w ??= this.w;
 		h ??= this.h;
-		if (this.level == 2) c = '*';
-		if (this.level == 5 || this.level >= 8) c = '─';
-		await this.rect(x, y, w, h, speed, c || '═');
-		// if (this.level == 5) this.eraseRect(x, y + 1, w, h - 2);
+		c ??= '─';
+		if (QuintOS.sys == 'a2') c = '*';
+		if (QuintOS.sys == 'gridc') c = '═';
+		await this.rect(x, y, w, h, speed, c);
 	}
 
 	/* Display a rectangle with character or character set */
@@ -328,18 +367,18 @@ tile {
 	erase() {
 		let eraser = {
 			x: 1,
-			y: this.level != 8 ? 1 : 2,
+			y: QuintOS.sys != 'arcv' ? 1 : 2,
 			w: this.w - 2,
 			h: this.h - 2
 		};
 		for (let i = 0; i < this.gpu.length; i++) {
 			let el = this.gpu[i];
-			if (this.level == 0 || this.overlap(el, eraser)) {
+			if (QuintOS.sys == 'calcu' || this.overlap(el, eraser)) {
 				el.erase();
 				i--;
 			}
 		}
-		if (this.level == 0) {
+		if (QuintOS.sys == 'calcu') {
 			this._textSync([' '.repeat(this.w), ' '.repeat(4)], 0, 0);
 			return;
 		}
@@ -351,7 +390,7 @@ tile {
 	}
 
 	async eraseRect(x, y, w, h, speed) {
-		if (this.level == 0 && (typeof h == 'undefined' || h > 1)) {
+		if (QuintOS.sys == 'calcu' && (typeof h == 'undefined' || h > 1)) {
 			await this.eraseRect(0, 0, this.w, 1, speed);
 			await this.eraseRect(0, 1, 4, 1, speed);
 			return;
@@ -382,8 +421,8 @@ tile {
 
 	button(txt, x, y, action) {
 		if (y != 0) {
-			if (this.level > 0 && this.level < 2) txt += '←';
-			if (this.level == 2) txt = '<' + txt + '>';
+			if (QuintOS.sys == 'zx') txt += '←';
+			if (QuintOS.sys == 'a2') txt = '<' + txt + '>';
 		}
 
 		let _this = this;
@@ -405,7 +444,7 @@ tile {
 
 				// add all tiles belonging to the button, to the button
 				for (let i = 0; i < lines.length; i++) {
-					if (i != 0 && this.level == 0) break;
+					if (i != 0 && QuintOS.sys == 'calcu') break;
 					let line = lines[i];
 					for (let j = 0; j < line.length; j++) {
 						this.tiles.push(_this.rows[this.y + i].tiles[this.x + j]);
@@ -468,7 +507,7 @@ tile {
 
 				this.blink = setInterval(() => {
 					$(_this.rows[this.y].tiles[this.cursorX]).toggleClass('hovered');
-					if (_this.level == 0 && _this.charAt(this.cursorX, this.y) != '_') {
+					if (QuintOS.sys == 'calcu' && _this.charAt(this.cursorX, this.y) != '_') {
 						_this.drawChar(this.cursorX, this.y, '_');
 					} else {
 						_this.drawChar(this.cursorX, this.y, ' ');
@@ -504,7 +543,7 @@ tile {
 				input.onSubmit(input.value);
 				return;
 			} else if (e.key == 'Backspace' && input.value.length > 0) {
-				if (_this.level == 0 && (input.y != 1 || input.value.length != 4)) {
+				if (QuintOS.sys == 'calcu' && (input.y != 1 || input.value.length != 4)) {
 					_this.drawChar(input.cursorX, input.y, ' ');
 				}
 				input.value = input.value.slice(0, -1);
@@ -538,7 +577,7 @@ tile {
 	}
 
 	async alert(txt, x, y, w, h) {
-		let pu = this.popup[this.level];
+		let pu = this.popup[QuintOS.sys];
 		pu ??= this.popup[3];
 		x = x || pu.x;
 		y = y || pu.y;
@@ -548,7 +587,7 @@ tile {
 		if (typeof txt != 'string') txt += '';
 
 		let th;
-		if (this.level > 0) {
+		if (QuintOS.sys != 'calcu') {
 			let _txt = this._text(txt, x + 2, y + 1, w - 4);
 			th = _txt.lines.length;
 			await this.eraseRect(x, y, w, h + th);
@@ -566,7 +605,7 @@ tile {
 
 		let okayX = Math.floor(Math.min(x + w / 2, x + w - 4));
 		let okayY = y + 2 + th;
-		if (this.level == 0) {
+		if (QuintOS.sys == 'calcu') {
 			okayX = 0;
 			okayY = 1;
 		}
@@ -587,12 +626,12 @@ tile {
 			let erasing = false;
 			let erase = async () => {
 				erasing = true;
-				if (this.level != 0) okayBtn.erase();
+				if (QuintOS.sys != 'calcu') okayBtn.erase();
 				document.removeEventListener('keydown', onKeyDown);
 				await _this.eraseRect(x, y, w, h + th);
 			};
 
-			if (this.level == 0) return;
+			if (QuintOS.sys == 'calcu') return;
 
 			okayBtn.action = async () => {
 				if (erasing) return;
@@ -603,7 +642,7 @@ tile {
 	}
 
 	async prompt(txt, x, y, w, h) {
-		let pu = this.popup[this.level];
+		let pu = this.popup[QuintOS.sys];
 		if (!pu) pu = this.popup.default;
 		x = x || pu.x;
 		y = y || pu.y;
@@ -613,7 +652,7 @@ tile {
 		if (typeof txt != 'string') txt += '';
 
 		let th;
-		if (this.level > 0) {
+		if (QuintOS.sys != 'calcu') {
 			let _txt = this._text(txt, x + 2, y + 1, w - 4);
 			th = _txt.lines.length;
 			await this.eraseRect(x, y, w, h + th);
@@ -629,18 +668,18 @@ tile {
 		}
 		let inX = x + 2;
 		let inY = y + 2 + th;
-		if (this.level == 0) {
+		if (QuintOS.sys == 'calcu') {
 			inX = 0;
 			inY = 1;
 		}
 		let inp = this.input('', inX, inY);
 		let enterBtn;
 		let cancelBtn;
-		if (this.level != 0) {
-			let ebX = x + w - (this.level == 1 ? 16 : 18);
+		if (QuintOS.sys != 'calcu') {
+			let ebX = x + w - (QuintOS.sys == 'zx' ? 16 : 18);
 			enterBtn = this.button('ENTER', ebX, y + 2 + th);
 
-			let cbX = x + w - (this.level == 1 ? 9 : 10);
+			let cbX = x + w - (QuintOS.sys == 'zx' ? 9 : 10);
 			cancelBtn = this.button('CANCEL', cbX, y + 2 + th);
 		}
 
@@ -648,7 +687,7 @@ tile {
 		let erasing = false;
 		let erase = async () => {
 			erasing = true;
-			if (this.level > 0) {
+			if (QuintOS.sys != 'calcu') {
 				enterBtn.erase();
 				cancelBtn.erase();
 			}
@@ -663,7 +702,7 @@ tile {
 				resolve(val);
 			};
 
-			if (this.level == 0) return;
+			if (QuintOS.sys == 'calcu') return;
 
 			enterBtn.action = inp.onSubmit;
 
@@ -704,13 +743,14 @@ command+option+i then click the Console tab.`);
 		});
 	}
 
-	async preloadData(game, dir) {
+	async preloadData() {
 		if (QuintOS?.preload && typeof QuintOS.preload != 'boolean') {
 			await QuintOS.preload();
 			return;
 		}
-		dir = QuintOS.dir || dir || '.';
-		let src = `${dir}/${game.slice(0, 1).toLowerCase() + game.slice(1)}-preload.js`;
+		let dir = QuintOS.dir || '.';
+		let title = QuintOS.gameTitle;
+		let src = `${dir}/${title.slice(0, 1).toLowerCase() + title.slice(1)}-preload.js`;
 		try {
 			await this.loadJS(src);
 		} catch (error) {
@@ -718,76 +758,13 @@ command+option+i then click the Console tab.`);
 		}
 	}
 
-	p5PlayMod() {
-		// // wait until p5.play loads by checking if the allSprites group
-		// // is available yet
-		// for (let attempt = 0; typeof Group == 'undefined' || typeof allSprites == 'undefined'; attempt++) {
-		// 	await delay(100);
-		// 	if (attempt > 20) throw 'Could not load p5.play'; // throw an error
-		// }
-		// await delay(100);
-
-		let _createSprite = createSprite;
-
-		createSprite = (x, y, w, h) => {
-			let img;
-			if (typeof x == 'object') img = x;
-			x ??= width / 2;
-			y ??= height / 2;
-
-			let sprite = _createSprite(x, y, w, h);
-
-			if (img) sprite.addImage(img);
-
-			// prettier-ignore
-			Object.defineProperty(sprite, 'x', {
-				get: function () { return this.position.x },
-				set: function (x) { this.position.x = Math.round(x) }
-			});
-			// prettier-ignore
-			Object.defineProperty(sprite, 'y', {
-				get: function () { return this.position.y },
-				set: function (y) { this.position.y = Math.round(y) }
-			});
-			// prettier-ignore
-			Object.defineProperty(sprite, 'w', {
-				get: function () { return this.width },
-				set: function (w) { this.width = Math.round(w) }
-			});
-			// prettier-ignore
-			Object.defineProperty(sprite, 'h', {
-				get: function () { return this.height },
-				set: function (h) { this.height = Math.round(h) }
-			});
-
-			sprite.ani = function (name, start, end) {
-				return new Promise((resolve, reject) => {
-					this.changeAnimation(name);
-					if (start) this.animation.changeFrame(start);
-					if (end) this.animation.goToFrame(end);
-					this.animation.onComplete = () => {
-						resolve();
-					};
-				});
-			};
-
-			sprite.loadAni = function (name, atlas) {
-				let { size, pos, line, frames, delay } = atlas;
-				size ??= [this.w / this.scale, this.h / this.scale];
-				pos ??= line || 0;
-				this.addAnimation(name, loadAni(this.spriteSheet, size, pos, frames, delay));
-			};
-
-			return sprite;
-		};
-	}
-
-	async loadGame(game, dir) {
+	async loadGame() {
+		let title = QuintOS.gameTitle;
 		if (QuintOS.game) {
 			QuintOS.game();
 		} else {
-			dir = dir || QuintOS.dir || '.';
-			let file = `${game.slice(0, 1).toLowerCase() + game.slice(1)}.js`;
+			let dir = QuintOS.dir || '.';
+			let file = `${title.slice(0, 1).toLowerCase() + title.slice(1)}.js`;
 			let src = dir + '/' + file;
 			try {
 				await this.loadJS(src);
@@ -803,11 +780,12 @@ command+option+i then click the Console tab.`);
 				}
 			}
 		}
-		let title = '0' + this.level + '_' + game.slice(0, 1).toUpperCase() + game.slice(1);
+		let lvl = QuintOS.level.toString();
+		if (lvl.length == 1) lvl = '0' + lvl;
+		title = lvl + '_' + title.slice(0, 1).toUpperCase() + title.slice(1);
 		$('head title').text(title);
-		if (this.level == 6 || this.level == 7) return;
-		if (this.level >= 2 && this.level <= 4) this.frame();
-		if (this.level > 0) {
+		if (/(a2|gridc)/.test(QuintOS.sys)) this.frame();
+		if (QuintOS.sys != 'calcu') {
 			this.button(title, 2, 0, () => {
 				if (!QuintOS.game) {
 					// open the javascript source in new tab
@@ -819,8 +797,8 @@ command+option+i then click the Console tab.`);
 			});
 			if (!QuintOS.username) return;
 			this.text(' by ', 2 + title.length, 0);
-			let x = this.level != 8 ? 6 + title.length : 2;
-			let y = this.level != 8 ? 0 : 1;
+			let x = QuintOS.sys != 'arcv' ? 6 + title.length : 2;
+			let y = QuintOS.sys != 'arcv' ? 0 : 1;
 			this.button(QuintOS.username, x, y, () => {
 				open('https://github.com/' + QuintOS.username);
 			});
@@ -842,7 +820,7 @@ command+option+i then click the Console tab.`);
 		await this.eraseRect();
 
 		// run a simple eval based calculator program
-		if (this.level == 0) {
+		if (QuintOS.sys == 'calcu') {
 			let inp;
 			function calculate(value) {
 				let result = eval(value);
@@ -859,448 +837,6 @@ command+option+i then click the Console tab.`);
 		});
 	}
 }
-
-(() => {
-	let calcuHTML = `
-<div id="pc">
-<div class="calculator" aria-hidden="true">
-<div class="lcd">
-  <p>F+</p><p>ARC</p><p>NYP</p><p>WRT</p><p>DEG</p><p>TRACE</p><p>PRT</p>
-	<div id="screen0" class="screen"><row><tile> </tile><tile> </tile><tile> </tile><tile> </tile><tile> </tile><tile> </tile><tile> </tile><tile> </tile><tile> </tile><tile> </tile><tile> </tile><tile> </tile><tile> </tile><tile> </tile><tile> </tile><tile> </tile><tile> </tile><tile> </tile><tile> </tile><tile> </tile><tile> </tile><tile> </tile><tile> </tile></row><row><tile> </tile><tile> </tile><tile> </tile><tile> </tile></row></div>
-</div>
-<div class="lcdBorder"></div>
-<div class="onoff"></div>
-<div class="onoffin"></div>
-<div class="onoffinline1"></div>
-<div class="onoffinline2"></div>
-<div class="onoffinline3"></div>
-<div class="onoffinline4"></div>
-<div class="onoffinline5"></div>
-<div class="horizmain"></div>
-<div id="keys">
-<div class="white"><p>F1</p></div>
-<div class="white"><p>F2</p></div>
-<div class="gray"><p>║</p></div>
-<div class="gray"><p>#</p></div>
-<div class="gray"><p>$</p></div>
-<div class="gray"><p>:</p></div>
-<div class="gray"><p>;</p></div>
-<div class="gray"><p>A</p></div>
-<div class="gray"><p>B</p></div>
-<div class="gray"><p>C</p></div>
-<div class="gray"><p>D</p></div>
-<div class="gray"><p>E</p></div>
-<div class="gray"><p>F</p></div>
-<div class="gray"><p>G</p></div>
-<div class="gray"><p>H</p></div>
-<div class="gray"><p>I</p></div>
-<div class="gray"><p>J</p></div>
-<div class="gray"><p>K</p></div>
-<div class="gray"><p>L</p></div>
-<div class="gray"><p>M</p></div>
-<div class="gray"><p>N</p></div>
-<div class="gray"><p>O</p></div>
-<div class="gray"><p>P</p></div>
-<div class="gray"><p>Q</p></div>
-<div class="gray"><p>R</p></div>
-<div class="gray"><p>S</p></div>
-<div class="gray"><p>T</p></div>
-<div class="gray"><p>U</p></div>
-<div class="gray"><p>V</p></div>
-<div class="gray"><p>W</p></div>
-<div class="gray"><p>X</p></div>
-<div class="gray"><p>Y</p></div>
-<div class="gray"><p>Z</p></div>
-<div class="gray"><p>=</p></div>
-<div class="gray"><p name=" ">SPC</p></div>
-<div class="black"><p>MODE</p></div>
-<div class="dark"><p>(</p></div>
-<div class="dark"><p>)</p></div>
-<div class="dark"><p name="Enter">⬆</p></div>
-<div class="orange"><p name="Backspace">C</p></div>
-<div class="orange"><p name="Clear">AC</p></div>
-<div class="dark"><p>7</p></div>
-<div class="dark"><p>8</p></div>
-<div class="dark"><p>9</p></div>
-<div class="dark"><p>/</p></div>
-<div class="black"><p>STAT</p></div>
-<div class="black"><p onclick="exit();">STOP</p></div>
-<div class="dark"><p>4</p></div>
-<div class="dark"><p>5</p></div>
-<div class="dark"><p>6</p></div>
-<div class="dark"><p>*</p></div>
-<div class="black"><p name="Enter">ANS</p></div>
-<div class="black"><p name="Enter">CONT</p></div>
-<div class="dark"><p>1</p></div>
-<div class="dark"><p>2</p></div>
-<div class="dark"><p>3</p></div>
-<div class="dark"><p>-</p></div>
-<div class="dark"><p>,</p></div>
-<div class="black"><p name="Backspace">⇦</p></div>
-<div class="dark"><p>0</p></div>
-<div class="dark"><p>.</p></div>
-<div class="dark"><p name="Enter">E</p></div>
-<div class="dark"><p>+</p></div>
-<div class="dark"><p name="Enter">EXE</p></div>
-<div class="black"><p name="Enter">⇨</p></div>
-</div>
-<div class="vertline"></div>
-<div class="horzlinewhite1"></div>
-<div class="horzlinewhite2"></div>
-<div class="horzlinewhite3"></div>
-<div class="horzlinewhite4"></div>
-<div class="vertline"></div>
-<div class="horzlineblack1"></div>
-<div class="horzlineblack2"></div>
-<div class="horzlineblack3"></div>
-<div class="horzlineblack4"></div>
-<div class="out" aria-hidden="true"></div>
-  <div class="casio">
-      <div class="speaker"></div>
-      <h1>
-				<span>
-					<p class="logo">QuintOS</p>
-          <p class="type">PROGRAMMABLE CALCULATOR</p>
-          <p class="model">FX-702P</p>
-      	</span>
-			</h1>
-  </div>
-</div>
-</div>`;
-
-	let terminalHTML = `
-<div id="pc" class="center">
-	<div class="screenBox">
-		<div class="frame">
-			<div class="screenBox2">
-				<div class="screenBox3">
-					<div class="terminalScreen">
-						<div id="screen0" class="screen"></div>
-					</div>
-				</div>
-			</div>
-			<div class="bottomFrame">
-				<div class="fan">
-				</div>
-				<a href="https://github.com/quinton-ashley/quintos">
-					<img class="logo" src="https://raw.githubusercontent.com/quinton-ashley/quintos/main/img/logo.png" />
-				</a>
-				<div class="powerButton">
-					<div class="powerIcon">
-					</div>
-				</div>
-				<div class="powerLight lightOff">
-				</div>
-			</div>
-		</div>
-	</div>
-	<div class="screenFoot"></div>
-	<div class="computer">
-		<div class="computerFrame">
-			<div class="computerFan1"></div>
-			<div class="computerFan2"></div>
-			<div class="screw1"></div>
-			<div class="screw2"></div>
-			<div class="computerFrame2">
-				<div class="floppy">
-					<div class="fingerGrip"></div>
-					<div class="slot"></div>
-				</div>
-				<div class="socket1"></div>
-				<div class="socket2"></div>
-			</div>
-			<div class="screw3"></div>
-			<div class="screw4"></div>
-			<div class="screw5"></div>
-			<div class="powerButton">
-				<div class="buttonSlide">
-					<div class="computerButton computerButtonOff"></div>
-				</div>
-				<div class="offIndicator"></div>
-				<div class="onIndicator"></div>
-			</div>
-			<div class="powerLight lightOff">
-			</div>
-		</div>
-	</div>
-</div>`;
-
-	const c64HTML = `
-<div id="pc">
-	<div id="case">
-		<div id="bezel">
-			<div id="tube" class="clear">
-				<div id="screen0" class="screen"></div>
-			</div>
-		</div>
-		<div id="bottom-panel">
-			<div id="badge">
-				<a id="logo" href="https://github.com/quinton-ashley/quintos">
-					<img class="logo" src="https://raw.githubusercontent.com/quinton-ashley/quintos/main/img/logo.png" />
-				</a>
-				<a id="brand" href="https://github.com/quinton-ashley/quintos">
-					<h1>QuintOS</h1>
-				</a>
-				<div id="refreshLbl">REFRESH</div>
-			</div>
-			<div id="ident">
-				<div>Created using</div>
-				<div><a href="https://github.com/quinton-ashley/quintos">QuintOS</a></div>
-			</div>
-			<div id="refresh"></div>
-			<div id="door"></div>
-			<div id="video"></div>
-			<div id="audio"></div>
-		</div>
-	</div>
-</div>`;
-
-	let gameboiHTML = `
-<div id="pc">
-<div id="container">
-	<div id="bitmapBG-container">
-		<div id="bitmapBG" style="--grid-size:20; --grid-columns:28; --grid-rows:20;"></div>
-		<div class="info-container">
-		<div id="screen0" class="screen"></div>
-		</div>
-		<div class="shine-container">
-			<div class="shine"></div>
-		</div>
-	</div>
-	<div id="bitmap-container">
-		<div id="bitmap" style="--grid-size:20; --grid-columns:28; --grid-rows:20;"></div>
-  </div>
-</div>
-</div>`;
-
-	const arcadeHTML = `
-<div id="pc">
-	<div id="case">
-		<div id="bezel">
-			<div id="tube">
-				<div id="screen0" class="screen"></div>
-			</div>
-		</div>
-	</div>
-</div>`;
-
-	const webHTML = `
-<div class="container">
-	<div class="mac">
-		<div class="monitor-frame">
-			<div class="monitor">
-				<div class="contain">
-					<div class="bg" id="bg">
-						<div class="menu">
-							<div class="click apple"><img ondragstart="return false;" src="https://raw.githubusercontent.com/quinton-ashley/quintos/main/img/favicon.png"/>
-								<div class="dropdown"><a href="#">
-										<p>About QuintOS...</p>
-										<li></li></a></div>
-							</div>
-							<div class="click">
-								<p>File</p>
-								<div class="dropdown"><a href="#">
-										<p>New Window</p>
-										<li>&#x2318;N</li></a><a href="#">
-										<p>Open File...</p>
-										<li>&#x2318;O</li></a><a href="#">
-										<p>Print</p>
-										<li>&#x2318;P</li></a><a href="#">
-										<p>Close Window</p>
-										<li>&#8679;&#x2318;W</li></a></div>
-							</div>
-							<div class="click">
-								<p>Edit</p>
-								<div class="dropdown"><a href="#">
-										<p>Undo</p>
-										<li>&#x2318;Z</li></a><a href="#">
-										<p>Redo</p>
-										<li>&#8679;&#x2318;Z</li></a><a href="#">
-										<p>Cut</p>
-										<li>&#x2318;X</li></a><a href="#">
-										<p>Copy</p>
-										<li>&#x2318;C</li></a><a href="#">
-										<p>Paste</p>
-										<li>&#x2318;V</li></a></div>
-							</div>
-							<div class="click">
-								<p>View</p>
-								<div class="dropdown"><a href="#">
-										<p>Bookmarks</p>
-										<li>&#x2318;B</li></a><a href="#">
-										<p>History</p>
-										<li>&#8679;&#x2318;H</li></a></div>
-							</div>
-							<div class="click">
-								<p>Special</p>
-								<div class="dropdown"><a href="#">
-										<p>Downloads</p>
-										<li>&#x2318;J</li></a><a href="#">
-										<p>Open Console</p>
-										<li>&#8679;&#x2318;I</li></a></div>
-							</div>
-							<div class="time">
-								<p></p>
-							</div>
-						</div>
-						<div class="desktop">
-							<div class="window">
-								<div class="bar title">
-									<h1>Netscape</h1>
-									<nav>
-										<ul>
-											<li class="close"></li>
-											<li class="maximize"></li>
-										</ul>
-									</nav>
-								</div>
-								<div class="bar info">
-									<ul>
-										<li>
-											<div class="emoji">⬅</div>
-											<p>Back</p>
-										</li>
-										<li>
-											<div class="emoji">➡</div>
-											<p>Forward</p>
-										</li>
-										<li>
-											<div class="emoji">🔄</div>
-											<p>Reload</p>
-										</li>
-										<li>
-											<div class="emoji">🏠</div>
-											<p>Home</p>
-										</li>
-										<li>
-											<div class="emoji">✉</div>
-											<p>Mail</p>
-										</li>
-										<li>
-											<div class="emoji">🖼</div>
-											<p>Images</p>
-										</li>
-										<li>
-											<div class="emoji">📂</div>
-											<p>Open</p>
-										</li>
-										<li>
-											<div class="emoji">🖨</div>
-											<p>Print</p>
-										</li>
-										<li>
-											<div class="emoji">🔍</div>
-											<p>Find</p>
-										</li>
-										<li>
-											<div class="emoji">🛑</div>
-											<p>Stop</p>
-										</li>
-									</ul>
-								</div>
-								<div class="bar links">
-									<ul>
-										<li>Welcome</li>
-										<li>What's New</li>
-										<li>What's Cool</li>
-										<li>Questions</li>
-										<li>Net Search</li>
-										<li>Net Directory</li>
-									</ul>
-								</div>
-								<iframe src="https://web.archive.org/web/19991128125537/http://www.geocities.com/Heartland/Bluffs/4157/hampdance.html"></iframe>
-								<div id="screen0" class="screen"></div>
-							</div>
-						</div>
-					</div>
-				</div>
-			</div>
-		</div>
-		<div class="floppy">
-			<div class="sec-1"></div>
-			<div class="sec-2"></div>
-		</div>
-		<div class="logo"><img src="https://raw.githubusercontent.com/quinton-ashley/quintos/main/img/logo.png" height="100%"/></div>
-	</div>
-</div>`;
-
-	// `<figure class="icon trash click"><img src="https://dl.dropboxusercontent.com/s/c5w4rhgk2g34de7/icon_trash.png?dl=0" alt=""/>
-	// 	<figcaption>Trash</figcaption>
-	// </figure>
-	// <figure class="icon doc click"><img src="https://dl.dropboxusercontent.com/s/2xofo03j79asxsy/icon_doc.png?dl=0" alt=""/>
-	// 	<figcaption>Document</figcaption>
-	// </figure>
-	// <figure class="icon mail click"><img src="https://dl.dropboxusercontent.com/s/graxq4qm8larlia/icon_mail.png?dl=0" alt=""/>
-	// 	<figcaption>Mail</figcaption>
-	// </figure>`;
-
-	if (typeof QuintOS.level != 'undefined') {
-		let lvl = QuintOS.level.toString();
-		if (lvl.length == 1) lvl = '0' + lvl;
-		$('body').addClass('lvl' + lvl);
-	}
-
-	if (QuintOS.level == 0) {
-		$('main').remove();
-		$('body').append(calcuHTML);
-		$('body').addClass('calcu');
-
-		$('#keys div p').click(function () {
-			let $this = $(this);
-			let key = $this.attr('name') || $this.text();
-			let count = 1;
-			if (key == 'Clear') {
-				count = 23;
-				key = 'Backspace';
-			}
-			if ('ABCDEFGHIJKLMNOPQRSTUVWXYZ'.includes(key)) {
-				key = key.toLowerCase();
-			}
-			for (let i = 0; i < count; i++) {
-				document.dispatchEvent(
-					new KeyboardEvent('keydown', {
-						key: key
-					})
-				);
-			}
-		});
-	} else if (QuintOS.level < 5) {
-		$('main').remove();
-		$('body').append(terminalHTML);
-		$('body').addClass('terminal');
-	} else if (QuintOS.level == 5) {
-		$('body').append(c64HTML);
-		$('body').addClass('c64');
-		$('main').css('display', 'none');
-	} else if (QuintOS.level == 7) {
-		$('main').remove();
-		$('body').append(gameboiHTML);
-		$('body').addClass('gameboi');
-	} else if (QuintOS.level == 8) {
-		$('body').append(arcadeHTML);
-		$('body').addClass('arcade');
-		$('main').css('display', 'none');
-	} else if (QuintOS.level == 9) {
-		$('main').remove();
-		$('body').append(webHTML);
-		$('body').addClass('web');
-
-		setInterval(() => {
-			$('.time p').text(
-				new Date().toLocaleTimeString('en-US', {
-					hour12: false,
-					hour: 'numeric',
-					minute: 'numeric',
-					second: 'numeric'
-				})
-			);
-		}, 1000);
-		$('.window').draggable({
-			handle: '.title.bar'
-		});
-		$('.window').resizable();
-	}
-})();
 
 function play(sound) {
 	return new Promise((resolve, reject) => {
@@ -1332,76 +868,6 @@ window.addEventListener('keydown', function (e) {
 	}
 });
 
-if (QuintOS.level == 0) throw 'hi!';
-
-p5.disableFriendlyErrors = true;
-
-{
-	let palettes = {
-		ZX: [
-			{
-				0: '#000000', // bright 0 black
-				1: '#0000d8', // bright 0 blue
-				2: '#d80000', // bright 0 red
-				3: '#d800d8', // bright 0 magenta
-				4: '#00d800', // bright 0 green
-				5: '#00d8d8', // bright 0 cyan
-				6: '#d8d800', // bright 0 yellow
-				7: '#ffffff', // bright 0 white
-				8: '#000000', // bright 1 black
-				9: '#0000ff', // bright 1 blue
-				A: '#ff0000', // bright 1 red
-				B: '#ff00ff', // bright 1 magenta
-				C: '#00ff00', // bright 1 green
-				D: '#00ffff', // bright 1 cyan
-				E: '#ffff00', // bright 1 yellow
-				F: '#ffffff' // bright 1 white
-			}
-		],
-		C64: [
-			{
-				' ': '',
-				'.': '',
-				k: '#000000', // blacK
-				d: '#626252', // Dark-gray
-				m: '#898989', // Mid-gray
-				l: '#adadad', // Light-gray
-				w: '#ffffff', // White
-				c: '#cb7e75', // Coral
-				r: '#9f4e44', // Red
-				n: '#6d5412', // browN
-				o: '#a1683c', // Orange
-				y: '#c9d487', // Yellow
-				e: '#9ae29b', // light grEEn
-				g: '#5cab5e', // Green
-				t: '#6abfc6', // Teal
-				b: '#50459b', // Blue
-				i: '#887ecb', // Indigo
-				p: '#a057a3' // Purple
-			}
-		],
-		GAMEBOI: [
-			{
-				0: '#0f380f',
-				1: '#306230',
-				2: '#8bac0f',
-				3: '#9bbc0f'
-			}
-			// {
-			// 	0: '#000000',
-			// 	1: '#555555',
-			// 	2: '#aaaaaa',
-			// 	3: '#ffffff'
-			// }
-		]
-	};
-
-	/*#0f380f; #306230; #8bac0f; #9bbc0f; */
-
-	// assign palettes to the system's palette
-	window.palettes = palettes[QuintOS.system] || [];
-}
-
 /**
  * Gets a color from a color pallette
  * c is the color key
@@ -1423,7 +889,7 @@ function spriteArt(txt, scale, palette) {
 	if (typeof palette == 'number') {
 		palette = palettes[palette];
 	}
-	palette ??= _palette;
+	palette ??= palettes[0];
 	let lines = txt; // accepts 2D arrays of characters
 	if (typeof txt == 'string') {
 		txt = txt.replace(/^[\n\t]+|\s+$/g, ''); // trim newlines
@@ -1573,9 +1039,10 @@ class Tiles {
 		if (sprite.layer == 0) {
 			throw 'QuintOS Error: Only sprites on layer 1 and higher can be moved';
 		}
+		let direction = true;
 		// if destRow is actually the direction
 		if (typeof destRow == 'string') {
-			let direction = destRow;
+			direction = destRow;
 			destRow = sprite.destRow;
 			destCol = sprite.destCol;
 			if (direction == 'up') destRow--;
@@ -1586,7 +1053,7 @@ class Tiles {
 		sprite.destRow = destRow;
 		sprite.destCol = destCol;
 		if (sprite.isMoving) return;
-		sprite.isMoving = true;
+		sprite.isMoving = direction;
 		sprite.attractionPoint(speed, this.x + (destCol + 0.5) * this.tileSize, this.y + (destRow + 0.5) * this.tileSize);
 	}
 
@@ -1594,7 +1061,7 @@ class Tiles {
 	 * update()
 	 * Updates the row col position of each sprite
 	 */
-	update() {
+	update(opt) {
 		for (let r = 0; r < this.tiles.length; r++) {
 			for (let c = 0; c < this.tiles[r].length; c++) {
 				for (let l = 1; l < this.tiles[r][c].length; l++) {
@@ -1605,13 +1072,13 @@ class Tiles {
 					if (row % 1 > 0.1 || col % 1 > 0.1) continue;
 					row = Math.round(row);
 					col = Math.round(col);
-					if (sprite.destRow != row || sprite.destCol != col) continue;
-					sprite.velocity.x = 0;
-					sprite.velocity.y = 0;
 					sprite.row = row;
 					sprite.col = col;
-					sprite.position.y = this.y + (row + 0.5) * this.tileSize;
-					sprite.position.x = this.x + (col + 0.5) * this.tileSize;
+					if (!opt.snap && (sprite.destRow != row || sprite.destCol != col)) continue;
+					sprite.velocity.x = 0;
+					sprite.velocity.y = 0;
+					sprite.y = this.y + (row + 0.5) * this.tileSize;
+					sprite.x = this.x + (col + 0.5) * this.tileSize;
 					sprite.isMoving = false;
 				}
 			}
@@ -1619,40 +1086,522 @@ class Tiles {
 	}
 }
 
-async function preload() {
-	$('canvas').removeAttr('style');
+/********************************************************************
+ ******************************* QUINTOS *****************************
+ ********************************************************************/
 
-	if (typeof QuintOS.level == 'undefined') {
-		console.error('ERROR: There was an error in your game file or QuintOS.level is not defined.');
-		return; // exit
+p5.disableFriendlyErrors = true;
+
+async function preload() {
+	if (!QuintOS?.gameTitle) {
+		if (QuintOS?.level) {
+			QuintOS.gameTitle = QuintOS.levels[QuintOS.level][0];
+		} else {
+			console.error('ERROR: There was an error in your load file or QuintOS.gameTitle is not defined.');
+			QuintOS.gameTitle = 'GuessTheNumber';
+		}
 	}
 
+	QuintOS.level = QuintOS?.level || QuintOS.levels.findIndex((l) => l[0] == QuintOS.gameTitle);
+
+	let sys = QuintOS?.sys || QuintOS?.system || QuintOS.levels[QuintOS.level][1];
+	QuintOS.sys = sys;
+	QuintOS.system = sys;
+
+	const pages = {
+		calcu: `
+<div id="pc">
+<div class="calculator" aria-hidden="true">
+<div class="lcd">
+  <p>F+</p><p>ARC</p><p>NYP</p><p>WRT</p><p>DEG</p><p>TRACE</p><p>PRT</p>
+	<div id="screen0" class="screen"><row><tile> </tile><tile> </tile><tile> </tile><tile> </tile><tile> </tile><tile> </tile><tile> </tile><tile> </tile><tile> </tile><tile> </tile><tile> </tile><tile> </tile><tile> </tile><tile> </tile><tile> </tile><tile> </tile><tile> </tile><tile> </tile><tile> </tile><tile> </tile><tile> </tile><tile> </tile><tile> </tile></row><row><tile> </tile><tile> </tile><tile> </tile><tile> </tile></row></div>
+</div>
+<div class="lcdBorder"></div>
+<div class="onoff"></div>
+<div class="onoffin"></div>
+<div class="onoffinline1"></div>
+<div class="onoffinline2"></div>
+<div class="onoffinline3"></div>
+<div class="onoffinline4"></div>
+<div class="onoffinline5"></div>
+<div class="horizmain"></div>
+<div id="keys">
+<div class="white"><p>F1</p></div>
+<div class="white"><p>F2</p></div>
+<div class="gray"><p>║</p></div>
+<div class="gray"><p>#</p></div>
+<div class="gray"><p>$</p></div>
+<div class="gray"><p>:</p></div>
+<div class="gray"><p>;</p></div>
+<div class="gray"><p>A</p></div>
+<div class="gray"><p>B</p></div>
+<div class="gray"><p>C</p></div>
+<div class="gray"><p>D</p></div>
+<div class="gray"><p>E</p></div>
+<div class="gray"><p>F</p></div>
+<div class="gray"><p>G</p></div>
+<div class="gray"><p>H</p></div>
+<div class="gray"><p>I</p></div>
+<div class="gray"><p>J</p></div>
+<div class="gray"><p>K</p></div>
+<div class="gray"><p>L</p></div>
+<div class="gray"><p>M</p></div>
+<div class="gray"><p>N</p></div>
+<div class="gray"><p>O</p></div>
+<div class="gray"><p>P</p></div>
+<div class="gray"><p>Q</p></div>
+<div class="gray"><p>R</p></div>
+<div class="gray"><p>S</p></div>
+<div class="gray"><p>T</p></div>
+<div class="gray"><p>U</p></div>
+<div class="gray"><p>V</p></div>
+<div class="gray"><p>W</p></div>
+<div class="gray"><p>X</p></div>
+<div class="gray"><p>Y</p></div>
+<div class="gray"><p>Z</p></div>
+<div class="gray"><p>=</p></div>
+<div class="gray"><p name=" ">SPC</p></div>
+<div class="black"><p>MODE</p></div>
+<div class="dark"><p>(</p></div>
+<div class="dark"><p>)</p></div>
+<div class="dark"><p name="Enter">⬆</p></div>
+<div class="orange"><p name="Backspace">C</p></div>
+<div class="orange"><p name="Clear">AC</p></div>
+<div class="dark"><p>7</p></div>
+<div class="dark"><p>8</p></div>
+<div class="dark"><p>9</p></div>
+<div class="dark"><p>/</p></div>
+<div class="black"><p>STAT</p></div>
+<div class="black"><p onclick="exit();">STOP</p></div>
+<div class="dark"><p>4</p></div>
+<div class="dark"><p>5</p></div>
+<div class="dark"><p>6</p></div>
+<div class="dark"><p>*</p></div>
+<div class="black"><p name="Enter">ANS</p></div>
+<div class="black"><p name="Enter">CONT</p></div>
+<div class="dark"><p>1</p></div>
+<div class="dark"><p>2</p></div>
+<div class="dark"><p>3</p></div>
+<div class="dark"><p>-</p></div>
+<div class="dark"><p>,</p></div>
+<div class="black"><p name="Backspace">⇦</p></div>
+<div class="dark"><p>0</p></div>
+<div class="dark"><p>.</p></div>
+<div class="dark"><p name="Enter">E</p></div>
+<div class="dark"><p>+</p></div>
+<div class="dark"><p name="Enter">EXE</p></div>
+<div class="black"><p name="Enter">⇨</p></div>
+</div>
+<div class="vertline"></div>
+<div class="horzlinewhite1"></div>
+<div class="horzlinewhite2"></div>
+<div class="horzlinewhite3"></div>
+<div class="horzlinewhite4"></div>
+<div class="vertline"></div>
+<div class="horzlineblack1"></div>
+<div class="horzlineblack2"></div>
+<div class="horzlineblack3"></div>
+<div class="horzlineblack4"></div>
+<div class="out" aria-hidden="true"></div>
+  <div class="casio">
+      <div class="speaker"></div>
+      <h1>
+				<span>
+					<p class="logo">QuintOS</p>
+          <p class="type">PROGRAMMABLE CALCULATOR</p>
+          <p class="model">FX-702P</p>
+      	</span>
+			</h1>
+  </div>
+</div>
+</div>`,
+		a2: `
+<div class="bg">
+	<div class="🖥️">
+		<div class="back-shadow"></div>
+		<div class="monitor-shadow"></div>
+		<div class="monitor">
+			<div class="monitor__soft-shadow"></div>
+			<div class="monitor__shadow"></div>
+			<div class="monitor__inner"></div>
+			<div class="monitor__inner-shadow"></div>
+			<div class="monitor__inner-shadow-light"></div>
+			<div class="monitor__inner-shadow-dark"></div>
+			<div class="monitor__screen"></div>
+			<div class="monitor__screen-2 top-shadow"></div>
+			<div class="monitor__screen-2 bottom-shadow"></div>
+			<div class="monitor__screen-2">
+				<div class="monitor__terminal">
+					<div id="screen0" class="screen"></div>
+				</div>
+			</div>
+			<div class="monitor__logo-embed"></div>
+			<div class="monitor__line"></div>
+			<div class="monitor__power-switch">
+				<div class="monitor__power-switch__button"></div>
+			</div>
+		</div>
+		<div class="keyboard">
+			<div class="middle"></div>
+			<div class="top">
+				<div class="emboss">
+					<div class="logo-label">
+						<div class="logo"></div>
+						<div class="label">QuintOS</div>
+					</div>
+					<div class="model-number">II<span>e</span></div>
+				</div>
+				<div class="embed">
+					<div class="keys-container"></div>
+				</div>
+			</div>
+		</div>
+		<div class="floppy-drive">
+			<div class="left">
+				<div class="emboss"></div>
+			</div>
+			<div class="top">
+				<div class="emboss emboss-1"></div>
+				<div class="embed embed-1"></div>
+				<div class="emboss emboss-2"></div>
+				<div class="embed embed-2"></div>
+			</div>
+			<div class="front">
+				<div class="slot-container">
+					<div class="slot">
+						<div class="hole"></div>
+					</div>
+				</div>
+				<div class="slot-embed">
+					<div class="cover"></div>
+					<div class="shadow"></div>
+				</div>
+				<div class="logo"></div>
+				<div class="label">disk II</div>
+				<div class="light">
+					<span>IN USE</span> <span class="arrow">▼</span>
+					<div class="led">
+						<div class="reflection"></div>
+					</div>
+				</div>
+			</div>
+			<div class="bottom"></div>
+		</div>
+	</div>
+</div>`,
+		gridc: `
+<div id="pc" class="center">
+	<div class="screenBox">
+		<div class="frame">
+			<div class="screenBox2">
+				<div class="screenBox3">
+					<div class="terminalScreen">
+						<div id="screen0" class="screen"></div>
+					</div>
+				</div>
+			</div>
+			<div class="bottomFrame">
+				<div class="fan">
+				</div>
+				<a href="https://github.com/quinton-ashley/quintos">
+					<img class="logo" src="https://raw.githubusercontent.com/quinton-ashley/quintos/main/img/logo.png" />
+				</a>
+				<div class="powerButton">
+					<div class="powerIcon">
+					</div>
+				</div>
+				<div class="powerLight lightOff">
+				</div>
+			</div>
+		</div>
+	</div>
+	<div class="screenFoot"></div>
+	<div class="computer">
+		<div class="computerFrame">
+			<div class="computerFan1"></div>
+			<div class="computerFan2"></div>
+			<div class="screw1"></div>
+			<div class="screw2"></div>
+			<div class="computerFrame2">
+				<div class="floppy">
+					<div class="fingerGrip"></div>
+					<div class="slot"></div>
+				</div>
+				<div class="socket1"></div>
+				<div class="socket2"></div>
+			</div>
+			<div class="screw3"></div>
+			<div class="screw4"></div>
+			<div class="screw5"></div>
+			<div class="powerButton">
+				<div class="buttonSlide">
+					<div class="computerButton computerButtonOff"></div>
+				</div>
+				<div class="offIndicator"></div>
+				<div class="onIndicator"></div>
+			</div>
+			<div class="powerLight lightOff">
+			</div>
+		</div>
+	</div>
+</div>`,
+		c64: `
+<div id="pc">
+	<div id="case">
+		<div id="bezel">
+			<div id="tube" class="clear">
+				<div id="screen0" class="screen"></div>
+			</div>
+		</div>
+		<div id="bottom-panel">
+			<div id="badge">
+				<a id="logo" href="https://github.com/quinton-ashley/quintos">
+					<img class="logo" src="https://raw.githubusercontent.com/quinton-ashley/quintos/main/img/logo.png" />
+				</a>
+				<a id="brand" href="https://github.com/quinton-ashley/quintos">
+					<h1>QuintOS</h1>
+				</a>
+				<div id="refreshLbl">REFRESH</div>
+			</div>
+			<div id="ident">
+				<div>Created using</div>
+				<div><a href="https://github.com/quinton-ashley/quintos">QuintOS</a></div>
+			</div>
+			<div id="refresh"></div>
+			<div id="door"></div>
+			<div id="video"></div>
+			<div id="audio"></div>
+		</div>
+	</div>
+</div>`,
+		gameboi: `
+<div id="pc">
+<div id="container">
+	<div id="bitmapBG-container">
+		<div id="bitmapBG" style="--grid-size:20; --grid-columns:28; --grid-rows:20;"></div>
+		<div class="info-container">
+		<div id="screen0" class="screen"></div>
+		</div>
+		<div class="shine-container">
+			<div class="shine"></div>
+		</div>
+	</div>
+	<div id="bitmap-container">
+		<div id="bitmap" style="--grid-size:20; --grid-columns:28; --grid-rows:20;"></div>
+  </div>
+</div>
+</div>`,
+		arcv: `
+<div id="pc">
+	<div id="case">
+		<div id="bezel">
+			<div id="tube">
+				<div id="screen0" class="screen"></div>
+			</div>
+		</div>
+	</div>
+</div>`,
+		macin: `
+<div class="container">
+	<div class="mac">
+		<div class="monitor-frame">
+			<div class="monitor">
+				<div class="contain">
+					<div class="bg" id="bg">
+						<div class="menu">
+							<div class="click apple"><img ondragstart="return false;" src="https://raw.githubusercontent.com/quinton-ashley/quintos/main/img/favicon.png"/>
+								<div class="dropdown"><a href="#">
+										<p>About QuintOS...</p>
+										<li></li></a></div>
+							</div>
+							<div class="click">
+								<p>File</p>
+								<div class="dropdown"><a href="#">
+										<p>New Window</p>
+										<li>&#x2318;N</li></a><a href="#">
+										<p>Open File...</p>
+										<li>&#x2318;O</li></a><a href="#">
+										<p>Print</p>
+										<li>&#x2318;P</li></a><a href="#">
+										<p>Close Window</p>
+										<li>&#8679;&#x2318;W</li></a></div>
+							</div>
+							<div class="click">
+								<p>Edit</p>
+								<div class="dropdown"><a href="#">
+										<p>Undo</p>
+										<li>&#x2318;Z</li></a><a href="#">
+										<p>Redo</p>
+										<li>&#8679;&#x2318;Z</li></a><a href="#">
+										<p>Cut</p>
+										<li>&#x2318;X</li></a><a href="#">
+										<p>Copy</p>
+										<li>&#x2318;C</li></a><a href="#">
+										<p>Paste</p>
+										<li>&#x2318;V</li></a></div>
+							</div>
+							<div class="click">
+								<p>View</p>
+								<div class="dropdown"><a href="#">
+										<p>Bookmarks</p>
+										<li>&#x2318;B</li></a><a href="#">
+										<p>History</p>
+										<li>&#8679;&#x2318;H</li></a></div>
+							</div>
+							<div class="click">
+								<p>Special</p>
+								<div class="dropdown"><a href="#">
+										<p>Downloads</p>
+										<li>&#x2318;J</li></a><a href="#">
+										<p>Open Console</p>
+										<li>&#8679;&#x2318;I</li></a></div>
+							</div>
+							<div class="time">
+								<p></p>
+							</div>
+						</div>
+						<div class="desktop">
+							<div class="window">
+								<div class="bar title">
+									<h1>Netscape</h1>
+									<nav>
+										<ul>
+											<li class="close"></li>
+											<li class="maximize"></li>
+										</ul>
+									</nav>
+								</div>
+								<div class="bar info">
+									<ul>
+										<li>
+											<div class="emoji">⬅</div>
+											<p>Back</p>
+										</li>
+										<li>
+											<div class="emoji">➡</div>
+											<p>Forward</p>
+										</li>
+										<li>
+											<div class="emoji">🔄</div>
+											<p>Reload</p>
+										</li>
+										<li>
+											<div class="emoji">🏠</div>
+											<p>Home</p>
+										</li>
+										<li>
+											<div class="emoji">✉</div>
+											<p>Mail</p>
+										</li>
+										<li>
+											<div class="emoji">🖼</div>
+											<p>Images</p>
+										</li>
+										<li>
+											<div class="emoji">📂</div>
+											<p>Open</p>
+										</li>
+										<li>
+											<div class="emoji">🖨</div>
+											<p>Print</p>
+										</li>
+										<li>
+											<div class="emoji">🔍</div>
+											<p>Find</p>
+										</li>
+										<li>
+											<div class="emoji">🛑</div>
+											<p>Stop</p>
+										</li>
+									</ul>
+								</div>
+								<div class="bar links">
+									<ul>
+										<li>Welcome</li>
+										<li>What's New</li>
+										<li>What's Cool</li>
+										<li>Questions</li>
+										<li>Net Search</li>
+										<li>Net Directory</li>
+									</ul>
+								</div>
+								<iframe src="https://web.archive.org/web/19991128125537/http://www.geocities.com/Heartland/Bluffs/4157/hampdance.html"></iframe>
+								<div id="screen0" class="screen"></div>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+		<div class="floppy">
+			<div class="sec-1"></div>
+			<div class="sec-2"></div>
+		</div>
+		<div class="logo"><img src="https://raw.githubusercontent.com/quinton-ashley/quintos/main/img/logo.png" height="100%"/></div>
+	</div>
+</div>`
+	};
+
+	// `<figure class="icon trash click"><img src="https://dl.dropboxusercontent.com/s/c5w4rhgk2g34de7/icon_trash.png?dl=0" alt=""/>
+	// 	<figcaption>Trash</figcaption>
+	// </figure>
+	// <figure class="icon doc click"><img src="https://dl.dropboxusercontent.com/s/2xofo03j79asxsy/icon_doc.png?dl=0" alt=""/>
+	// 	<figcaption>Document</figcaption>
+	// </figure>
+	// <figure class="icon mail click"><img src="https://dl.dropboxusercontent.com/s/graxq4qm8larlia/icon_mail.png?dl=0" alt=""/>
+	// 	<figcaption>Mail</figcaption>
+	// </figure>`;
+
+	$('body').append(pages[QuintOS.sys]);
+	$('body').addClass(QuintOS.sys);
+
+	if (/(c64|arcv)/.test(QuintOS.sys)) {
+		$('main').css('display', 'none');
+	} else {
+		$('main').remove();
+	}
+
+	if (QuintOS.sys == 'calcu') {
+		$('#keys div p').click(function () {
+			let $this = $(this);
+			let key = $this.attr('name') || $this.text();
+			let count = 1;
+			if (key == 'Clear') {
+				count = 23;
+				key = 'Backspace';
+			}
+			if ('ABCDEFGHIJKLMNOPQRSTUVWXYZ'.includes(key)) {
+				key = key.toLowerCase();
+			}
+			for (let i = 0; i < count; i++) {
+				document.dispatchEvent(
+					new KeyboardEvent('keydown', {
+						key: key
+					})
+				);
+			}
+		});
+	} else if (QuintOS.sys == 'macin') {
+		setInterval(() => {
+			$('.time p').text(
+				new Date().toLocaleTimeString('en-US', {
+					hour12: false,
+					hour: 'numeric',
+					minute: 'numeric',
+					second: 'numeric'
+				})
+			);
+		}, 1000);
+		$('.window').draggable({
+			handle: '.title.bar'
+		});
+		$('.window').resizable();
+	}
+
+	$('canvas').removeAttr('style');
 	pixelDensity(1);
 
-	let screen = {
-		w: 40,
-		h: 25
-	};
-	if (QuintOS.level == 0) {
-		screen.w = 23;
-		screen.h = 2;
-	} else if (QuintOS.level == 1) {
-		screen.w = 55;
-		screen.h = 35;
-	} else if (QuintOS.level == 2) {
-		screen.w = 40;
-		screen.h = 24;
-	} else if (QuintOS.level == 3 || QuintOS.level == 4) {
-		screen.w = 80;
-		screen.h = 30;
-	} else if (QuintOS.level == 7) {
-		screen.w = 16;
-		screen.h = 2;
-	} else if (QuintOS.level == 8) {
-		screen.w = 28;
-		screen.h = 34;
-	}
-	window.pc = new PC(screen.w, screen.h, QuintOS.level);
+	window.pc = new PC();
 	window.prompt = async (msg) => {
 		return await pc.prompt(msg);
 	};
@@ -1966,36 +1915,25 @@ CopyLeft 1977`
 		]
 	};
 
-	async function loadGame(game) {
-		if (pc.level < 5 || pc.level == 7) {
-			await pc.eraseRect();
-		}
-		pc.loadGame(game);
-	}
-
 	async function displayBootscreen() {
-		console.log('QuintOS v' + pc.level + ' size: ' + pc.w + 'x' + pc.h);
+		console.log('QuintOS v' + QuintOS.level + ' size: ' + pc.w + 'x' + pc.h);
 
-		if (pc.level == 0 || pc.level == 7) {
+		if (QuintOS.sys == 'calcu') {
 			let txt0 = "'-.⎽⎽.-'⎺⎺".repeat(3);
-			for (let i = 0; i < 30 * (pc.level == 7 ? 0.5 : 1); i++) {
+			for (let i = 0; i < 30; i++) {
 				// pc.text(txt1.slice(0, 12), 0, 0, 0, 0, 12);
 				await pc.text(txt0.slice(0, 23), 0, 0, 0, 0, 23);
 				txt0 = txt0[txt0.length - 1] + txt0.slice(0, -1);
 				// txt1 = txt1.slice(1) + txt1[1];
 			}
-			await pc.eraseRect();
-		}
-
-		if (pc.level < 5 || pc.level == 7) {
+			return;
+		} else if (/(a2|gridc|zx)/.test(QuintOS.sys)) {
 			for (let el of bootScreen) {
 				let txt = el.txt.charAt(0) == '/n' ? el.txt.slice(1) : el.txt;
 				await pc.text(txt, el.x, el.y, 0, 0, el.speed);
 			}
-			if (pc.level == 7) await delay(500);
+			return;
 		}
-
-		if (pc.level < 5) return;
 
 		let waitForDraw = new Promise((resolve) => {
 			let wasDrawn = false;
@@ -2007,84 +1945,178 @@ CopyLeft 1977`
 			};
 		});
 
-		if (pc.level == 5 || pc.level == 8) {
-			const STR$ = (val) => String.fromCodePoint((9380 + val) >>> 0);
-			const RND = (range) => Math.random() * range;
+		const STR$ = (val) => String.fromCodePoint((9380 + val) >>> 0);
+		const RND = (range) => Math.random() * range;
 
-			async function makeMaze() {
-				for (let i = 0; i < pc.h; i++) {
-					let txt = '';
-					for (let j = 0; j < pc.w; j++) {
-						txt += STR$(205.5 + RND(1));
-					}
-					pc._textSync([txt], 0, i);
-					await delay();
+		async function makeMaze() {
+			for (let i = 0; i < pc.h; i++) {
+				let txt = '';
+				for (let j = 0; j < pc.w; j++) {
+					txt += STR$(205.5 + RND(1));
 				}
+				pc._textSync([txt], 0, i);
+				await delay();
 			}
-
-			await Promise.all([Promise.race([makeMaze(), delay(1000)]), waitForDraw]);
 		}
 
-		if (pc.level == 5 || pc.level >= 8) {
-			$('#tube').addClass('clear');
-			$('#tube').append($('main'));
-			$('main').css('display', 'block');
+		await Promise.all([Promise.race([makeMaze(), delay(1000)]), waitForDraw]);
 
-			if (pc.level == 8) {
-				resizeCanvas(320, 400);
-				frameRate(60);
-				camera.position.y = 160;
-				camera.position.y = 200;
-			} else {
-				camera.position.x = 160;
-				camera.position.y = 100;
-			}
-			strokeWeight(2);
-			$('canvas').removeAttr('style');
+		$('#tube').addClass('clear');
+		$('#tube').append($('main'));
+		$('main').css('display', 'block');
 
-			let logo = bootScreen[0];
-			await pc.text(logo.txt, logo.x, logo.y);
-
-			await delay(500);
-			await pc.eraseRect();
+		if (QuintOS.sys == 'arcv') {
+			resizeCanvas(320, 400);
+			camera.position.x = 160;
+			camera.position.y = 200;
+		} else {
+			camera.position.x = 160;
+			camera.position.y = 100;
 		}
+		strokeWeight(2);
+		$('canvas').removeAttr('style');
+
+		let logo = bootScreen[0];
+		await pc.text(logo.txt, logo.x, logo.y);
+
+		await delay(500);
 	}
 
-	let games = [
-		'GuessTheNumber',
-		'PickAPath',
-		'Hangman',
-		'QuickClicks',
-		'TicTacToe',
-		'Pong',
-		'SpeakAndSpell',
-		'Snake',
-		'Sokoban',
-		'WorldWideWeb'
-	];
+	let palettes = {
+		zx: [
+			{
+				0: '#000000', // bright 0 black
+				1: '#0000d8', // bright 0 blue
+				2: '#d80000', // bright 0 red
+				3: '#d800d8', // bright 0 magenta
+				4: '#00d800', // bright 0 green
+				5: '#00d8d8', // bright 0 cyan
+				6: '#d8d800', // bright 0 yellow
+				7: '#ffffff', // bright 0 white
+				8: '#000000', // bright 1 black
+				9: '#0000ff', // bright 1 blue
+				A: '#ff0000', // bright 1 red
+				B: '#ff00ff', // bright 1 magenta
+				C: '#00ff00', // bright 1 green
+				D: '#00ffff', // bright 1 cyan
+				E: '#ffff00', // bright 1 yellow
+				F: '#ffffff' // bright 1 white
+			}
+		],
+		c64: [
+			{
+				' ': '',
+				'.': '',
+				k: '#000000', // blacK
+				d: '#626252', // Dark-gray
+				m: '#898989', // Mid-gray
+				l: '#adadad', // Light-gray
+				w: '#ffffff', // White
+				c: '#cb7e75', // Coral
+				r: '#9f4e44', // Red
+				n: '#6d5412', // browN
+				o: '#a1683c', // Orange
+				y: '#c9d487', // Yellow
+				e: '#9ae29b', // light grEEn
+				g: '#5cab5e', // Green
+				t: '#6abfc6', // Teal
+				b: '#50459b', // Blue
+				i: '#887ecb', // Indigo
+				p: '#a057a3' // Purple
+			}
+		],
+		gameboi: [
+			{
+				0: '#0f380f',
+				1: '#306230',
+				2: '#8bac0f',
+				3: '#9bbc0f'
+			}
+			// {
+			// 	0: '#000000',
+			// 	1: '#555555',
+			// 	2: '#aaaaaa',
+			// 	3: '#ffffff'
+			// }
+		]
+	};
 
-	let game = games[pc.level];
+	/*#0f380f; #306230; #8bac0f; #9bbc0f; */
 
-	// deprecated
-	if (typeof QuintOS.gameSelect != 'undefined') {
-		game = QuintOS.gameSelect;
-	}
-	if (typeof QuintOS.gameTitle != 'undefined') {
-		game = QuintOS.gameTitle;
-	}
-	QuintOS.dir += '/' + game[0].toUpperCase() + game.slice(1);
+	// assign palettes to the system's palette
+	window.palettes = palettes[QuintOS.sys] || [];
 
-	pc.p5PlayMod();
-	if (QuintOS.level > 5 && !QuintOS?.preload) QuintOS.preload = true;
-	if (QuintOS.preload) pc.preloadData(game);
-	if (pc.level >= 2 && pc.level < 5) await pc.frame();
-	let bootScreen = bootScreens[game] || bootScreens[games[pc.level]];
+	let _createSprite = createSprite;
+
+	createSprite = (x, y, w, h) => {
+		let img;
+		if (typeof x == 'object') img = x;
+		x ??= width / 2;
+		y ??= height / 2;
+
+		let sprite = _createSprite(x, y, w, h);
+
+		if (img) sprite.addImage(img);
+
+		// prettier-ignore
+		Object.defineProperty(sprite, 'x', {
+				get: function () { return this.position.x },
+				set: function (x) { this.position.x = Math.round(x) }
+			});
+		// prettier-ignore
+		Object.defineProperty(sprite, 'y', {
+				get: function () { return this.position.y },
+				set: function (y) { this.position.y = Math.round(y) }
+			});
+		// prettier-ignore
+		Object.defineProperty(sprite, 'w', {
+				get: function () { return this.width },
+				set: function (w) { this.width = Math.round(w) }
+			});
+		// prettier-ignore
+		Object.defineProperty(sprite, 'h', {
+				get: function () { return this.height },
+				set: function (h) { this.height = Math.round(h) }
+			});
+
+		sprite.ani = function (name, start, end) {
+			return new Promise((resolve, reject) => {
+				this.changeAnimation(name);
+				if (start) this.animation.changeFrame(start);
+				if (end) this.animation.goToFrame(end);
+				this.animation.onComplete = () => {
+					resolve();
+				};
+			});
+		};
+
+		sprite.loadAni = function (name, atlas) {
+			let { size, pos, line, frames, delay } = atlas;
+			size ??= [this.w / this.scale, this.h / this.scale];
+			pos ??= line || 0;
+			this.addAnimation(name, loadAni(this.spriteSheet, size, pos, frames, delay));
+		};
+
+		return sprite;
+	};
+
+	let title = QuintOS.gameTitle;
+	QuintOS.dir += '/' + title[0].toUpperCase() + title.slice(1);
+
+	if (QuintOS.level >= 11 && !QuintOS?.preload) QuintOS.preload = true;
+	if (QuintOS.preload) pc.preloadData();
+
+	if (/(a2|gridc)/.test(QuintOS.sys)) await pc.frame();
+
+	let bootScreen = bootScreens[title];
 	await displayBootscreen();
-	if (pc.level == 0) await delay(1000);
-	if (pc.level == 2) await delay(500);
+	await pc.eraseRect();
 
-	if (pc.level >= 3 && pc.level < 5) {
-		// Add the Clock
+	if (QuintOS.sys == 'calcu') await delay(1000);
+	if (QuintOS.sys == 'a2') await delay(500);
+
+	if (QuintOS.sys == 'gridc') {
+		// add the clock
 		setInterval(() => {
 			let time = new Date($.now());
 			pc.text(Date.now(), 65, 29);
@@ -2096,7 +2128,14 @@ CopyLeft 1977`
 	// onerror = (msg, url, lineNum) => {
 	// 	pc.error(msg + ' ' + url + ':' + lineNum);
 	// };
-
-	p5.disableFriendlyErrors = true;
-	loadGame(game);
+	p5.disableFriendlyErrors = false;
+	pc.loadGame();
 }
+
+function setup() {
+	createCanvas(320, 200);
+	frameRate(60);
+	noStroke();
+}
+
+function draw() {}

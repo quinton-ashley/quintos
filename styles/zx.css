@@ -1,0 +1,23 @@
+body.zx {
+	color: #ddd;
+}
+
+.zx .screen {
+	font-family: C64, monospace;
+	font-size: 1.05em;
+}
+
+.zx tile {
+	height: 100%;
+}
+
+.zx .hovered {
+	color: black;
+	background-color: #eee;
+}
+
+.zx #screen0 {
+	margin-top: 50px;
+	height: 570px;
+	filter: drop-shadow(0 0 10px #eee);
+}
