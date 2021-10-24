@@ -1,0 +1,378 @@
+body.gridc {
+	background-color: #000;
+	color: #eee;
+}
+
+.gridc .screen {
+	font-family: VT323, Pixel7, monospace;
+	font-size: 1.13em;
+}
+
+.gridc .hovered,
+.gridc tile:hover {
+	color: black;
+	background-color: #eee;
+}
+
+.gridc #screen0 {
+	filter: drop-shadow(0 0 10px #eee);
+}
+
+.gridc #screen0,
+.gridc .hovered {
+	cursor: none;
+}
+
+.gridc #screen0 {
+	margin-top: 50px;
+	height: 570px;
+}
+
+.gridc .center {
+	position: absolute;
+	top: 0px;
+	left: 50%;
+	transform: translateX(-50%);
+}
+
+.gridc .screenBox {
+	position: relative;
+	width: 1080px;
+	height: 972px;
+	background-color: #e3e3e3;
+	border-radius: 1%;
+	left: 90px;
+}
+
+.gridc .frame {
+	position: absolute;
+	width: 1022.4px;
+	height: 914.4px;
+	background-color: #e3e3e3;
+	left: 21.6px;
+	top: 21.6px;
+	border: 7.2px #888888 solid;
+	border-radius: 1%;
+}
+
+.gridc .screenBox2 {
+	position: absolute;
+	width: 100%;
+	height: 770.4px;
+	background-color: #999999;
+	border-bottom: 7.2px #888888 solid;
+}
+
+.gridc .screenBox3 {
+	position: absolute;
+	left: 28.8px;
+	top: 28.8px;
+	width: 964.8px;
+	height: 712.8px;
+	background-color: #7a7a7a;
+	border-radius: 30%/2%;
+}
+
+.gridc .screenEffect {
+	background: repeating-linear-gradient(to bottom, #171717, #171717 3.6px, #121212 3.6px, #121212 7.2px);
+}
+
+.gridc .gridcScreen {
+	position: absolute;
+	left: 21.6px;
+	top: 21.6px;
+	width: 921.6px;
+	height: 669.6px;
+	background-color: #171717;
+	border-radius: 50%/8%;
+	cursor: text;
+}
+
+.gridc .gridcScreen {
+	background: radial-gradient(circle, rgba(23, 23, 23, 1) 20%, rgba(30, 30, 30, 1) 100%);
+}
+
+.gridc.lvl02 .gridcScreen {
+	background: radial-gradient(circle, rgba(23, 23, 23, 1) 20%, rgba(38, 59, 2, 1) 100%);
+}
+
+.gridc.lvl03 .gridcScreen,
+.gridc.lvl04 .gridcScreen {
+	background: radial-gradient(circle, rgba(23, 23, 23, 1) 20%, rgba(39, 24, 7, 1) 100%);
+}
+
+.gridc.lvl03 .frame,
+.gridc.lvl04 .frame {
+	background-color: #555;
+	border-color: #444;
+}
+
+.gridc.lvl03 .screenBox,
+.gridc.lvl03 .screenBox2,
+.gridc.lvl04 .screenBox,
+.gridc.lvl04 .screenBox2 {
+	background-color: #333;
+}
+
+.gridc.lvl03 .screenBox3,
+.gridc.lvl04 .screenBox3 {
+	background-color: #222;
+}
+
+.gridc .bottomFrame {
+	position: absolute;
+	background-color: #e3e3e3;
+	width: 100%;
+	height: 115.2px;
+	bottom: 0px;
+	border-top: 7.2px #888888 solid;
+}
+
+.gridc .fan {
+	position: absolute;
+	background: repeating-linear-gradient(to right, white, white 10.8px, #333333 10.8px, #333333 21.6px);
+	width: 259.2px;
+	height: 100%;
+}
+
+.gridc .logo {
+	position: absolute;
+	top: 0px;
+	left: 468px;
+	width: 115.2px;
+}
+
+.gridc .screenBox .powerButton {
+	position: absolute;
+	top: 18px;
+	left: 900px;
+	width: 72px;
+	height: 72px;
+	background-color: #999999;
+	border: 3.6px #7a7a7a solid;
+	cursor: pointer;
+}
+
+.gridc .powerIcon {
+	position: absolute;
+	border: 3.6px #555555 solid;
+	top: 16.2px;
+	left: 14.4px;
+	width: 36px;
+	height: 36px;
+	border-radius: 50%;
+}
+
+.gridc .screenBox .powerLight {
+	position: absolute;
+	width: 21.6px;
+	height: 21.6px;
+	top: 46.8px;
+	left: 828px;
+	border-radius: 50%;
+}
+
+.gridc .lightOn {
+	background-color: #1bcf60;
+	filter: drop-shadow(0 0 12px #1bcf60);
+}
+
+.gridc .lightOff {
+	background-color: #fa4646;
+	filter: drop-shadow(0 0 12px #fa4646);
+}
+
+.gridc .screenFoot {
+	position: relative;
+	width: 990px;
+	height: 54px;
+	left: 133.2px;
+	background-color: #7a7a7a;
+	box-shadow: inset 0px 36px 21.6px 0px #222222;
+}
+
+.gridc .computer {
+	position: relative;
+	width: 1260px;
+	height: 288px;
+	background-color: #e3e3e3;
+	border-radius: 10.8px;
+}
+
+.gridc .computerFrame {
+	position: absolute;
+	left: 21.6px;
+	top: 21.6px;
+	width: 1202.4px;
+	height: 230.4px;
+	border: 7.2px #888888 solid;
+	border-radius: 10.8px;
+}
+
+.gridc .computerFan1,
+.gridc .computerFan2 {
+	position: absolute;
+	background: repeating-linear-gradient(to right, white, white 10.8px, #333333 10.8px, #333333 21.6px);
+	height: 77.4px;
+	width: 288px;
+	top: 25.2px;
+	left: 18px;
+}
+
+.gridc .computerFan2 {
+	top: 127.8px;
+}
+
+.gridc div[class^='screw'] {
+	position: absolute;
+	width: 28.8px;
+	height: 28.8px;
+	background-color: #222222;
+	border-radius: 50%;
+}
+
+.gridc .screw1 {
+	left: 342px;
+	top: 43.2px;
+}
+
+.gridc .screw2 {
+	left: 342px;
+	top: 151.2px;
+}
+
+.gridc .computerFrame2 {
+	position: absolute;
+	width: 468px;
+	height: 165.6px;
+	background-color: #999999;
+	border: 7.2px #888888 solid;
+	left: 414px;
+	top: 25.2px;
+	border-radius: 10.8px;
+}
+
+.gridc .floppy {
+	position: absolute;
+	width: 446.4px;
+	height: 90px;
+	left: 10.8px;
+	top: 10.8px;
+	background-color: #222222;
+}
+
+.gridc .fingerGrip {
+	position: absolute;
+	width: 108px;
+	height: 82.8px;
+	background-color: #0d0d0d;
+	top: 3.6px;
+	left: 169.2px;
+	border-radius: 10.8px;
+}
+
+.gridc .slot {
+	position: absolute;
+	width: 95%;
+	height: 18px;
+	left: 2.5%;
+	top: 32.4px;
+	border-radius: 10.8px;
+	background-color: black;
+}
+
+.gridc div[class^='socket'] {
+	position: absolute;
+	width: 217.8px;
+	height: 43.2px;
+	background-color: black;
+}
+
+.gridc .socket1 {
+	top: 111.6px;
+	left: 10.8px;
+}
+
+.gridc .socket2 {
+	top: 111.6px;
+	left: 239.4px;
+}
+
+.gridc .screw3 {
+	left: 954px;
+	top: 43.2px;
+}
+
+.gridc .screw4 {
+	left: 1036.8px;
+	top: 43.2px;
+}
+
+.gridc .screw5 {
+	left: 1126.8px;
+	top: 43.2px;
+}
+
+.gridc .computer .powerButton {
+	position: absolute;
+	width: 126px;
+	height: 93.6px;
+	left: 954px;
+	background-color: #333333;
+	top: 108px;
+}
+
+.gridc .buttonSlide {
+	position: absolute;
+	width: 90%;
+	height: 43.2px;
+	left: 5%;
+	top: 7.2px;
+	background-color: #111111;
+	border-radius: 3.6px;
+}
+
+.gridc .computerButton {
+	position: absolute;
+	width: 45%;
+	height: 28.8px;
+	top: 7.2px;
+	background-color: #fa4646;
+	cursor: pointer;
+}
+
+.gridc .computerButtonOff {
+	left: 8%;
+}
+
+.gridc .computerButtonOn {
+	left: 48%;
+}
+
+.gridc .offIndicator {
+	position: absolute;
+	width: 14.4px;
+	height: 14.4px;
+	top: 57.6px;
+	left: 18px;
+	border-radius: 50%;
+	border: 3.6px white solid;
+}
+
+.gridc .onIndicator {
+	position: absolute;
+	width: 0px;
+	height: 21.6px;
+	top: 57.6px;
+	left: 100.8px;
+	border-right: 3.6px white solid;
+}
+
+.gridc .computer .powerLight {
+	position: absolute;
+	width: 21.6px;
+	height: 21.6px;
+	border-radius: 50%;
+	left: 1134px;
+	top: 136.8px;
+}

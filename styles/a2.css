@@ -7,21 +7,21 @@
 
 .a2 .screen {
 	font-family: Apple2, monospace;
-	font-size: 1.2vmin;
+	font-size: 0.8em;
 	width: 92%;
 }
 
 .a2 .hovered {
 	color: black;
-	background-color: #27f19d;
+	background-color: #1fda6c;
 }
 
 .a2 #screen0 {
-	filter: drop-shadow(0 0 10px #27f19d);
+	filter: drop-shadow(0 0 10px #1fda6c);
 }
 
 body.a2 {
-	color: #27f19d;
+	color: #1fda6c;
 }
 
 .a2 *,
@@ -47,7 +47,7 @@ body.a2 {
 	height: 100vh;
 	display: grid;
 	place-items: center;
-	transform: scale(1.6);
+	/* transform: scale(1.6); */
 }
 
 .a2 .bg {
@@ -86,8 +86,8 @@ body.a2 {
 	height: 100vmin;
 	perspective: 80vmin;
 	perspective-origin: 70% 40%;
-	left: -4vw;
-	top: 10vmin;
+	/* left: -4vw; */
+	/* top: 10vmin; */
 }
 .a2 /* .keys-container {
   --size: 3vmin;
@@ -700,7 +700,7 @@ body.a2 {
 	left: 7.95vmin;
 	width: 43.8vmin;
 	height: 27.75vmin;
-	background-color: #19171a;
+	background-color: #13130e;
 	border-radius: 10%/95%;
 	box-shadow: inset 0 0 10px #000000;
 }
@@ -711,7 +711,7 @@ body.a2 {
 	width: 40.05vmin;
 	height: 30.3vmin;
 	border-radius: 95%/10%;
-	background: radial-gradient(#344050 0%, #19171a 50%);
+	background: radial-gradient(#282a12 0%, #13130e 90%);
 }
 .a2 .monitor__screen-2:not(.bottom-shadow),
 .a2 .monitor__screen-2:not(.top-shadow) {

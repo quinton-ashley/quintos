@@ -3,8 +3,8 @@ let log = console.log; // log becomes a shortcut for console.log
 window.QuintOS = {
 	levels: [
 		/*00*/ ['GuessTheNumber', 'calcu'],
-		/*01*/ ['PickAPath', 'zx'], // TODO zx
-		/*02*/ ['Pong', 'c64'], // TODO arc
+		/*01*/ ['PickAPath', 'cpet'], // TODO zx
+		/*02*/ ['Pong', 'zx'], // TODO arc
 		/*03*/ ['Hangman', 'a2'],
 		/*04*/ ['QuickClicks', 'gridc'],
 		/*05*/ ['ClickAPath', 'gridc'],
@@ -31,8 +31,8 @@ class PC {
 			w = 23;
 			h = 2;
 		} else if (QuintOS.sys == 'zx') {
-			w = 55;
-			h = 35;
+			w = 32;
+			h = 24;
 		} else if (QuintOS.sys == 'a2') {
 			w = 40;
 			h = 24;
@@ -152,20 +152,34 @@ tile {
 	/* Display the text character at a position */
 	drawChar(x, y, char) {
 		// out of bounds check
-		if (x >= 0 && y >= 0 && x < this.w && y < this.h) {
-			if (QuintOS.sys == 'calcu' && y == 1 && x > 4) return;
-			this.rows[y].tiles[x].childNodes[0].nodeValue = char;
-		}
+		if (x < 0 || y < 0 || x >= this.w || y >= this.h) return;
+		if (QuintOS.sys == 'calcu' && y == 1 && x > 4) return;
+		this.rows[y].tiles[x].childNodes[0].nodeValue = char;
 	}
 
 	/* Get the value of a character */
 	charAt(x, y) {
 		if (x < 0 || y < 0 || x >= this.w || y >= this.h || (QuintOS.sys == 'calcu' && y == 1 && x > 4)) {
 			this.error(
-				`Out of bounds error! Could not retreive character at: ${x},${y}\nThe size of this screen is: ${this.w}x${this.h}`
+				`Out of bounds error! Could not retreive character at: ${x},${y}\nThe size of this screen is ${this.w}x${this.h} characters.`
 			);
 		}
 		return this.rows[y].tiles[x].childNodes[0].nodeValue;
+	}
+
+	_boundsCheck(x, y, w, h, type) {
+		type ??= 'object';
+		let x1 = x + w;
+		let y1 = y + h;
+		let b0 = x < 0 || y < 0 || x >= this.w || y >= this.h;
+		let b1 = x1 < 0 || y1 < 0 || x1 >= this.w || y1 >= this.h;
+		if (b0 || b1) {
+			console.error(
+				`ERROR: Out of bounds! Failed to create a ${type} at x: ${x} y: ${y} of width: ${w} and height: ${h}. The size of this screen is: ${this.w}x${this.h} characters.`
+			);
+			return false;
+		}
+		return true;
 	}
 
 	_textSync(lines, x, y) {
@@ -420,6 +434,7 @@ tile {
 	}
 
 	button(txt, x, y, action) {
+		// not the game title or username
 		if (y != 0) {
 			if (QuintOS.sys == 'zx') txt += '←';
 			if (QuintOS.sys == 'a2') txt = '<' + txt + '>';
@@ -439,6 +454,11 @@ tile {
 				}
 				this.w = w;
 				this.h = lines.length;
+
+				if (!_this._boundsCheck(this.x, this.y, this.w, this.h, 'button')) {
+					return;
+				}
+
 				this.action = action;
 				this.tiles = [];
 
@@ -1215,6 +1235,577 @@ async function preload() {
   </div>
 </div>
 </div>`,
+		zx: `
+<div class="container">
+  <div class="tv">
+    <div class="television-container">
+      <div class="television">
+        <div class="television-inner">
+          <div class="television-screen-container">
+            <div class="television-crt">
+              <div class="television-screen">
+                <div class="off"></div>
+                <div id="screen0" class="screen"></div>
+                <div class="noise"></div>
+              </div>
+            </div>
+          </div>
+          <div class="television-lateral">
+            <div class="dial-container">
+              <div class="dial channel-button" style="--value: 0deg">
+                <div class="data-container">
+                  <div class="data">#</div>
+                  <div class="data">#</div>
+                  <div class="data">#</div>
+                  <div class="data">#</div>
+                  <div class="data">#</div>
+                  <div class="data">#</div>
+                  <div class="data">#</div>
+                  <div class="data">#</div>
+                  <div class="data">#</div>
+                  <div class="data">#</div>
+                  <div class="data">#</div>
+                  <div class="data">#</div>
+                </div>
+                <div class="dial-core"></div>
+                <div class="selector"></div>
+              </div>
+              <div class="dial volume-button" style="--value: 0deg">
+                <div class="data-container">
+                  <div class="data">#</div>
+                  <div class="data">#</div>
+                  <div class="data">#</div>
+                  <div class="data">#</div>
+                  <div class="data">#</div>
+                  <div class="data">#</div>
+                  <div class="data">#</div>
+                  <div class="data">#</div>
+                  <div class="data">#</div>
+                  <div class="data">#</div>
+                  <div class="data">#</div>
+                  <div class="data">#</div>
+                </div>
+                <div class="dial-core"></div>
+                <div class="selector"></div>
+              </div>
+            </div>
+            <div class="speaker-container">
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
+            </div>
+          </div>
+          <div class="buttons">
+            <div class="button-container">
+              <div class="button"></div>
+            </div>
+            <div class="button-container">
+              <div class="button"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="television-base">
+        <div class="slots">
+          <div class="slot"></div>
+          <div class="slot"></div>
+          <div class="slot"></div>
+        </div>
+        <div class="slots">
+          <div class="slot"></div>
+          <div class="slot"></div>
+          <div class="slot"></div>
+          <div class="slot"></div>
+          <div class="slot"></div>
+          <div class="slot"></div>
+        </div>
+      </div>
+      <div class="foot-container">
+        <div class="foot left"></div>
+        <div class="foot right"></div>
+      </div>
+    </div>
+  </div>
+</div>
+<div class="zx-spectrum">
+
+  <div class="zx-spectrum-top">
+    <div class="logos">
+      <div class="sinclair-logo">QuintOS</div>
+      <div class="model-name">ZX Spectrum</div>
+    </div>
+  </div>
+
+  <div class="zx-spectrum-border top"></div>
+
+  <div class="zx-spectrum-keyboard">
+    <div class="keyboard-container">
+      <div class="keyboard-row keyboard-row-1">
+
+        <div class="key-container">
+          <div class="first label color-blue">BLUE</div>
+          <div class="second label">EDIT</div>
+          <div class="key">
+            <div class="primary">1</div>
+            <div class="secondary">
+              <div class="symbol symbol-1"></div>
+            </div>
+            <div class="tertiary">!</div>
+          </div>
+          <div class="last label">DEF FN</div>
+        </div>
+
+        <div class="key-container">
+          <div class="first label color-red">RED</div>
+          <div class="second label">CAPS LOCK</div>
+          <div class="key">
+            <div class="primary">2</div>
+            <div class="secondary">
+              <div class="symbol symbol-2"></div>
+            </div>
+            <div class="tertiary">@</div>
+          </div>
+          <div class="last label">FN</div>
+        </div>
+
+        <div class="key-container">
+          <div class="first label color-magenta">MAGENTA</div>
+          <div class="second label">TRUE VIDEO</div>
+          <div class="key">
+            <div class="primary">3</div>
+            <div class="secondary">
+              <div class="symbol symbol-3"></div>
+            </div>
+            <div class="tertiary">#</div>
+          </div>
+          <div class="last label">LINE</div>
+        </div>
+
+        <div class="key-container">
+          <div class="first label">GREEN</div>
+          <div class="second label">INV.VIDEO</div>
+          <div class="key">
+            <div class="primary">4</div>
+            <div class="secondary">
+              <div class="symbol symbol-4"></div>
+            </div>
+            <div class="tertiary">$</div>
+          </div>
+          <div class="last label">OPEN #</div>
+        </div>
+
+        <div class="key-container">
+          <div class="first label color-cyan">CYAN</div>
+          <div class="second label arrow">⇦</div>
+          <div class="key">
+            <div class="primary">5</div>
+            <div class="secondary">
+              <div class="symbol symbol-5"></div>
+            </div>
+            <div class="tertiary">%</div>
+          </div>
+          <div class="last label">CLOSE #</div>
+        </div>
+
+        <div class="key-container">
+          <div class="first label color-yellow">YELLOW</div>
+          <div class="second label arrow arrow-vertical">⇩</div>
+          <div class="key">
+            <div class="primary">6</div>
+            <div class="secondary">
+              <div class="symbol symbol-6"></div>
+            </div>
+            <div class="tertiary">&</div>
+          </div>
+          <div class="last label">MOVE</div>
+        </div>
+
+        <div class="key-container">
+          <div class="first label color-white">WHITE</div>
+          <div class="second label arrow arrow-vertical">⇧</div>
+          <div class="key">
+            <div class="primary">7</div>
+            <div class="secondary">
+              <div class="symbol symbol-7"></div>
+            </div>
+            <div class="tertiary">'</div>
+          </div>
+          <div class="last label">ERASE</div>
+        </div>
+
+        <div class="key-container">
+          <div class="first label arrow">⇨</div>
+          <div class="key">
+            <div class="primary">8</div>
+            <div class="secondary">
+              <div class="symbol symbol-8"></div>
+            </div>
+            <div class="tertiary">(</div>
+          </div>
+          <div class="last label">POINT</div>
+        </div>
+
+        <div class="key-container">
+          <div class="first label color-white">GRAPHICS</div>
+          <div class="key">
+            <div class="primary">9</div>
+            <div class="secondary"></div>
+            <div class="tertiary">)</div>
+          </div>
+          <div class="last label">CAT</div>
+        </div>
+
+        <div class="key-container">
+          <div class="first label inverted-color">BLACK</div>
+          <div class="second label">DELETE</div>
+          <div class="key">
+            <div class="primary">0</div>
+            <div class="secondary"></div>
+            <div class="tertiary">_</div>
+          </div>
+          <div class="last label">FORMAT</div>
+        </div>
+
+      </div>
+      <div class="keyboard-row keyboard-row-2">
+
+        <div class="key-container">
+          <div class="first label">SIN</div>
+          <div class="key">
+            <div class="primary">Q</div>
+            <div class="secondary">&lt;=</div>
+            <div class="tertiary">PLOT</div>
+          </div>
+          <div class="last label">ASN</div>
+        </div>
+
+        <div class="key-container">
+          <div class="first label">COS</div>
+          <div class="key">
+            <div class="primary">W</div>
+            <div class="secondary">&lt;&gt;</div>
+            <div class="tertiary">DRAW</div>
+          </div>
+          <div class="last label">ACS</div>
+        </div>
+
+        <div class="key-container">
+          <div class="first label">TAN</div>
+          <div class="key">
+            <div class="primary">E</div>
+            <div class="secondary">&gt;=</div>
+            <div class="tertiary">REM</div>
+          </div>
+          <div class="last label">ATN</div>
+        </div>
+
+        <div class="key-container">
+          <div class="first label">INT</div>
+          <div class="key">
+            <div class="primary">R</div>
+            <div class="secondary">&lt;</div>
+            <div class="tertiary">RUN</div>
+          </div>
+          <div class="last label">VERIFY</div>
+        </div>
+
+        <div class="key-container">
+          <div class="first label">RND</div>
+          <div class="key">
+            <div class="primary">T</div>
+            <div class="secondary">&lt;</div>
+            <div class="tertiary">RAND</div>
+          </div>
+          <div class="last label">MERGE</div>
+        </div>
+
+        <div class="key-container">
+          <div class="first label">STR $</div>
+          <div class="key">
+            <div class="primary">Y</div>
+            <div class="secondary">AND</div>
+            <div class="tertiary">RETURN</div>
+          </div>
+          <div class="last label">[</div>
+        </div>
+
+        <div class="key-container">
+          <div class="first label">CHR $</div>
+          <div class="key">
+            <div class="primary">U</div>
+            <div class="secondary">OR</div>
+            <div class="tertiary">IF</div>
+          </div>
+          <div class="last label">]</div>
+        </div>
+
+        <div class="key-container">
+          <div class="first label">CODE</div>
+          <div class="key">
+            <div class="primary">I</div>
+            <div class="secondary">AT</div>
+            <div class="tertiary">INPUT</div>
+          </div>
+          <div class="last label">IN</div>
+        </div>
+
+        <div class="key-container">
+          <div class="first label">PEEK</div>
+          <div class="key">
+            <div class="primary">O</div>
+            <div class="secondary big">;</div>
+            <div class="tertiary">POKE</div>
+          </div>
+          <div class="last label">OUT</div>
+        </div>
+
+        <div class="key-container">
+          <div class="first label">TAB</div>
+          <div class="key">
+            <div class="primary">P</div>
+            <div class="secondary big">"</div>
+            <div class="tertiary">PRINT</div>
+          </div>
+          <div class="last label">©</div>
+        </div>
+
+      </div>
+      <div class="keyboard-row keyboard-row-3">
+
+        <div class="key-container">
+          <div class="first label">READ</div>
+          <div class="key">
+            <div class="primary">A</div>
+            <div class="secondary">STOP</div>
+            <div class="tertiary">NEW</div>
+          </div>
+          <div class="last label big">~</div>
+        </div>
+
+        <div class="key-container">
+          <div class="first label">RESTORE</div>
+          <div class="key">
+            <div class="primary">S</div>
+            <div class="secondary">NOT</div>
+            <div class="tertiary">SAVE</div>
+          </div>
+          <div class="last label">|</div>
+        </div>
+
+        <div class="key-container">
+          <div class="first label">DATA</div>
+          <div class="key">
+            <div class="primary">D</div>
+            <div class="secondary">STEP</div>
+            <div class="tertiary">DIM</div>
+          </div>
+          <div class="last label">\</div>
+        </div>
+
+        <div class="key-container">
+          <div class="first label">SGN</div>
+          <div class="key">
+            <div class="primary">F</div>
+            <div class="secondary">TO</div>
+            <div class="tertiary">FOR</div>
+          </div>
+          <div class="last label">{</div>
+        </div>
+
+        <div class="key-container">
+          <div class="first label">ABS</div>
+          <div class="key">
+            <div class="primary">G</div>
+            <div class="secondary">THEN</div>
+            <div class="tertiary">GOTO</div>
+          </div>
+          <div class="last label">}</div>
+        </div>
+
+        <div class="key-container">
+          <div class="first label">SQR</div>
+          <div class="key">
+            <div class="primary">H</div>
+            <div class="secondary big">↑</div>
+            <div class="tertiary">GOSUB</div>
+          </div>
+          <div class="last label">CIRCLE</div>
+        </div>
+
+        <div class="key-container">
+          <div class="first label">VAL</div>
+          <div class="key">
+            <div class="primary">J</div>
+            <div class="secondary big">-</div>
+            <div class="tertiary">LOAD</div>
+          </div>
+          <div class="last label">VAL $</div>
+        </div>
+
+        <div class="key-container">
+          <div class="first label">LEN</div>
+          <div class="key">
+            <div class="primary">K</div>
+            <div class="secondary big">+</div>
+            <div class="tertiary">LIST</div>
+          </div>
+          <div class="last label">SCREEN $</div>
+        </div>
+
+        <div class="key-container">
+          <div class="first label">USR</div>
+          <div class="key">
+            <div class="primary">L</div>
+            <div class="secondary big">=</div>
+            <div class="tertiary">LET</div>
+          </div>
+          <div class="last label">ATTR</div>
+        </div>
+
+        <div class="key-container">
+          <div class="without-label key">ENTER</div>
+        </div>
+
+      </div>
+      <div class="keyboard-row keyboard-row-4">
+
+        <div class="key-container">
+          <div class="key double without-label large">
+            <span>CAPS</span>
+            <span>SHIFT</span>
+          </div>
+        </div>
+
+        <div class="key-container">
+          <div class="first label">LN</div>
+          <div class="key">
+            <div class="primary">Z</div>
+            <div class="secondary big">:</div>
+            <div class="tertiary">COPY</div>
+          </div>
+          <div class="last label">BLEEP</div>
+        </div>
+
+        <div class="key-container">
+          <div class="first label">EXP</div>
+          <div class="key">
+            <div class="primary">X</div>
+            <div class="secondary big">£</div>
+            <div class="tertiary">CLEAR</div>
+          </div>
+          <div class="last label">INK</div>
+        </div>
+
+        <div class="key-container">
+          <div class="first label">L PRINT</div>
+          <div class="key">
+            <div class="primary">C</div>
+            <div class="secondary big">?</div>
+            <div class="tertiary">CONT</div>
+          </div>
+          <div class="last label">PAPER</div>
+        </div>
+
+        <div class="key-container">
+          <div class="first label">L LIST</div>
+          <div class="key">
+            <div class="primary">V</div>
+            <div class="secondary big">/</div>
+            <div class="tertiary">CLS</div>
+          </div>
+          <div class="last label">FLASH</div>
+        </div>
+
+        <div class="key-container">
+          <div class="first label">BIN</div>
+          <div class="key">
+            <div class="primary">B</div>
+            <div class="secondary big">*</div>
+            <div class="tertiary">BORDER</div>
+          </div>
+          <div class="last label">BRIGHT</div>
+        </div>
+
+        <div class="key-container">
+          <div class="first label">IN KEY $</div>
+          <div class="key">
+            <div class="primary">N</div>
+            <div class="secondary big">,</div>
+            <div class="tertiary">NEXT</div>
+          </div>
+          <div class="last label">OVER</div>
+        </div>
+
+        <div class="key-container">
+          <div class="first label">PI</div>
+          <div class="key">
+            <div class="primary">M</div>
+            <div class="secondary big">.</div>
+            <div class="tertiary">PAUSE</div>
+          </div>
+          <div class="last label">INVERSE</div>
+        </div>
+
+        <div class="key-container">
+          <div class="key double without-label">
+            <span class="color-red">SYMBOL</span>
+            <span class="color-red">SHIFT</span>
+          </div>
+        </div>
+
+        <div class="key-container">
+          <div class="key double without-label large-xl">
+            <span>BREAK</span>
+            <span class="big">SPACE</span>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <div class="zx-spectrum-border bottom"></div>
+
+</div>`,
 		a2: `
 <div class="bg">
 	<div class="🖥️">
@@ -1555,7 +2146,7 @@ async function preload() {
 	$('body').append(pages[QuintOS.sys]);
 	$('body').addClass(QuintOS.sys);
 
-	if (/(c64|arcv)/.test(QuintOS.sys)) {
+	if (QuintOS.sys != 'calcu') {
 		$('main').css('display', 'none');
 	} else {
 		$('main').remove();
@@ -1815,42 +2406,6 @@ Copyleft © 1983 QUiNT Systems Corp`
 		],
 		Pong: [
 			{
-				name: 'boot',
-				txt: `
-  **** QUINTOS 05 JAVASCRIPT ES12 ****
-
-  64GB RAM SYSTEM 38911 GIGABYTES FREE
-
-READY.
-10 PRINT CHR$(205.5+RND(1)); : GOTO 10
-  RUN\n`.slice(1)
-			},
-			{
-				name: 'logo',
-				x: 12,
-				y: 9,
-				speed: 2,
-				txt: `
-┏━━┓ ┏┓ ┏┓┏━┳━━┓
-┃┏┓┣┳╋╋━┫┗┫┃┃━━┫
-┃┗┛┃┃┃┃┃┃┏┫┃┣━━┃
-┗━┓┣━┻┻┻┻━┻━┻━━┛
-  ┗┛`
-			}
-		],
-		SketchBook: [
-			{
-				name: 'boot',
-				txt: `
-  **** QUINTOS 05 JAVASCRIPT ES12 ****
-
-  64GB RAM SYSTEM 38911 GIGABYTES FREE
-
-READY.
-10 PRINT CHR$(205.5+RND(1)); : GOTO 10
-  RUN\n`.slice(1)
-			},
-			{
 				name: 'h1',
 				x: 6,
 				y: 3,
@@ -1880,6 +2435,31 @@ READY.
 JavaScript READY
 QuintOS version 0.1
 CopyLeft 1977`
+			}
+		],
+		SketchBook: [
+			{
+				name: 'boot',
+				txt: `
+  **** QUINTOS 05 JAVASCRIPT ES12 ****
+
+  64GB RAM SYSTEM 38911 GIGABYTES FREE
+
+READY.
+10 PRINT CHR$(205.5+RND(1)); : GOTO 10
+  RUN\n`.slice(1)
+			},
+			{
+				name: 'logo',
+				x: 12,
+				y: 9,
+				speed: 2,
+				txt: `
+┏━━┓ ┏┓ ┏┓┏━┳━━┓
+┃┏┓┣┳╋╋━┫┗┫┃┃━━┫
+┃┗┛┃┃┃┃┃┃┏┫┃┣━━┃
+┗━┓┣━┻┻┻┻━┻━┻━━┛
+  ┗┛`
 			}
 		],
 		Snake: [
@@ -1914,6 +2494,8 @@ CopyLeft 1977`
 			}
 		]
 	};
+
+	bootScreens.WheelOfFortune = bootScreens.Hangman;
 
 	async function displayBootscreen() {
 		console.log('QuintOS v' + QuintOS.level + ' size: ' + pc.w + 'x' + pc.h);
@@ -1961,18 +2543,18 @@ CopyLeft 1977`
 
 		await Promise.all([Promise.race([makeMaze(), delay(1000)]), waitForDraw]);
 
-		$('#tube').addClass('clear');
-		$('#tube').append($('main'));
+		// $('#screen0').parent().addClass('clear');
+		$('#screen0').parent().append($('main'));
 		$('main').css('display', 'block');
 
+		if (QuintOS.sys == 'zx') {
+			resizeCanvas(128, 192);
+		}
 		if (QuintOS.sys == 'arcv') {
 			resizeCanvas(320, 400);
-			camera.position.x = 160;
-			camera.position.y = 200;
-		} else {
-			camera.position.x = 160;
-			camera.position.y = 100;
 		}
+		camera.position.x = width / 2;
+		camera.position.y = height / 2;
 		strokeWeight(2);
 		$('canvas').removeAttr('style');
 

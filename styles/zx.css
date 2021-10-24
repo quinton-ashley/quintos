@@ -1,9 +1,12 @@
 body.zx {
 	color: #ddd;
+	margin: 0;
+	background: #ff1313;
+	background-image: radial-gradient(#333, #000);
 }
 
 .zx .screen {
-	font-family: C64, monospace;
+	font-family: zx_spectrum-7, monospace;
 	font-size: 1.05em;
 }
 
@@ -17,7 +20,1147 @@ body.zx {
 }
 
 .zx #screen0 {
-	margin-top: 50px;
-	height: 570px;
 	filter: drop-shadow(0 0 10px #eee);
+}
+
+@font-face {
+	font-family: 'Heading Pro';
+	src: url(https://manzdev.github.io/twitch-television/fonts/heading-pro.woff) format('woff');
+	font-display: swap;
+}
+
+:root {
+	--television-width: 86vw;
+	--television-height: 84vw;
+	--television-bgcolor: #b71a11;
+	--television-bgcolor-dark: #88110b;
+	--antenna-gradient: linear-gradient(to top, #444 10%, #999 25% 40%, #444 70%, #2224 90%);
+	--spectrum-width: 76vw;
+	--spectrum-height: 49.5vw;
+	--spectrum-bgcolor: #353539;
+}
+
+.container {
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	margin-top: 1vw;
+}
+
+.tv {
+	width: var(--television-width);
+	height: var(--television-height);
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+}
+
+.tv .television-container {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	z-index: 1;
+}
+
+.tv .television-container .television {
+	width: 85vw;
+	height: 60vw;
+	border-radius: 7vw / 9vw;
+	box-shadow: 0.4vw 0.4vw 1vw #0004, 0.4vw -0.4vw 0.4vw darkred inset, 0.4vw 0.31vw 0.31vw #fff inset,
+		0 0 0.6vw 1vw #0002;
+	background: var(--television-bgcolor);
+	background: linear-gradient(var(--television-bgcolor), var(--television-bgcolor-dark));
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	z-index: 2;
+}
+
+.tv .television-container .television .television-inner {
+	width: 93%;
+	height: 90%;
+	background: linear-gradient(to bottom, #454c45 5%, #232522 35% 45%);
+	border-bottom: 0.31vw solid #fff;
+	box-shadow: 0 0.31vw 0.4vw #470404 inset;
+	border-radius: 5vw / 5vw;
+	position: relative;
+	display: grid;
+	grid-template-columns: 3fr 1fr;
+	grid-template-rows: 0.8fr;
+	align-content: center;
+	gap: 0.6vw;
+}
+
+.tv .television-container .television .television-inner .television-screen-container {
+	border: 0.31vw solid #222;
+	box-shadow: 0 0.4vw 0.4vw #888, 0.4vw 0 0.4vw #444, -0.4vw 0 0.4vw #444, 0 -0.4vw 0.4vw #111;
+	border-radius: 3vw;
+	margin: 2vw;
+	overflow: hidden;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	background: linear-gradient(70deg, #555 15%, transparent 30%),
+		repeating-conic-gradient(#222 0 30deg, #333 60deg, #222 90deg);
+}
+
+.tv .television-container .television .television-inner .television-screen-container .television-crt {
+	width: 95%;
+	height: 95%;
+	background: #111;
+	box-shadow: 0 0 1vw 0.4vw #111, 0 0 2vw 0.4vw #1112;
+	border-radius: 4vw 4vw 4vw 4vw / 5vw 5vw 5vw 5vw;
+	overflow: hidden;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+}
+
+.tv
+	.television-container
+	.television
+	.television-inner
+	.television-screen-container
+	.television-crt
+	.television-screen {
+	background: #302d30;
+	width: 100%;
+	height: 100%;
+	border-radius: 2vw;
+	box-shadow: 0 0 1vw 0.4vw #111 inset;
+	overflow: hidden;
+	position: relative;
+}
+
+.tv
+	.television-container
+	.television
+	.television-inner
+	.television-screen-container
+	.television-crt
+	.television-screen
+	.noise {
+	width: 100%;
+	height: 100%;
+	background: linear-gradient(to bottom, transparent, #aaa4, #8881, #6664, #4445, #2228, #4443, transparent),
+		repeating-linear-gradient(transparent 0 0.4vw, #25242950 0.4vw 4px);
+	-webkit-animation: moveBand 8s linear infinite;
+	animation: moveBand 8s linear infinite;
+	z-index: 4;
+	position: relative;
+}
+
+.tv
+	.television-container
+	.television
+	.television-inner
+	.television-screen-container
+	.television-crt
+	.television-screen
+	.off {
+	width: 100%;
+	height: 100%;
+	background: radial-gradient(#222, #1a1a1a, #111);
+	z-index: 5;
+	position: absolute;
+	top: 0;
+}
+
+.tv
+	.television-container
+	.television
+	.television-inner
+	.television-screen-container
+	.television-crt
+	.television-screen
+	.logo-container {
+	position: absolute;
+	z-index: 0;
+	width: 100%;
+	height: 100%;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+}
+
+.tv
+	.television-container
+	.television
+	.television-inner
+	.television-screen-container
+	.television-crt
+	.television-screen
+	.logo-container
+	.logo {
+	background: #f34b59;
+	width: 9vw;
+	height: 6.4vw;
+	border-radius: 1.6vw;
+	margin-right: 1vw;
+	display: grid;
+	place-items: center;
+}
+
+.tv
+	.television-container
+	.television
+	.television-inner
+	.television-screen-container
+	.television-crt
+	.television-screen
+	.logo-container
+	.logo
+	.play {
+	width: 3vw;
+	height: 3vw;
+	background: #fff;
+	-webkit-clip-path: polygon(0 0, 100% 50%, 0 100%);
+	clip-path: polygon(0 0, 100% 50%, 0 100%);
+}
+
+.tv
+	.television-container
+	.television
+	.television-inner
+	.television-screen-container
+	.television-crt
+	.television-screen
+	.logo-container
+	.text {
+	font-family: 'Heading Pro', sans-serif;
+	font-size: 8.4vw;
+	color: white;
+	letter-spacing: -0.31vw;
+}
+
+.tv .television-container .television .television-inner .television-lateral {
+	display: grid;
+	grid-template-rows: 1.1fr 1fr;
+	gap: 2.4vw;
+	margin: 3vw;
+	margin-left: 0;
+}
+
+.tv .television-container .television .television-inner .television-lateral .dial-container {
+	border: 0.4vw solid #333;
+	border-left: 0.31vw solid #444;
+	border-bottom: 0.4vw solid #444;
+	border-radius: 1vw;
+	box-shadow: -0.4vw 0.4vw 1.2vw #111 inset, -0.31vw 0.4vw 0.6vw #aaa;
+	display: flex;
+	flex-direction: column;
+	justify-content: center;
+	gap: 1.2vw;
+	align-items: center;
+}
+
+.tv .television-container .television .television-inner .television-lateral .dial-container .dial {
+	width: 8.4vw;
+	height: 8.4vw;
+	border: 0.4vw solid #6e706f;
+	border-radius: 50%;
+	box-shadow: -0.8vw 0.4vw 0.8vw #111, 0 0 0.31vw 0.4vw #000;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	position: relative;
+	cursor: -webkit-grab;
+	cursor: grab;
+}
+
+.tv .television-container .television .television-inner .television-lateral .dial-container .dial .data-container {
+	display: flex;
+	justify-content: center;
+	width: 100%;
+	height: 100%;
+}
+
+.tv
+	.television-container
+	.television
+	.television-inner
+	.television-lateral
+	.dial-container
+	.dial
+	.data-container
+	.data {
+	color: #888;
+	font-size: 1.2vw;
+	text-shadow: 0 0 0.4vw #888;
+	position: absolute;
+	top: 0;
+	height: 100%;
+	transform-origin: 50% 50%;
+}
+
+.tv
+	.television-container
+	.television
+	.television-inner
+	.television-lateral
+	.dial-container
+	.dial
+	.data-container
+	.data:nth-child(2) {
+	transform: rotate(30deg);
+}
+
+.tv
+	.television-container
+	.television
+	.television-inner
+	.television-lateral
+	.dial-container
+	.dial
+	.data-container
+	.data:nth-child(3) {
+	transform: rotate(60deg);
+}
+
+.tv
+	.television-container
+	.television
+	.television-inner
+	.television-lateral
+	.dial-container
+	.dial
+	.data-container
+	.data:nth-child(4) {
+	transform: rotate(90deg);
+}
+
+.tv
+	.television-container
+	.television
+	.television-inner
+	.television-lateral
+	.dial-container
+	.dial
+	.data-container
+	.data:nth-child(5) {
+	transform: rotate(120deg);
+}
+
+.tv
+	.television-container
+	.television
+	.television-inner
+	.television-lateral
+	.dial-container
+	.dial
+	.data-container
+	.data:nth-child(6) {
+	transform: rotate(150deg);
+}
+
+.tv
+	.television-container
+	.television
+	.television-inner
+	.television-lateral
+	.dial-container
+	.dial
+	.data-container
+	.data:nth-child(7) {
+	transform: rotate(180deg);
+}
+
+.tv
+	.television-container
+	.television
+	.television-inner
+	.television-lateral
+	.dial-container
+	.dial
+	.data-container
+	.data:nth-child(8) {
+	transform: rotate(210deg);
+}
+
+.tv
+	.television-container
+	.television
+	.television-inner
+	.television-lateral
+	.dial-container
+	.dial
+	.data-container
+	.data:nth-child(9) {
+	transform: rotate(240deg);
+}
+
+.tv
+	.television-container
+	.television
+	.television-inner
+	.television-lateral
+	.dial-container
+	.dial
+	.data-container
+	.data:nth-child(10) {
+	transform: rotate(270deg);
+}
+
+.tv
+	.television-container
+	.television
+	.television-inner
+	.television-lateral
+	.dial-container
+	.dial
+	.data-container
+	.data:nth-child(11) {
+	transform: rotate(300deg);
+}
+
+.tv
+	.television-container
+	.television
+	.television-inner
+	.television-lateral
+	.dial-container
+	.dial
+	.data-container
+	.data:nth-child(12) {
+	transform: rotate(330deg);
+}
+
+.tv .television-container .television .television-inner .television-lateral .dial-container .dial .dial-core {
+	width: 5.6vw;
+	height: 5.6vw;
+	border-radius: 50%;
+	background: conic-gradient(#eee 0deg 45deg, #666 70deg 285deg, #eee 320deg);
+	position: absolute;
+}
+
+.tv .television-container .television .television-inner .television-lateral .dial-container .dial .selector {
+	position: absolute;
+	width: 75%;
+	background: linear-gradient(#666 30%, #aaa 40%);
+	height: 0.8vw;
+	border: 0.31vw solid #666;
+	border-radius: 0.8vw / 1.6vw;
+	transform: rotate(calc(var(--value) - 90deg));
+	transition: transform 0.25s linear;
+}
+
+.tv .television-container .television .television-inner .television-lateral .dial-container .dial.channel-button {
+	background: #000;
+}
+
+.tv .television-container .television .television-inner .television-lateral .dial-container .dial.volume-button {
+	background: #ccc;
+}
+
+.tv .television-container .television .television-inner .television-lateral .dial-container .dial.volume-button .data {
+	color: #444;
+}
+
+.tv .television-container .television .television-inner .television-lateral .speaker-container {
+	display: grid;
+	grid-template-columns: repeat(6, 1fr);
+	gap: 0.31vw 0;
+	margin-bottom: 2.4vw;
+	margin-left: 0.4vw;
+	margin-right: 0.4vw;
+}
+
+.tv .television-container .television .television-inner .television-lateral .speaker-container div {
+	width: 2vw;
+	height: 2vw;
+	background: radial-gradient(#000, #222);
+	border-radius: 50%;
+	border-bottom: 0.31vw solid #fff;
+}
+
+.tv .television-container .television .television-inner .buttons {
+	position: absolute;
+	bottom: 1vw;
+	right: 6vw;
+	width: 12vw;
+	display: flex;
+	justify-content: space-between;
+}
+
+.tv .television-container .television .television-inner .buttons .button-container {
+	width: 4vw;
+	height: 4vw;
+	background: linear-gradient(to bottom, #fff 40%, #aaa 50% 55%, #666 70%);
+	border-radius: 50%;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+}
+
+.tv .television-container .television .television-inner .buttons .button-container .button {
+	width: 2vw;
+	height: 2vw;
+	border-radius: 50%;
+	background: linear-gradient(to top, #fff 40%, #aaa 50% 55%, #666 70%);
+	box-shadow: -0.31vw -0.31vw 0.31vw 0.4vw #000;
+	transform: translate(0.4vw, 1px);
+	transition: transform 0.1s, box-shadow 0.1s;
+	cursor: pointer;
+}
+
+.tv .television-container .television .television-inner .buttons .button-container .button:active {
+	transform: translate(0, 0);
+	box-shadow: 0 0 0.31vw 0.4vw #000;
+}
+
+.tv .television-container .television-base {
+	width: 70vw;
+	height: 5vw;
+	background: linear-gradient(var(--television-bgcolor), var(--television-bgcolor-dark));
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+	box-shadow: 0 1.6vw 0.8vw #0009;
+}
+
+.tv .television-container .television-base::before,
+.tv .television-container .television-base::after {
+	content: '';
+	display: block;
+	width: 1.6vw;
+	height: 100%;
+	background-color: var(--television-bgcolor);
+	background-image: linear-gradient(var(--television-bgcolor), var(--television-bgcolor-dark));
+	transform: translateX(var(--x)) skewX(var(--skew-x));
+}
+
+.tv .television-container .television-base::before {
+	--skew-x: 10deg;
+	--x: -0.4vw;
+}
+
+.tv .television-container .television-base::after {
+	--skew-x: -10deg;
+	--x: 0.4vw;
+}
+
+.tv .television-container .television-base .slots {
+	width: 50%;
+	height: 3vw;
+	display: flex;
+	justify-content: center;
+}
+
+.tv .television-container .television-base .slots .slot {
+	width: 0.8vw;
+	height: 100%;
+	background: #0b0000;
+	margin-left: 0.6vw;
+	border-radius: 0.4vw / 0.31vw;
+}
+
+.tv .television-container .foot-container {
+	width: 70%;
+	display: flex;
+	justify-content: space-between;
+}
+
+.tv .television-container .foot-container .foot {
+	width: 4vw;
+	height: 2vw;
+	background: var(--television-bgcolor);
+}
+
+.tv .television-container .foot-container .foot.left {
+	box-shadow: 0.8vw 0 #850101;
+}
+
+.tv .television-container .foot-container .foot.right {
+	box-shadow: -0.8vw 0 #850101;
+}
+
+/* Animation */
+
+.tv .off {
+	transition: opacity 0.5s;
+	opacity: 1;
+}
+
+.tv:not(.on) .off {
+	opacity: 0;
+}
+
+@-webkit-keyframes moveBand {
+	0% {
+		background-position-y: 0, 0;
+	}
+	100% {
+		background-position-y: -44.2vw, -30vw;
+	}
+}
+
+@keyframes moveBand {
+	0% {
+		background-position-y: 0, 0;
+	}
+	100% {
+		background-position-y: -44.2vw, -30vw;
+	}
+}
+
+.created {
+	background: url(https://assets.codepen.io/154065/internal/avatars/users/default.png),
+		linear-gradient(to bottom, #884ced, #ec1cce);
+	background-size: 15vw 15vw, cover;
+	background-repeat: no-repeat;
+	position: absolute;
+	top: 0;
+	right: 0;
+	width: 50vw;
+	height: 15vw;
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	padding-left: 2em;
+}
+
+.created span,
+.created h2,
+.created p,
+.created a {
+	font-family: Montserrat;
+	margin: 0;
+}
+
+.created a,
+.created p,
+.created span {
+	color: #fff;
+}
+
+.created h2 {
+	font-weight: 700;
+	transform: translate(0, -4px);
+}
+
+.created a {
+	-webkit-text-decoration-color: rgba(255, 255, 255, 0.4);
+	text-decoration-color: rgba(255, 255, 255, 0.4);
+}
+
+.created a:hover {
+	color: #e6e82a;
+}
+
+/******************************** SPECTRUM *********************/
+
+@font-face {
+	font-family: 'Sinclair logo';
+	src: url('https://manzdev.github.io/twitch-zx-spectrum/fonts/sinclair-logo.woff2') format('woff2'),
+		url('https://manzdev.github.io/twitch-zx-spectrum/fonts/sinclair-logo.woff') format('woff');
+	font-display: swap;
+}
+
+@font-face {
+	font-family: 'Technoid';
+	src: url('https://manzdev.github.io/twitch-zx-spectrum/fonts/technoid.woff2') format('woff2'),
+		url('https://manzdev.github.io/twitch-zx-spectrum/fonts/technoid.woff') format('woff');
+	font-display: swap;
+}
+
+@font-face {
+	font-family: 'Alte Haas Grotesk';
+	src: url('https://manzdev.github.io/twitch-zx-spectrum/fonts/alte-haas-grotesk-bold.woff2') format('woff2'),
+		url('https://manzdev.github.io/twitch-zx-spectrum/fonts/alte-haas-grotesk-bold.woff') format('woff');
+	font-display: swap;
+}
+
+@font-face {
+	font-family: 'PLZ';
+	src: url('https://manzdev.github.io/twitch-zx-spectrum/fonts/plz.woff2') format('woff2'),
+		url('https://manzdev.github.io/twitch-zx-spectrum/fonts/plz.woff') format('woff');
+	font-display: swap;
+}
+
+.zx-spectrum {
+	width: var(--spectrum-width);
+	height: 95%;
+	margin: 3em auto;
+	background: var(--spectrum-bgcolor);
+	border-top: 0.31vw solid #3e3e41;
+	border-radius: 2.5vw 2.5vw 0.5vw 0.5vw;
+	overflow: hidden;
+	position: relative;
+	box-shadow: -1vw 1vw 2vw #0008;
+}
+
+.zx-spectrum .zx-spectrum-top {
+	height: 17vw;
+	background: linear-gradient(to right, #1f1f21 0, #4d4b50 1%, #323136 2.5% 97%, #4d4b50cc 99%, #1f1f21 100%);
+	position: relative;
+}
+
+.zx-spectrum .zx-spectrum-top .logos {
+	padding-left: 3vw;
+}
+
+.zx-spectrum .zx-spectrum-top .sinclair-logo {
+	padding-top: 0.5vw;
+	font-family: 'Sinclair logo';
+	font-size: 9vw;
+	letter-spacing: 0.31vw;
+	color: #3b3a3f;
+	text-shadow: 0 -0.31vw 0.31vw #6c6b6d, 0.31vw 0.31vw 0.31vw #161617;
+	line-height: 50%;
+}
+
+.zx-spectrum .zx-spectrum-top .model-name {
+	font-family: Montserrat, sans-serif;
+	font-size: 2.2vw;
+	margin-top: 1.4vw;
+	text-shadow: 0.31vw 0.31vw 0 #111;
+	color: #fff;
+}
+
+.zx-spectrum .zx-spectrum-top::after {
+	content: '';
+	display: block;
+	background: #272729;
+	background: linear-gradient(to right, #1f1f21 0, #2e2e2f 1%, #272729 2.5% 97%, #2e2e2f 99%, #1f1f21 100%);
+	width: 100%;
+	height: 4vw;
+	position: absolute;
+	bottom: 0;
+	border-radius: 2.5vw 2.5vw 0 0;
+}
+
+.zx-spectrum .zx-spectrum-border {
+	width: 100%;
+	height: 1vw;
+	background: linear-gradient(to bottom, #38373c, #2e2e32, #252427);
+}
+
+.zx-spectrum .zx-spectrum-border.top {
+	border-radius: 2.5vw 2.5vw 0 0;
+	height: 3vw;
+	background: linear-gradient(to bottom, #38373c 2%, #2e2e32 13%, #252427 25%);
+	transform: translateY(-18px);
+}
+
+.zx-spectrum .zx-spectrum-border.top::after,
+.zx-spectrum .zx-spectrum-border.top::before {
+	content: '';
+	display: block;
+	width: 2vw;
+	height: 3vw;
+	position: absolute;
+	right: 0;
+	top: 0;
+	border-radius: 0 2.5vw 0 0;
+	background: radial-gradient(ellipse 7vw 5vw at -0.8vw 2.4vw, #252427 33%, #2e2e32 40%, #38373c 65%);
+}
+
+.zx-spectrum .zx-spectrum-border.top::before {
+	background: radial-gradient(ellipse 5vw 5vw at 2vw 2.5vw, #252427 36%, #2e2e32 40%, #38373c 50%);
+	border-radius: 2.5vw 0 0 0;
+	right: auto;
+	left: 0;
+}
+
+.zx-spectrum .zx-spectrum-border.bottom {
+	height: 1.5vw;
+	transform: scaleY(0.6) translateY(5px);
+	border-radius: 0.31vw 0.31vw 0.31vw 0.31vw;
+	position: absolute;
+	bottom: 0;
+	background: linear-gradient(to bottom, #fff3 0.31vw, transparent 0.4vw 1.2vw, #0006 12px),
+		linear-gradient(to right, #4d4b50 0.5%, #2c2b2f 1% 99.5%, #1f1f21 100%);
+	box-shadow: 0 -0.31vw 0.4vw #0006;
+}
+
+.zx-spectrum .zx-spectrum-keyboard {
+	height: 33vw;
+	border-radius: 2.5vw 2.5vw 0.5vw 0.5vw;
+	background: #272729;
+	background: linear-gradient(to right, transparent 96%, #0002 98%, #fff2 99%),
+		linear-gradient(
+			113deg,
+			transparent 0 71.5vw,
+			#ea5a48 71.6vw 72.7vw,
+			#e0c92b 72.8vw 73.8vw,
+			#66ae43 73.8vw 75vw,
+			#70b9e6 75vw 76.2vw,
+			transparent 762px
+		),
+		linear-gradient(to right, #1f1f21 0, #4d4b50 1%, #323136 2.5% 97%, #4d4b50cc 99%, #1f1f21 100%);
+	transform: translateY(-40px);
+	display: flex;
+	justify-content: center;
+	align-items: flex-start;
+}
+
+.zx-spectrum .zx-spectrum-keyboard .keyboard-container {
+	width: 69.4vw;
+	height: 29vw;
+	margin-top: 0.8vw;
+}
+
+.zx-spectrum .zx-spectrum-keyboard .keyboard-container > .keyboard-row {
+	width: 100%;
+	display: flex;
+	align-items: flex-end;
+	gap: 0 1.8vw;
+}
+
+.zx-spectrum .zx-spectrum-keyboard .keyboard-container .keyboard-row-1 {
+	height: 8vw;
+}
+
+.zx-spectrum .zx-spectrum-keyboard .keyboard-container .keyboard-row-1 .key {
+	display: grid;
+	grid-template-areas: 'pri sec' 'pri ter';
+}
+
+.zx-spectrum .zx-spectrum-keyboard .keyboard-container .keyboard-row-1 .key .primary {
+	grid-area: pri;
+}
+
+.zx-spectrum .zx-spectrum-keyboard .keyboard-container .keyboard-row-1 .key .secondary {
+	grid-area: sec;
+}
+
+.zx-spectrum .zx-spectrum-keyboard .keyboard-container .keyboard-row-1 .key .tertiary {
+	grid-area: ter;
+}
+
+.zx-spectrum .zx-spectrum-keyboard .keyboard-container .keyboard-row-2 {
+	height: 7vw;
+	transform: translateX(30px);
+}
+
+.zx-spectrum
+	.zx-spectrum-keyboard
+	.keyboard-container
+	.keyboard-row-2
+	.key-container:is(:nth-child(1), :nth-child(2), :nth-child(3))
+	.secondary {
+	letter-spacing: 0.31vw;
+}
+
+.zx-spectrum
+	.zx-spectrum-keyboard
+	.keyboard-container
+	.keyboard-row-2
+	.key-container:is(:nth-child(1), :nth-child(2), :nth-child(3), :nth-child(4), :nth-child(5))
+	.secondary {
+	font-size: 1.2vw;
+}
+
+.zx-spectrum .zx-spectrum-keyboard .keyboard-container .keyboard-row-2 .key {
+	display: grid;
+	grid-template-rows: 2.2vw 1vw;
+	grid-template-areas: 'pri sec' 'ter ter';
+}
+
+.zx-spectrum .zx-spectrum-keyboard .keyboard-container .keyboard-row-2 .key .primary {
+	grid-area: pri;
+}
+
+.zx-spectrum .zx-spectrum-keyboard .keyboard-container .keyboard-row-2 .key .secondary {
+	grid-area: sec;
+	font-family: Montserrat;
+	font-size: 1vw;
+	text-shadow: 0 0.31vw 0.31vw #0008;
+	color: #cf574b;
+}
+
+.zx-spectrum .zx-spectrum-keyboard .keyboard-container .keyboard-row-2 .key .secondary.big {
+	font-size: 1.4vw;
+}
+
+.zx-spectrum .zx-spectrum-keyboard .keyboard-container .keyboard-row-2 .key .tertiary {
+	grid-area: ter;
+	color: #fff;
+	justify-content: flex-end;
+	margin-right: 0.5vw;
+}
+
+.zx-spectrum .zx-spectrum-keyboard .keyboard-container .keyboard-row-3 {
+	height: 7vw;
+	transform: translateX(49px);
+}
+
+.zx-spectrum .zx-spectrum-keyboard .keyboard-container .keyboard-row-3 .key {
+	display: grid;
+	grid-template-rows: 2.2vw 1vw;
+	grid-template-areas: 'pri sec' 'ter ter';
+}
+
+.zx-spectrum .zx-spectrum-keyboard .keyboard-container .keyboard-row-3 .key .primary {
+	grid-area: pri;
+}
+
+.zx-spectrum .zx-spectrum-keyboard .keyboard-container .keyboard-row-3 .key .secondary {
+	grid-area: sec;
+	font-family: Montserrat;
+	font-size: 0.8vw;
+	text-shadow: 0 0.31vw 0.31vw #0008;
+	color: #cf574b;
+}
+
+.zx-spectrum .zx-spectrum-keyboard .keyboard-container .keyboard-row-3 .key .secondary.big {
+	font-size: 1.2vw;
+}
+
+.zx-spectrum .zx-spectrum-keyboard .keyboard-container .keyboard-row-3 .key .tertiary {
+	grid-area: ter;
+	color: #fff;
+	justify-content: flex-end;
+	margin-right: 0.5vw;
+}
+
+.zx-spectrum .zx-spectrum-keyboard .keyboard-container .keyboard-row-3 .last.label.big {
+	transform: rotate(25deg) translate(2vw, 8px) scale(1.8);
+}
+
+.zx-spectrum .zx-spectrum-keyboard .keyboard-container .keyboard-row-4 {
+	height: 7vw;
+}
+
+.zx-spectrum .zx-spectrum-keyboard .keyboard-container .keyboard-row-4 .key {
+	display: grid;
+	grid-template-rows: 2.2vw 1vw;
+	grid-template-areas: 'pri sec' 'ter ter';
+}
+
+.zx-spectrum .zx-spectrum-keyboard .keyboard-container .keyboard-row-4 .key .primary {
+	grid-area: pri;
+}
+
+.zx-spectrum .zx-spectrum-keyboard .keyboard-container .keyboard-row-4 .key .secondary {
+	grid-area: sec;
+	font-family: Montserrat;
+	font-size: 0.8vw;
+	text-shadow: 0 0.31vw 0.31vw #0008;
+	color: #cf574b;
+}
+
+.zx-spectrum .zx-spectrum-keyboard .keyboard-container .keyboard-row-4 .key .secondary.big {
+	font-size: 1.2vw;
+}
+
+.zx-spectrum .zx-spectrum-keyboard .keyboard-container .keyboard-row-4 .key .tertiary {
+	grid-area: ter;
+	color: #fff;
+	justify-content: flex-end;
+	margin-right: 0.5vw;
+}
+
+.zx-spectrum .zx-spectrum-keyboard .key-container .label {
+	font-family: Montserrat, sans-serif;
+	font-size: 0.9vw;
+}
+
+.zx-spectrum .zx-spectrum-keyboard .key-container .label.arrow {
+	font-size: 1.6vw;
+	color: white;
+	line-height: 70%;
+	transform: translateY(-3px);
+}
+
+.zx-spectrum .zx-spectrum-keyboard .key-container .label.arrow.arrow-vertical {
+	transform: scaleY(0.6) translateY(-4px);
+}
+
+.zx-spectrum .zx-spectrum-keyboard .key-container .color-red {
+	color: #cf574b;
+}
+
+.zx-spectrum .zx-spectrum-keyboard .key-container .first {
+	color: #6d8326;
+}
+
+.zx-spectrum .zx-spectrum-keyboard .key-container .first.color-blue {
+	color: #607cbf;
+}
+
+.zx-spectrum .zx-spectrum-keyboard .key-container .first.color-red {
+	color: #cf574b;
+}
+
+.zx-spectrum .zx-spectrum-keyboard .key-container .first.color-magenta {
+	color: #983d6a;
+}
+
+.zx-spectrum .zx-spectrum-keyboard .key-container .first.color-green {
+	color: #6d8326;
+}
+
+.zx-spectrum .zx-spectrum-keyboard .key-container .first.color-cyan {
+	color: #1aa8de;
+}
+
+.zx-spectrum .zx-spectrum-keyboard .key-container .first.color-yellow {
+	color: #ffcf4f;
+}
+
+.zx-spectrum .zx-spectrum-keyboard .key-container .first.color-white {
+	color: #fff;
+}
+
+.zx-spectrum .zx-spectrum-keyboard .key-container .first.inverted-color {
+	color: #353438;
+	background: #fff;
+	display: inline-block;
+	padding: 0 0.5vw;
+	border-radius: 0.31vw;
+}
+
+.zx-spectrum .zx-spectrum-keyboard .key-container .second {
+	color: #fff;
+}
+
+.zx-spectrum .zx-spectrum-keyboard .key-container .key {
+	width: 4.8vw;
+	height: 3.5vw;
+	margin-top: 0.31vw;
+	margin-bottom: 0.4vw;
+	background: #535c61;
+	border-radius: 0.5vw;
+	box-shadow: 0 0.31vw 0.31vw #7f878d inset, 0 -0.31vw 0.31vw #202224 inset, -0.31vw 0 0.31vw #676d73 inset,
+		0.31vw 0 0.31vw #646b71 inset, 0 0 0.31vw 0.31vw #100f1055, 0 0.31vw 0.31vw 0.5vw #100f1033, 0 0.31vw 0.31vw #111;
+	-webkit-user-select: none;
+	-moz-user-select: none;
+	-ms-user-select: none;
+	user-select: none;
+}
+
+.zx-spectrum .zx-spectrum-keyboard .key-container .key .primary {
+	font-family: 'PLZ', serif;
+	font-size: 2.2vw;
+	color: #fff;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	text-shadow: 0 0 0.4vw #0004;
+	transform: translateY(3px);
+}
+
+.zx-spectrum .zx-spectrum-keyboard .key-container .key .secondary {
+	display: flex;
+	justify-content: center;
+	align-items: center;
+}
+
+.zx-spectrum .zx-spectrum-keyboard .key-container .key .tertiary {
+	font-family: Montserrat, sans-serif;
+	font-size: 0.9vw;
+	color: #cf574b;
+	text-shadow: 0 0.31vw 0.31vw #0007;
+	display: flex;
+	justify-content: center;
+	align-items: flex-start;
+}
+
+.zx-spectrum .zx-spectrum-keyboard .key-container .key.without-label {
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	font-family: Montserrat, sans-serif;
+	font-size: 1vw;
+	color: #fff;
+}
+
+.zx-spectrum .zx-spectrum-keyboard .key-container .key.double {
+	display: flex;
+	flex-direction: column;
+}
+
+.zx-spectrum .zx-spectrum-keyboard .key-container .key.double .big {
+	font-size: 1.4vw;
+}
+
+.zx-spectrum .zx-spectrum-keyboard .key-container .key.large {
+	width: 6.5vw;
+}
+
+.zx-spectrum .zx-spectrum-keyboard .key-container .key.large-xl {
+	width: 8vw;
+}
+
+.zx-spectrum .zx-spectrum-keyboard .key-container .without-label {
+	transform: translateY(-11px);
+}
+
+.zx-spectrum .zx-spectrum-keyboard .key-container .last {
+	color: #cf574b;
+}
+
+.symbol {
+	width: 0.8vw;
+	height: 0.8vw;
+	border: 0.31vw solid #fff;
+	border-radius: 0.31vw;
+}
+
+.symbol-1 {
+	background: linear-gradient(to right, #fff 50%, transparent 50%),
+		linear-gradient(to bottom, transparent 50%, #fff 50%);
+}
+
+.symbol-2 {
+	background: linear-gradient(to right, transparent 50%, #fff 50%),
+		linear-gradient(to bottom, transparent 50%, #fff 50%);
+}
+
+.symbol-3 {
+	background: linear-gradient(to bottom, transparent 50%, #fff 50%);
+}
+
+.symbol-4 {
+	background: linear-gradient(to right, #fff 50%, transparent 50%),
+		linear-gradient(to bottom, #fff 50%, transparent 50%);
+}
+
+.symbol-5 {
+	background: linear-gradient(to right, #fff 50%, transparent 50%);
+}
+
+.symbol-6 {
+	position: relative;
+}
+
+.symbol-6::before {
+	content: '';
+	display: block;
+	width: 50%;
+	height: 50%;
+	background: #fff;
+	position: absolute;
+	right: 0;
+}
+
+.symbol-6::after {
+	content: '';
+	display: block;
+	width: 50%;
+	height: 50%;
+	background: #fff;
+	position: absolute;
+	left: 0;
+	bottom: 0;
+}
+
+.symbol-7 {
+	position: relative;
+}
+
+.symbol-7::after {
+	content: '';
+	display: block;
+	width: 50%;
+	height: 50%;
+	background: #fff;
+	position: absolute;
+	left: 0;
+	bottom: 0;
+}
+
+.symbol-8 {
+	background: #fff;
 }

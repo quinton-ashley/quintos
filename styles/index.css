@@ -35,6 +35,16 @@ canvas {
 }
 
 @font-face {
+	font-family: Commodore_PET;
+	src: url('../fonts/Commodore_PET.ttf');
+}
+
+@font-face {
+	font-family: zx_spectrum-7;
+	src: url('../fonts/zx_spectrum-7.ttf');
+}
+
+@font-face {
 	font-family: C64;
 	src: url('../fonts/C64_Pro_Mono-STYLE.woff2');
 }
