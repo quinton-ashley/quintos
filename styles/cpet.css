@@ -1,378 +1,379 @@
-body.gridc {
+body.cpet {
 	background-color: #000;
 	color: #eee;
 }
 
-.gridc .screen {
-	font-family: VT323, Pixel7, monospace;
-	font-size: 1.13em;
+.cpet .screen {
+	font-family: C64, monospace;
+	font-size: 1.2em;
 }
 
-.gridc .hovered,
-.gridc tile:hover {
+.cpet .hovered,
+.cpet tile:hover {
 	color: black;
 	background-color: #eee;
 }
 
-.gridc #screen0 {
+.cpet #screen0 {
 	filter: drop-shadow(0 0 10px #eee);
 }
 
-.gridc #screen0,
-.gridc .hovered {
+.cpet #screen0,
+.cpet .hovered {
 	cursor: none;
 }
 
-.gridc #screen0 {
-	margin-top: 50px;
-	height: 570px;
+.cpet #screen0 {
+	margin-top: 1vw;
+	height: 51.82vw;
 }
 
-.gridc .center {
+.cpet .center {
 	position: absolute;
-	top: 0px;
+	top: 0.31vw;
 	left: 50%;
 	transform: translateX(-50%);
 }
 
-.gridc .screenBox {
+.cpet .screenBox {
 	position: relative;
-	width: 1080px;
-	height: 972px;
+	width: 98.18vw;
+	height: 76.3vw;
 	background-color: #e3e3e3;
 	border-radius: 1%;
-	left: 90px;
+	left: 8.18vw;
 }
 
-.gridc .frame {
+.cpet .frame {
 	position: absolute;
-	width: 1022.4px;
-	height: 914.4px;
+	width: 92.95vw;
+	height: 71vw;
 	background-color: #e3e3e3;
-	left: 21.6px;
-	top: 21.6px;
-	border: 7.2px #888888 solid;
+	left: 1.96vw;
+	top: 1.96vw;
+	border: 0.65vw #888888 solid;
 	border-radius: 1%;
 }
 
-.gridc .screenBox2 {
+.cpet .screenBox2 {
 	position: absolute;
 	width: 100%;
-	height: 770.4px;
+	height: 70.04vw;
 	background-color: #999999;
-	border-bottom: 7.2px #888888 solid;
+	border-bottom: 0.65vw #888888 solid;
 }
 
-.gridc .screenBox3 {
+.cpet .screenBox3 {
 	position: absolute;
-	left: 28.8px;
-	top: 28.8px;
-	width: 964.8px;
-	height: 712.8px;
+	left: 2.62vw;
+	top: 2.62vw;
+	width: 87.71vw;
+	height: 54.5vw;
 	background-color: #7a7a7a;
 	border-radius: 30%/2%;
+	background-color: #211;
 }
 
-.gridc .screenEffect {
-	background: repeating-linear-gradient(to bottom, #171717, #171717 3.6px, #121212 3.6px, #121212 7.2px);
+.cpet .screenEffect {
+	background: repeating-linear-gradient(to bottom, #171717, #171717 0.33vw, #121212 0.33vw, #121212 7.2px);
 }
 
-.gridc .gridcScreen {
+.cpet .cpetScreen {
 	position: absolute;
-	left: 21.6px;
-	top: 21.6px;
-	width: 921.6px;
-	height: 669.6px;
+	left: 1.96vw;
+	top: 1.96vw;
+	width: 83.78vw;
+	height: 60.87vw;
 	background-color: #171717;
 	border-radius: 50%/8%;
 	cursor: text;
 }
 
-.gridc .gridcScreen {
+.cpet .cpetScreen {
 	background: radial-gradient(circle, rgba(23, 23, 23, 1) 20%, rgba(30, 30, 30, 1) 100%);
 }
 
-.gridc.lvl02 .gridcScreen {
+.cpet.lvl02 .cpetScreen {
 	background: radial-gradient(circle, rgba(23, 23, 23, 1) 20%, rgba(38, 59, 2, 1) 100%);
 }
 
-.gridc.lvl03 .gridcScreen,
-.gridc.lvl04 .gridcScreen {
+.cpet.lvl03 .cpetScreen,
+.cpet.lvl04 .cpetScreen {
 	background: radial-gradient(circle, rgba(23, 23, 23, 1) 20%, rgba(39, 24, 7, 1) 100%);
 }
 
-.gridc.lvl03 .frame,
-.gridc.lvl04 .frame {
+.cpet.lvl03 .frame,
+.cpet.lvl04 .frame {
 	background-color: #555;
 	border-color: #444;
 }
 
-.gridc.lvl03 .screenBox,
-.gridc.lvl03 .screenBox2,
-.gridc.lvl04 .screenBox,
-.gridc.lvl04 .screenBox2 {
+.cpet.lvl03 .screenBox,
+.cpet.lvl03 .screenBox2,
+.cpet.lvl04 .screenBox,
+.cpet.lvl04 .screenBox2 {
 	background-color: #333;
 }
 
-.gridc.lvl03 .screenBox3,
-.gridc.lvl04 .screenBox3 {
+.cpet.lvl03 .screenBox3,
+.cpet.lvl04 .screenBox3 {
 	background-color: #222;
 }
 
-.gridc .bottomFrame {
+.cpet .bottomFrame {
 	position: absolute;
 	background-color: #e3e3e3;
 	width: 100%;
-	height: 115.2px;
-	bottom: 0px;
-	border-top: 7.2px #888888 solid;
+	height: 10.47vw;
+	bottom: 0.31vw;
+	border-top: 0.65vw #888888 solid;
 }
 
-.gridc .fan {
+.cpet .fan {
 	position: absolute;
-	background: repeating-linear-gradient(to right, white, white 10.8px, #333333 10.8px, #333333 21.6px);
-	width: 259.2px;
+	background: repeating-linear-gradient(to right, white, white 0.98vw, #333333 0.98vw, #333333 21.6px);
+	width: 23.56vw;
 	height: 100%;
 }
 
-.gridc .logo {
+.cpet .logo {
 	position: absolute;
-	top: 0px;
-	left: 468px;
-	width: 115.2px;
+	top: 0.31vw;
+	left: 42.55vw;
+	width: 10.47vw;
 }
 
-.gridc .screenBox .powerButton {
+.cpet .screenBox .powerButton {
 	position: absolute;
-	top: 18px;
-	left: 900px;
-	width: 72px;
-	height: 72px;
+	top: 1.64vw;
+	left: 81.82vw;
+	width: 6.55vw;
+	height: 6.55vw;
 	background-color: #999999;
-	border: 3.6px #7a7a7a solid;
+	border: 0.33vw #7a7a7a solid;
 	cursor: pointer;
 }
 
-.gridc .powerIcon {
+.cpet .powerIcon {
 	position: absolute;
-	border: 3.6px #555555 solid;
-	top: 16.2px;
-	left: 14.4px;
-	width: 36px;
-	height: 36px;
+	border: 0.33vw #555555 solid;
+	top: 1.47vw;
+	left: 1.31vw;
+	width: 3.27vw;
+	height: 3.27vw;
 	border-radius: 50%;
 }
 
-.gridc .screenBox .powerLight {
+.cpet .screenBox .powerLight {
 	position: absolute;
-	width: 21.6px;
-	height: 21.6px;
-	top: 46.8px;
-	left: 828px;
+	width: 1.96vw;
+	height: 1.96vw;
+	top: 4.25vw;
+	left: 75.27vw;
 	border-radius: 50%;
 }
 
-.gridc .lightOn {
+.cpet .lightOn {
 	background-color: #1bcf60;
-	filter: drop-shadow(0 0 12px #1bcf60);
+	filter: drop-shadow(0 0 1.09vw #1bcf60);
 }
 
-.gridc .lightOff {
+.cpet .lightOff {
 	background-color: #fa4646;
-	filter: drop-shadow(0 0 12px #fa4646);
+	filter: drop-shadow(0 0 1.09vw #fa4646);
 }
 
-.gridc .screenFoot {
+.cpet .screenFoot {
 	position: relative;
-	width: 990px;
-	height: 54px;
-	left: 133.2px;
+	width: 90vw;
+	height: 4.91vw;
+	left: 12.11vw;
 	background-color: #7a7a7a;
-	box-shadow: inset 0px 36px 21.6px 0px #222222;
+	box-shadow: inset 0.31vw 3.27vw 1.96vw 0.31vw #222222;
 }
 
-.gridc .computer {
+.cpet .computer {
 	position: relative;
-	width: 1260px;
-	height: 288px;
+	width: 114.55vw;
+	height: 26.18vw;
 	background-color: #e3e3e3;
-	border-radius: 10.8px;
+	border-radius: 0.98vw;
 }
 
-.gridc .computerFrame {
+.cpet .computerFrame {
 	position: absolute;
-	left: 21.6px;
-	top: 21.6px;
-	width: 1202.4px;
-	height: 230.4px;
-	border: 7.2px #888888 solid;
-	border-radius: 10.8px;
+	left: 1.96vw;
+	top: 1.96vw;
+	width: 109.31vw;
+	height: 20.95vw;
+	border: 0.65vw #888888 solid;
+	border-radius: 0.98vw;
 }
 
-.gridc .computerFan1,
-.gridc .computerFan2 {
+.cpet .computerFan1,
+.cpet .computerFan2 {
 	position: absolute;
-	background: repeating-linear-gradient(to right, white, white 10.8px, #333333 10.8px, #333333 21.6px);
-	height: 77.4px;
-	width: 288px;
-	top: 25.2px;
-	left: 18px;
+	background: repeating-linear-gradient(to right, white, white 0.98vw, #333333 0.98vw, #333333 21.6px);
+	height: 7.04vw;
+	width: 26.18vw;
+	top: 2.29vw;
+	left: 1.64vw;
 }
 
-.gridc .computerFan2 {
-	top: 127.8px;
+.cpet .computerFan2 {
+	top: 11.62vw;
 }
 
-.gridc div[class^='screw'] {
+.cpet div[class^='screw'] {
 	position: absolute;
-	width: 28.8px;
-	height: 28.8px;
+	width: 2.62vw;
+	height: 2.62vw;
 	background-color: #222222;
 	border-radius: 50%;
 }
 
-.gridc .screw1 {
-	left: 342px;
-	top: 43.2px;
+.cpet .screw1 {
+	left: 31.09vw;
+	top: 3.93vw;
 }
 
-.gridc .screw2 {
-	left: 342px;
-	top: 151.2px;
+.cpet .screw2 {
+	left: 31.09vw;
+	top: 13.75vw;
 }
 
-.gridc .computerFrame2 {
+.cpet .computerFrame2 {
 	position: absolute;
-	width: 468px;
-	height: 165.6px;
+	width: 42.55vw;
+	height: 15.05vw;
 	background-color: #999999;
-	border: 7.2px #888888 solid;
-	left: 414px;
-	top: 25.2px;
-	border-radius: 10.8px;
+	border: 0.65vw #888888 solid;
+	left: 37.64vw;
+	top: 2.29vw;
+	border-radius: 0.98vw;
 }
 
-.gridc .floppy {
+.cpet .floppy {
 	position: absolute;
-	width: 446.4px;
-	height: 90px;
-	left: 10.8px;
-	top: 10.8px;
+	width: 40.58vw;
+	height: 8.18vw;
+	left: 0.98vw;
+	top: 0.98vw;
 	background-color: #222222;
 }
 
-.gridc .fingerGrip {
+.cpet .fingerGrip {
 	position: absolute;
-	width: 108px;
-	height: 82.8px;
+	width: 9.82vw;
+	height: 7.53vw;
 	background-color: #0d0d0d;
-	top: 3.6px;
-	left: 169.2px;
-	border-radius: 10.8px;
+	top: 0.33vw;
+	left: 15.38vw;
+	border-radius: 0.98vw;
 }
 
-.gridc .slot {
+.cpet .slot {
 	position: absolute;
 	width: 95%;
-	height: 18px;
+	height: 1.64vw;
 	left: 2.5%;
-	top: 32.4px;
-	border-radius: 10.8px;
+	top: 2.95vw;
+	border-radius: 0.98vw;
 	background-color: black;
 }
 
-.gridc div[class^='socket'] {
+.cpet div[class^='socket'] {
 	position: absolute;
-	width: 217.8px;
-	height: 43.2px;
+	width: 19.8vw;
+	height: 3.93vw;
 	background-color: black;
 }
 
-.gridc .socket1 {
-	top: 111.6px;
-	left: 10.8px;
+.cpet .socket1 {
+	top: 10.15vw;
+	left: 0.98vw;
 }
 
-.gridc .socket2 {
-	top: 111.6px;
-	left: 239.4px;
+.cpet .socket2 {
+	top: 10.15vw;
+	left: 21.76vw;
 }
 
-.gridc .screw3 {
-	left: 954px;
-	top: 43.2px;
+.cpet .screw3 {
+	left: 86.73vw;
+	top: 3.93vw;
 }
 
-.gridc .screw4 {
-	left: 1036.8px;
-	top: 43.2px;
+.cpet .screw4 {
+	left: 94.25vw;
+	top: 3.93vw;
 }
 
-.gridc .screw5 {
-	left: 1126.8px;
-	top: 43.2px;
+.cpet .screw5 {
+	left: 102.44vw;
+	top: 3.93vw;
 }
 
-.gridc .computer .powerButton {
+.cpet .computer .powerButton {
 	position: absolute;
-	width: 126px;
-	height: 93.6px;
-	left: 954px;
+	width: 11.45vw;
+	height: 8.51vw;
+	left: 86.73vw;
 	background-color: #333333;
-	top: 108px;
+	top: 9.82vw;
 }
 
-.gridc .buttonSlide {
+.cpet .buttonSlide {
 	position: absolute;
 	width: 90%;
-	height: 43.2px;
+	height: 3.93vw;
 	left: 5%;
-	top: 7.2px;
+	top: 0.65vw;
 	background-color: #111111;
-	border-radius: 3.6px;
+	border-radius: 0.33vw;
 }
 
-.gridc .computerButton {
+.cpet .computerButton {
 	position: absolute;
 	width: 45%;
-	height: 28.8px;
-	top: 7.2px;
+	height: 2.62vw;
+	top: 0.65vw;
 	background-color: #fa4646;
 	cursor: pointer;
 }
 
-.gridc .computerButtonOff {
+.cpet .computerButtonOff {
 	left: 8%;
 }
 
-.gridc .computerButtonOn {
+.cpet .computerButtonOn {
 	left: 48%;
 }
 
-.gridc .offIndicator {
+.cpet .offIndicator {
 	position: absolute;
-	width: 14.4px;
-	height: 14.4px;
-	top: 57.6px;
-	left: 18px;
+	width: 1.31vw;
+	height: 1.31vw;
+	top: 5.24vw;
+	left: 1.64vw;
 	border-radius: 50%;
-	border: 3.6px white solid;
+	border: 0.33vw white solid;
 }
 
-.gridc .onIndicator {
+.cpet .onIndicator {
 	position: absolute;
-	width: 0px;
-	height: 21.6px;
-	top: 57.6px;
-	left: 100.8px;
-	border-right: 3.6px white solid;
+	width: 0.31vw;
+	height: 1.96vw;
+	top: 5.24vw;
+	left: 9.16vw;
+	border-right: 0.33vw white solid;
 }
 
-.gridc .computer .powerLight {
+.cpet .computer .powerLight {
 	position: absolute;
-	width: 21.6px;
-	height: 21.6px;
+	width: 1.96vw;
+	height: 1.96vw;
 	border-radius: 50%;
-	left: 1134px;
-	top: 136.8px;
+	left: 103.09vw;
+	top: 12.44vw;
 }

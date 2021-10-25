@@ -27,24 +27,24 @@ $('head').append('<link rel="icon" href="node_modules/quintos/img/favicon.png" /
 class PC {
 	constructor() {
 		let w, h;
-		if (QuintOS.sys == 'calcu') {
-			w = 23;
-			h = 2;
-		} else if (QuintOS.sys == 'zx') {
-			w = 32;
-			h = 24;
-		} else if (QuintOS.sys == 'a2') {
+		if (QuintOS.sys == 'a2') {
 			w = 40;
 			h = 24;
-		} else if (QuintOS.sys == 'gridc') {
-			w = 80;
-			h = 30;
-		} else if (QuintOS.sys == 'c64') {
-			w = 40;
-			h = 25;
 		} else if (QuintOS.sys == 'arcv') {
 			w = 28;
 			h = 34;
+		} else if (/(c64|cpet)/.test(QuintOS.sys)) {
+			w = 40;
+			h = 25;
+		} else if (QuintOS.sys == 'calcu') {
+			w = 23;
+			h = 2;
+		} else if (QuintOS.sys == 'gridc') {
+			w = 80;
+			h = 30;
+		} else if (QuintOS.sys == 'zx') {
+			w = 32;
+			h = 24;
 		}
 		this.w = w;
 		this.h = h;
@@ -54,28 +54,16 @@ class PC {
 
 		// default values for alerts and prompts for each system
 		this.popup = {
-			calcu: {
-				x: 0,
-				y: 0,
-				w: 23,
-				h: 1
-			},
-			zx: {
-				x: 0,
-				y: 2,
-				w: 55,
-				h: 4
-			},
 			a2: {
 				x: 2,
 				y: 2,
 				w: 36,
 				h: 4
 			},
-			gridc: {
-				x: 3,
-				y: 2,
-				w: 50,
+			arcv: {
+				x: 4,
+				y: 16,
+				w: 20,
 				h: 4
 			},
 			c64: {
@@ -84,10 +72,28 @@ class PC {
 				w: 20,
 				h: 4
 			},
-			arcv: {
-				x: 4,
-				y: 16,
-				w: 20,
+			calcu: {
+				x: 0,
+				y: 0,
+				w: 23,
+				h: 1
+			},
+			cpet: {
+				x: 0,
+				y: 1,
+				w: 40,
+				h: 4
+			},
+			gridc: {
+				x: 3,
+				y: 2,
+				w: 50,
+				h: 4
+			},
+			zx: {
+				x: 0,
+				y: 2,
+				w: 55,
 				h: 4
 			}
 		};
@@ -889,7 +895,7 @@ window.addEventListener('keydown', function (e) {
 });
 
 /**
- * Gets a color from a color pallette
+ * Gets a color from a color palette
  * c is the color key
  * palette can be a palette object or number index
  *   in the system's palettes array
@@ -1129,6 +1135,119 @@ async function preload() {
 	QuintOS.system = sys;
 
 	const pages = {
+		a2: `
+<div class="bg">
+	<div class="🖥️">
+		<div class="back-shadow"></div>
+		<div class="monitor-shadow"></div>
+		<div class="monitor">
+			<div class="monitor__soft-shadow"></div>
+			<div class="monitor__shadow"></div>
+			<div class="monitor__inner"></div>
+			<div class="monitor__inner-shadow"></div>
+			<div class="monitor__inner-shadow-light"></div>
+			<div class="monitor__inner-shadow-dark"></div>
+			<div class="monitor__screen"></div>
+			<div class="monitor__screen-2 top-shadow"></div>
+			<div class="monitor__screen-2 bottom-shadow"></div>
+			<div class="monitor__screen-2">
+				<div class="monitor__terminal">
+					<div id="screen0" class="screen"></div>
+				</div>
+			</div>
+			<div class="monitor__logo-embed"></div>
+			<div class="monitor__line"></div>
+			<div class="monitor__power-switch">
+				<div class="monitor__power-switch__button"></div>
+			</div>
+		</div>
+		<div class="keyboard">
+			<div class="middle"></div>
+			<div class="top">
+				<div class="emboss">
+					<div class="logo-label">
+						<div class="logo"></div>
+						<div class="label">QuintOS</div>
+					</div>
+					<div class="model-number">II<span>e</span></div>
+				</div>
+				<div class="embed">
+					<div class="keys-container"></div>
+				</div>
+			</div>
+		</div>
+		<div class="floppy-drive">
+			<div class="left">
+				<div class="emboss"></div>
+			</div>
+			<div class="top">
+				<div class="emboss emboss-1"></div>
+				<div class="embed embed-1"></div>
+				<div class="emboss emboss-2"></div>
+				<div class="embed embed-2"></div>
+			</div>
+			<div class="front">
+				<div class="slot-container">
+					<div class="slot">
+						<div class="hole"></div>
+					</div>
+				</div>
+				<div class="slot-embed">
+					<div class="cover"></div>
+					<div class="shadow"></div>
+				</div>
+				<div class="logo"></div>
+				<div class="label">disk II</div>
+				<div class="light">
+					<span>IN USE</span> <span class="arrow">▼</span>
+					<div class="led">
+						<div class="reflection"></div>
+					</div>
+				</div>
+			</div>
+			<div class="bottom"></div>
+		</div>
+	</div>
+</div>`,
+		arcv: `
+<div id="pc">
+	<div id="case">
+		<div id="bezel">
+			<div id="tube">
+				<div id="screen0" class="screen"></div>
+			</div>
+		</div>
+	</div>
+</div>`,
+		c64: `
+<div id="pc">
+	<div id="case">
+		<div id="bezel">
+			<div id="tube" class="clear">
+				<div id="screen0" class="screen"></div>
+			</div>
+		</div>
+		<div id="bottom-panel">
+			<div id="badge">
+				<a id="logo" href="https://github.com/quinton-ashley/quintos">
+					<img class="logo" src="https://raw.githubusercontent.com/quinton-ashley/quintos/main/img/logo.png" />
+				</a>
+				<a id="brand" href="https://github.com/quinton-ashley/quintos">
+					<h1>QuintOS</h1>
+				</a>
+				<div id="refreshLbl">REFRESH</div>
+			</div>
+			<div id="ident">
+				<div>Created using</div>
+				<div><a href="https://github.com/quinton-ashley/quintos">QuintOS</a></div>
+			</div>
+			<div id="refresh"></div>
+			<div id="door"></div>
+			<div id="video"></div>
+			<div id="audio"></div>
+		</div>
+	</div>
+</div>`,
 		calcu: `
 <div id="pc">
 <div class="calculator" aria-hidden="true">
@@ -1234,6 +1353,244 @@ async function preload() {
 			</h1>
   </div>
 </div>
+</div>`,
+		cpet: `
+<div id="pc" class="center">
+	<div class="screenBox">
+		<div class="frame">
+			<div class="screenBox2">
+				<div class="screenBox3">
+					<div class="terminalScreen">
+						<div id="screen0" class="screen"></div>
+					</div>
+				</div>
+			</div>
+			<div class="bottomFrame">
+				<div class="fan">
+				</div>
+				<a href="https://github.com/quinton-ashley/quintos">
+					<img class="logo" src="https://raw.githubusercontent.com/quinton-ashley/quintos/main/img/logo.png" />
+				</a>
+				<div class="powerButton">
+					<div class="powerIcon">
+					</div>
+				</div>
+				<div class="powerLight lightOff">
+				</div>
+			</div>
+		</div>
+	</div>
+	<div class="screenFoot"></div>
+	<div class="computer">
+		<div class="computerFrame">
+			<div class="computerFan1"></div>
+			<div class="computerFan2"></div>
+			<div class="screw1"></div>
+			<div class="screw2"></div>
+			<div class="computerFrame2">
+				<div class="floppy">
+					<div class="fingerGrip"></div>
+					<div class="slot"></div>
+				</div>
+				<div class="socket1"></div>
+				<div class="socket2"></div>
+			</div>
+			<div class="screw3"></div>
+			<div class="screw4"></div>
+			<div class="screw5"></div>
+			<div class="powerButton">
+				<div class="buttonSlide">
+					<div class="computerButton computerButtonOff"></div>
+				</div>
+				<div class="offIndicator"></div>
+				<div class="onIndicator"></div>
+			</div>
+			<div class="powerLight lightOff">
+			</div>
+		</div>
+	</div>
+</div>`,
+		gameboi: `
+<div id="pc">
+<div id="container">
+	<div id="bitmapBG-container">
+		<div id="bitmapBG" style="--grid-size:20; --grid-columns:28; --grid-rows:20;"></div>
+		<div class="info-container">
+		<div id="screen0" class="screen"></div>
+		</div>
+		<div class="shine-container">
+			<div class="shine"></div>
+		</div>
+	</div>
+	<div id="bitmap-container">
+		<div id="bitmap" style="--grid-size:20; --grid-columns:28; --grid-rows:20;"></div>
+  </div>
+</div>
+</div>`,
+		gridc: `
+<div id="pc" class="center">
+	<div class="screenBox">
+		<div class="frame">
+			<div class="screenBox2">
+				<div class="screenBox3">
+					<div class="terminalScreen">
+						<div id="screen0" class="screen"></div>
+					</div>
+				</div>
+			</div>
+			<div class="bottomFrame">
+				<div class="fan">
+				</div>
+				<a href="https://github.com/quinton-ashley/quintos">
+					<img class="logo" src="https://raw.githubusercontent.com/quinton-ashley/quintos/main/img/logo.png" />
+				</a>
+				<div class="powerButton">
+					<div class="powerIcon">
+					</div>
+				</div>
+				<div class="powerLight lightOff">
+				</div>
+			</div>
+		</div>
+	</div>`,
+		macin: `
+<div class="container">
+	<div class="mac">
+		<div class="monitor-frame">
+			<div class="monitor">
+				<div class="contain">
+					<div class="bg" id="bg">
+						<div class="menu">
+							<div class="click apple"><img ondragstart="return false;" src="https://raw.githubusercontent.com/quinton-ashley/quintos/main/img/favicon.png"/>
+								<div class="dropdown"><a href="#">
+										<p>About QuintOS...</p>
+										<li></li></a></div>
+							</div>
+							<div class="click">
+								<p>File</p>
+								<div class="dropdown"><a href="#">
+										<p>New Window</p>
+										<li>&#x2318;N</li></a><a href="#">
+										<p>Open File...</p>
+										<li>&#x2318;O</li></a><a href="#">
+										<p>Print</p>
+										<li>&#x2318;P</li></a><a href="#">
+										<p>Close Window</p>
+										<li>&#8679;&#x2318;W</li></a></div>
+							</div>
+							<div class="click">
+								<p>Edit</p>
+								<div class="dropdown"><a href="#">
+										<p>Undo</p>
+										<li>&#x2318;Z</li></a><a href="#">
+										<p>Redo</p>
+										<li>&#8679;&#x2318;Z</li></a><a href="#">
+										<p>Cut</p>
+										<li>&#x2318;X</li></a><a href="#">
+										<p>Copy</p>
+										<li>&#x2318;C</li></a><a href="#">
+										<p>Paste</p>
+										<li>&#x2318;V</li></a></div>
+							</div>
+							<div class="click">
+								<p>View</p>
+								<div class="dropdown"><a href="#">
+										<p>Bookmarks</p>
+										<li>&#x2318;B</li></a><a href="#">
+										<p>History</p>
+										<li>&#8679;&#x2318;H</li></a></div>
+							</div>
+							<div class="click">
+								<p>Special</p>
+								<div class="dropdown"><a href="#">
+										<p>Downloads</p>
+										<li>&#x2318;J</li></a><a href="#">
+										<p>Open Console</p>
+										<li>&#8679;&#x2318;I</li></a></div>
+							</div>
+							<div class="time">
+								<p></p>
+							</div>
+						</div>
+						<div class="desktop">
+							<div class="window">
+								<div class="bar title">
+									<h1>Netscape</h1>
+									<nav>
+										<ul>
+											<li class="close"></li>
+											<li class="maximize"></li>
+										</ul>
+									</nav>
+								</div>
+								<div class="bar info">
+									<ul>
+										<li>
+											<div class="emoji">⬅</div>
+											<p>Back</p>
+										</li>
+										<li>
+											<div class="emoji">➡</div>
+											<p>Forward</p>
+										</li>
+										<li>
+											<div class="emoji">🔄</div>
+											<p>Reload</p>
+										</li>
+										<li>
+											<div class="emoji">🏠</div>
+											<p>Home</p>
+										</li>
+										<li>
+											<div class="emoji">✉</div>
+											<p>Mail</p>
+										</li>
+										<li>
+											<div class="emoji">🖼</div>
+											<p>Images</p>
+										</li>
+										<li>
+											<div class="emoji">📂</div>
+											<p>Open</p>
+										</li>
+										<li>
+											<div class="emoji">🖨</div>
+											<p>Print</p>
+										</li>
+										<li>
+											<div class="emoji">🔍</div>
+											<p>Find</p>
+										</li>
+										<li>
+											<div class="emoji">🛑</div>
+											<p>Stop</p>
+										</li>
+									</ul>
+								</div>
+								<div class="bar links">
+									<ul>
+										<li>Welcome</li>
+										<li>What's New</li>
+										<li>What's Cool</li>
+										<li>Questions</li>
+										<li>Net Search</li>
+										<li>Net Directory</li>
+									</ul>
+								</div>
+								<iframe src="https://web.archive.org/web/19991128125537/http://www.geocities.com/Heartland/Bluffs/4157/hampdance.html"></iframe>
+								<div id="screen0" class="screen"></div>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+		<div class="floppy">
+			<div class="sec-1"></div>
+			<div class="sec-2"></div>
+		</div>
+		<div class="logo"><img src="https://raw.githubusercontent.com/quinton-ashley/quintos/main/img/logo.png" height="100%"/></div>
+	</div>
 </div>`,
 		zx: `
 <div class="container">
@@ -1805,331 +2162,6 @@ async function preload() {
 
   <div class="zx-spectrum-border bottom"></div>
 
-</div>`,
-		a2: `
-<div class="bg">
-	<div class="🖥️">
-		<div class="back-shadow"></div>
-		<div class="monitor-shadow"></div>
-		<div class="monitor">
-			<div class="monitor__soft-shadow"></div>
-			<div class="monitor__shadow"></div>
-			<div class="monitor__inner"></div>
-			<div class="monitor__inner-shadow"></div>
-			<div class="monitor__inner-shadow-light"></div>
-			<div class="monitor__inner-shadow-dark"></div>
-			<div class="monitor__screen"></div>
-			<div class="monitor__screen-2 top-shadow"></div>
-			<div class="monitor__screen-2 bottom-shadow"></div>
-			<div class="monitor__screen-2">
-				<div class="monitor__terminal">
-					<div id="screen0" class="screen"></div>
-				</div>
-			</div>
-			<div class="monitor__logo-embed"></div>
-			<div class="monitor__line"></div>
-			<div class="monitor__power-switch">
-				<div class="monitor__power-switch__button"></div>
-			</div>
-		</div>
-		<div class="keyboard">
-			<div class="middle"></div>
-			<div class="top">
-				<div class="emboss">
-					<div class="logo-label">
-						<div class="logo"></div>
-						<div class="label">QuintOS</div>
-					</div>
-					<div class="model-number">II<span>e</span></div>
-				</div>
-				<div class="embed">
-					<div class="keys-container"></div>
-				</div>
-			</div>
-		</div>
-		<div class="floppy-drive">
-			<div class="left">
-				<div class="emboss"></div>
-			</div>
-			<div class="top">
-				<div class="emboss emboss-1"></div>
-				<div class="embed embed-1"></div>
-				<div class="emboss emboss-2"></div>
-				<div class="embed embed-2"></div>
-			</div>
-			<div class="front">
-				<div class="slot-container">
-					<div class="slot">
-						<div class="hole"></div>
-					</div>
-				</div>
-				<div class="slot-embed">
-					<div class="cover"></div>
-					<div class="shadow"></div>
-				</div>
-				<div class="logo"></div>
-				<div class="label">disk II</div>
-				<div class="light">
-					<span>IN USE</span> <span class="arrow">▼</span>
-					<div class="led">
-						<div class="reflection"></div>
-					</div>
-				</div>
-			</div>
-			<div class="bottom"></div>
-		</div>
-	</div>
-</div>`,
-		gridc: `
-<div id="pc" class="center">
-	<div class="screenBox">
-		<div class="frame">
-			<div class="screenBox2">
-				<div class="screenBox3">
-					<div class="terminalScreen">
-						<div id="screen0" class="screen"></div>
-					</div>
-				</div>
-			</div>
-			<div class="bottomFrame">
-				<div class="fan">
-				</div>
-				<a href="https://github.com/quinton-ashley/quintos">
-					<img class="logo" src="https://raw.githubusercontent.com/quinton-ashley/quintos/main/img/logo.png" />
-				</a>
-				<div class="powerButton">
-					<div class="powerIcon">
-					</div>
-				</div>
-				<div class="powerLight lightOff">
-				</div>
-			</div>
-		</div>
-	</div>
-	<div class="screenFoot"></div>
-	<div class="computer">
-		<div class="computerFrame">
-			<div class="computerFan1"></div>
-			<div class="computerFan2"></div>
-			<div class="screw1"></div>
-			<div class="screw2"></div>
-			<div class="computerFrame2">
-				<div class="floppy">
-					<div class="fingerGrip"></div>
-					<div class="slot"></div>
-				</div>
-				<div class="socket1"></div>
-				<div class="socket2"></div>
-			</div>
-			<div class="screw3"></div>
-			<div class="screw4"></div>
-			<div class="screw5"></div>
-			<div class="powerButton">
-				<div class="buttonSlide">
-					<div class="computerButton computerButtonOff"></div>
-				</div>
-				<div class="offIndicator"></div>
-				<div class="onIndicator"></div>
-			</div>
-			<div class="powerLight lightOff">
-			</div>
-		</div>
-	</div>
-</div>`,
-		c64: `
-<div id="pc">
-	<div id="case">
-		<div id="bezel">
-			<div id="tube" class="clear">
-				<div id="screen0" class="screen"></div>
-			</div>
-		</div>
-		<div id="bottom-panel">
-			<div id="badge">
-				<a id="logo" href="https://github.com/quinton-ashley/quintos">
-					<img class="logo" src="https://raw.githubusercontent.com/quinton-ashley/quintos/main/img/logo.png" />
-				</a>
-				<a id="brand" href="https://github.com/quinton-ashley/quintos">
-					<h1>QuintOS</h1>
-				</a>
-				<div id="refreshLbl">REFRESH</div>
-			</div>
-			<div id="ident">
-				<div>Created using</div>
-				<div><a href="https://github.com/quinton-ashley/quintos">QuintOS</a></div>
-			</div>
-			<div id="refresh"></div>
-			<div id="door"></div>
-			<div id="video"></div>
-			<div id="audio"></div>
-		</div>
-	</div>
-</div>`,
-		gameboi: `
-<div id="pc">
-<div id="container">
-	<div id="bitmapBG-container">
-		<div id="bitmapBG" style="--grid-size:20; --grid-columns:28; --grid-rows:20;"></div>
-		<div class="info-container">
-		<div id="screen0" class="screen"></div>
-		</div>
-		<div class="shine-container">
-			<div class="shine"></div>
-		</div>
-	</div>
-	<div id="bitmap-container">
-		<div id="bitmap" style="--grid-size:20; --grid-columns:28; --grid-rows:20;"></div>
-  </div>
-</div>
-</div>`,
-		arcv: `
-<div id="pc">
-	<div id="case">
-		<div id="bezel">
-			<div id="tube">
-				<div id="screen0" class="screen"></div>
-			</div>
-		</div>
-	</div>
-</div>`,
-		macin: `
-<div class="container">
-	<div class="mac">
-		<div class="monitor-frame">
-			<div class="monitor">
-				<div class="contain">
-					<div class="bg" id="bg">
-						<div class="menu">
-							<div class="click apple"><img ondragstart="return false;" src="https://raw.githubusercontent.com/quinton-ashley/quintos/main/img/favicon.png"/>
-								<div class="dropdown"><a href="#">
-										<p>About QuintOS...</p>
-										<li></li></a></div>
-							</div>
-							<div class="click">
-								<p>File</p>
-								<div class="dropdown"><a href="#">
-										<p>New Window</p>
-										<li>&#x2318;N</li></a><a href="#">
-										<p>Open File...</p>
-										<li>&#x2318;O</li></a><a href="#">
-										<p>Print</p>
-										<li>&#x2318;P</li></a><a href="#">
-										<p>Close Window</p>
-										<li>&#8679;&#x2318;W</li></a></div>
-							</div>
-							<div class="click">
-								<p>Edit</p>
-								<div class="dropdown"><a href="#">
-										<p>Undo</p>
-										<li>&#x2318;Z</li></a><a href="#">
-										<p>Redo</p>
-										<li>&#8679;&#x2318;Z</li></a><a href="#">
-										<p>Cut</p>
-										<li>&#x2318;X</li></a><a href="#">
-										<p>Copy</p>
-										<li>&#x2318;C</li></a><a href="#">
-										<p>Paste</p>
-										<li>&#x2318;V</li></a></div>
-							</div>
-							<div class="click">
-								<p>View</p>
-								<div class="dropdown"><a href="#">
-										<p>Bookmarks</p>
-										<li>&#x2318;B</li></a><a href="#">
-										<p>History</p>
-										<li>&#8679;&#x2318;H</li></a></div>
-							</div>
-							<div class="click">
-								<p>Special</p>
-								<div class="dropdown"><a href="#">
-										<p>Downloads</p>
-										<li>&#x2318;J</li></a><a href="#">
-										<p>Open Console</p>
-										<li>&#8679;&#x2318;I</li></a></div>
-							</div>
-							<div class="time">
-								<p></p>
-							</div>
-						</div>
-						<div class="desktop">
-							<div class="window">
-								<div class="bar title">
-									<h1>Netscape</h1>
-									<nav>
-										<ul>
-											<li class="close"></li>
-											<li class="maximize"></li>
-										</ul>
-									</nav>
-								</div>
-								<div class="bar info">
-									<ul>
-										<li>
-											<div class="emoji">⬅</div>
-											<p>Back</p>
-										</li>
-										<li>
-											<div class="emoji">➡</div>
-											<p>Forward</p>
-										</li>
-										<li>
-											<div class="emoji">🔄</div>
-											<p>Reload</p>
-										</li>
-										<li>
-											<div class="emoji">🏠</div>
-											<p>Home</p>
-										</li>
-										<li>
-											<div class="emoji">✉</div>
-											<p>Mail</p>
-										</li>
-										<li>
-											<div class="emoji">🖼</div>
-											<p>Images</p>
-										</li>
-										<li>
-											<div class="emoji">📂</div>
-											<p>Open</p>
-										</li>
-										<li>
-											<div class="emoji">🖨</div>
-											<p>Print</p>
-										</li>
-										<li>
-											<div class="emoji">🔍</div>
-											<p>Find</p>
-										</li>
-										<li>
-											<div class="emoji">🛑</div>
-											<p>Stop</p>
-										</li>
-									</ul>
-								</div>
-								<div class="bar links">
-									<ul>
-										<li>Welcome</li>
-										<li>What's New</li>
-										<li>What's Cool</li>
-										<li>Questions</li>
-										<li>Net Search</li>
-										<li>Net Directory</li>
-									</ul>
-								</div>
-								<iframe src="https://web.archive.org/web/19991128125537/http://www.geocities.com/Heartland/Bluffs/4157/hampdance.html"></iframe>
-								<div id="screen0" class="screen"></div>
-							</div>
-						</div>
-					</div>
-				</div>
-			</div>
-		</div>
-		<div class="floppy">
-			<div class="sec-1"></div>
-			<div class="sec-2"></div>
-		</div>
-		<div class="logo"><img src="https://raw.githubusercontent.com/quinton-ashley/quintos/main/img/logo.png" height="100%"/></div>
-	</div>
 </div>`
 	};
 
@@ -2437,7 +2469,7 @@ QuintOS version 0.1
 CopyLeft 1977`
 			}
 		],
-		SketchBook: [
+		Contain: [
 			{
 				name: 'boot',
 				txt: `
@@ -2496,9 +2528,21 @@ READY.
 	};
 
 	bootScreens.WheelOfFortune = bootScreens.Hangman;
+	bootScreens.Sketchbook = bootScreens.Contain;
 
 	async function displayBootscreen() {
 		console.log('QuintOS v' + QuintOS.level + ' size: ' + pc.w + 'x' + pc.h);
+
+		let waitForDraw = () =>
+			new Promise((resolve) => {
+				let wasDrawn = false;
+				window.draw = () => {
+					if (!wasDrawn) {
+						wasDrawn = true;
+						resolve();
+					}
+				};
+			});
 
 		if (QuintOS.sys == 'calcu') {
 			let txt0 = "'-.⎽⎽.-'⎺⎺".repeat(3);
@@ -2509,59 +2553,44 @@ READY.
 				// txt1 = txt1.slice(1) + txt1[1];
 			}
 			return;
-		} else if (/(a2|gridc|zx)/.test(QuintOS.sys)) {
-			for (let el of bootScreen) {
-				let txt = el.txt.charAt(0) == '/n' ? el.txt.slice(1) : el.txt;
-				await pc.text(txt, el.x, el.y, 0, 0, el.speed);
-			}
-			return;
-		}
-
-		let waitForDraw = new Promise((resolve) => {
-			let wasDrawn = false;
-			window.draw = () => {
-				if (!wasDrawn) {
-					wasDrawn = true;
-					resolve();
-				}
-			};
-		});
-
-		const STR$ = (val) => String.fromCodePoint((9380 + val) >>> 0);
-		const RND = (range) => Math.random() * range;
-
-		async function makeMaze() {
-			for (let i = 0; i < pc.h; i++) {
+		} else if (QuintOS.sys == 'c64') {
+			function makeMaze() {
+				const STR$ = (val) => String.fromCodePoint((9380 + val) >>> 0);
+				const RND = (range) => Math.random() * range;
 				let txt = '';
-				for (let j = 0; j < pc.w; j++) {
-					txt += STR$(205.5 + RND(1));
+				for (let i = 0; i < pc.h; i++) {
+					for (let j = 0; j < pc.w; j++) {
+						txt += STR$(205.5 + RND(1));
+					}
+					txt += '\n';
 				}
-				pc._textSync([txt], 0, i);
-				await delay();
+				return txt;
 			}
+			await pc.text(makeMaze(), 0, 0, null, null, 20);
 		}
 
-		await Promise.all([Promise.race([makeMaze(), delay(1000)]), waitForDraw]);
+		for (let el of bootScreen) {
+			let txt = el.txt.charAt(0) == '/n' ? el.txt.slice(1) : el.txt;
+			await pc.text(txt, el.x, el.y, 0, 0, el.speed);
+		}
+
+		await waitForDraw();
 
 		// $('#screen0').parent().addClass('clear');
 		$('#screen0').parent().append($('main'));
 		$('main').css('display', 'block');
 
-		if (QuintOS.sys == 'zx') {
-			resizeCanvas(128, 192);
-		}
 		if (QuintOS.sys == 'arcv') {
 			resizeCanvas(320, 400);
+		} else if (QuintOS.sys == 'gridc') {
+			resizeCanvas(320, 240);
+		} else if (QuintOS.sys == 'zx') {
+			resizeCanvas(128, 192);
 		}
 		camera.position.x = width / 2;
 		camera.position.y = height / 2;
 		strokeWeight(2);
 		$('canvas').removeAttr('style');
-
-		let logo = bootScreen[0];
-		await pc.text(logo.txt, logo.x, logo.y);
-
-		await delay(500);
 	}
 
 	let palettes = {
@@ -2622,6 +2651,8 @@ READY.
 			// }
 		]
 	};
+
+	palettes.arcv = palettes.zx;
 
 	/*#0f380f; #306230; #8bac0f; #9bbc0f; */
 
