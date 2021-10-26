@@ -11,7 +11,7 @@ window.QuintOS = {
 		/*06*/ ['TicTacToe', 'gridc'],
 		/*07*/ ['WorldWideWeb', 'macin'],
 		/*08*/ ['WheelOfFortune', 'a2'],
-		/*09*/ ['Contain', 'c64'], // TODO arc
+		/*09*/ ['Contain', 'zx'], // TODO arc
 		/*10*/ ['AIOs', 'gridc'],
 		/*11*/ ['SpeakAndSpell', 'calcu'], // TODO sas
 		/*12*/ ['Snake', 'arcv'], // TODO gameboi
@@ -93,7 +93,7 @@ class PC {
 			zx: {
 				x: 0,
 				y: 2,
-				w: 55,
+				w: 32,
 				h: 4
 			}
 		};
@@ -442,7 +442,6 @@ tile {
 	button(txt, x, y, action) {
 		// not the game title or username
 		if (y != 0) {
-			if (QuintOS.sys == 'zx') txt += '←';
 			if (QuintOS.sys == 'a2') txt = '<' + txt + '>';
 		}
 
@@ -702,11 +701,13 @@ tile {
 		let enterBtn;
 		let cancelBtn;
 		if (QuintOS.sys != 'calcu') {
-			let ebX = x + w - (QuintOS.sys == 'zx' ? 16 : 18);
-			enterBtn = this.button('ENTER', ebX, y + 2 + th);
+			let ebX = x + w - (QuintOS.sys != 'zx' ? 18 : 4);
+			let eLbl = QuintOS.sys != 'zx' ? 'ENTER' : '»';
+			enterBtn = this.button(eLbl, ebX, y + 2 + th);
 
-			let cbX = x + w - (QuintOS.sys == 'zx' ? 9 : 10);
-			cancelBtn = this.button('CANCEL', cbX, y + 2 + th);
+			let cbX = x + w - (QuintOS.sys != 'zx' ? 10 : 2);
+			let cLbl = QuintOS.sys != 'zx' ? 'CANCEL' : 'X';
+			cancelBtn = this.button(cLbl, cbX, y + 2 + th);
 		}
 
 		let _this = this;
@@ -2437,31 +2438,38 @@ Copyleft © 1983 QUiNT Systems Corp`
 			}
 		],
 		Pong: [
-			{
-				name: 'h1',
-				x: 6,
-				y: 3,
-				speed: 2,
-				txt: `
-  ────────────────▄▄───▐█
-  ────▄▄▄───▄██▄──█▀───█─▄
-  ──▄██▀█▌─██▄▄──▐█▀▄─▐█▀
-  ─▐█▀▀▌───▄▀▌─▌─█─▌──▌─▌
-  ─▌▀▄─▐──▀▄─▐▄─▐▄▐▄─▐▄─▐▄
+			// 			{
+			// 				name: 'h1',
+			// 				x: 0,
+			// 				y: 3,
+			// 				speed: 2,
+			// 				txt: `
+			//   ────────────────▄▄───▐█
+			//   ────▄▄▄───▄██▄──█▀───█─▄
+			//   ──▄██▀█▌─██▄▄──▐█▀▄─▐█▀
+			//   ─▐█▀▀▌───▄▀▌─▌─█─▌──▌─▌
+			//   ─▌▀▄─▐──▀▄─▐▄─▐▄▐▄─▐▄─▐▄
 
-████◣             ██◣ ██◣
-█    █             █  █ █
-█    █ █ █▐▌██◣██◣ █  █ █
-█    █ █ █▐▌█ █ █  █  █ ◥██◣
-█    █ █ █▐▌█ █ █  █  █    █
-█  ▗ █ ██◤▐▌█ █ █  █  █    █
-◥████◤             ◥██◤ ◥██◤
-	    ▘`
+			// ████◣             ██◣ ██◣
+			// █    █             █  █ █
+			// █    █ █ █▐▌██◣██◣ █  █ █
+			// █    █ █ █▐▌█ █ █  █  █ ◥██◣
+			// █    █ █ █▐▌█ █ █  █  █    █
+			// █  ▗ █ ██◤▐▌█ █ █  █  █    █
+			// ◥████◤             ◥██◤ ◥██◤
+			// 	    ▘`
+			// 			},
+			{
+				name: 'bg',
+				x: 0,
+				y: 0,
+				speed: 20,
+				txt: ['§', 'ж', '*', '^', '°', '#', '¤', '‡', '˜', '»'][Math.floor(Math.random() * 10)].repeat(1000)
 			},
 			{
 				name: 'info',
-				x: 20,
-				y: 31,
+				x: 12,
+				y: 20,
 				speed: 1,
 				txt: `
 JavaScript READY

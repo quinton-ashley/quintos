@@ -3,11 +3,12 @@ body.zx {
 	margin: 0;
 	background: #ff1313;
 	background-image: radial-gradient(#333, #000);
+	perspective: 100vw;
 }
 
 .zx .screen {
 	font-family: zx_spectrum-7, monospace;
-	font-size: 1.05em;
+	font-size: 1.8vw;
 }
 
 .zx tile {
@@ -49,10 +50,10 @@ body.zx {
 
 .tv {
 	width: var(--television-width);
-	height: var(--television-height);
+	/* height: var(--television-height); */
 	display: flex;
 	flex-direction: column;
-	align-items: center;
+	/* align-items: center; */
 	margin-bottom: 0;
 }
 
@@ -148,7 +149,7 @@ body.zx {
 	-webkit-animation: moveBand 8s linear infinite;
 	animation: moveBand 8s linear infinite;
 	z-index: 4;
-	position: relative;
+	position: absolute;
 }
 
 .tv
@@ -681,14 +682,16 @@ body.zx {
 .zx-spectrum {
 	width: var(--spectrum-width);
 	height: 95%;
-	margin: 3em auto;
-	margin-top: 0;
+	margin: 0 auto;
+	margin-bottom: 7vw;
 	background: var(--spectrum-bgcolor);
 	border-top: 0.31vw solid #3e3e41;
 	border-radius: 2.5vw 2.5vw 0.5vw 0.5vw;
 	overflow: hidden;
 	position: relative;
 	box-shadow: -1vw 1vw 2vw #0008;
+	transform: rotateX(45deg);
+	transform-style: preserve-3d;
 }
 
 .zx-spectrum .zx-spectrum-top {
