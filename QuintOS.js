@@ -26,73 +26,71 @@ $('head').append('<link rel="icon" href="node_modules/quintos/img/favicon.png" /
 /* PC functions are used to create text based user interfaces */
 class PC {
 	constructor() {
-		let w, h;
+		let rows, cols;
 		if (QuintOS.sys == 'a2') {
-			w = 40;
-			h = 24;
+			rows = 24;
+			cols = 40;
 		} else if (QuintOS.sys == 'arcv') {
-			w = 28;
-			h = 34;
+			rows = 34;
+			cols = 28;
 		} else if (/(c64|cpet)/.test(QuintOS.sys)) {
-			w = 40;
-			h = 25;
+			rows = 25;
+			cols = 40;
 		} else if (QuintOS.sys == 'calcu') {
-			w = 23;
-			h = 2;
+			rows = 2;
+			cols = 23;
 		} else if (QuintOS.sys == 'gridc') {
-			w = 80;
-			h = 30;
+			rows = 30;
+			cols = 80;
 		} else if (QuintOS.sys == 'zx') {
-			w = 32;
-			h = 24;
+			rows = 24;
+			cols = 32;
 		}
-		this.w = w;
-		this.h = h;
-		this.width = w; // columns
-		this.height = h; // rows
+		this.cols = cols;
+		this.rows = rows;
 		this.gpu = [];
 
 		// default values for alerts and prompts for each system
 		this.popup = {
 			a2: {
-				x: 2,
-				y: 2,
+				row: 2,
+				col: 2,
 				w: 36,
 				h: 4
 			},
 			arcv: {
-				x: 4,
-				y: 16,
+				row: 16,
+				col: 4,
 				w: 20,
 				h: 4
 			},
 			c64: {
-				x: 10,
-				y: 10,
+				row: 10,
+				col: 10,
 				w: 20,
 				h: 4
 			},
 			calcu: {
-				x: 0,
-				y: 0,
+				row: 0,
+				col: 0,
 				w: 23,
 				h: 1
 			},
 			cpet: {
-				x: 0,
-				y: 2,
+				row: 2,
+				col: 0,
 				w: 40,
 				h: 4
 			},
 			gridc: {
-				x: 3,
-				y: 2,
+				row: 2,
+				col: 3,
 				w: 50,
 				h: 4
 			},
 			zx: {
-				x: 0,
-				y: 2,
+				row: 2,
+				col: 0,
 				w: 32,
 				h: 4
 			}
@@ -101,104 +99,85 @@ class PC {
 		let screen0 = document.getElementById('screen0');
 
 		if (QuintOS.sys == 'calcu') {
-			this.rows = screen0.childNodes;
-			for (let i = 0; i < h; i++) {
-				this.rows[i].tiles = this.rows[i].childNodes;
+			this.screen = screen0.childNodes;
+			for (let i = 0; i < rows; i++) {
+				this.screen[i].tiles = this.screen[i].childNodes;
 			}
 			return;
 		}
 		// create rows
-		for (let i = 0; i < h; i++) {
+		for (let i = 0; i < rows; i++) {
 			let row = document.createElement('row');
 			screen0.appendChild(row);
 		}
-		this.rows = screen0.childNodes;
+		this.screen = screen0.childNodes;
 
 		// create single character text tiles
-		for (let i = 0; i < h; i++) {
-			for (let j = 0; j < w; j++) {
+		for (let i = 0; i < rows; i++) {
+			for (let j = 0; j < cols; j++) {
 				let tile = document.createElement('tile');
 				tile.appendChild(document.createTextNode(' '));
-				this.rows[i].appendChild(tile);
+				this.screen[i].appendChild(tile);
 			}
-			this.rows[i].tiles = this.rows[i].childNodes;
+			this.screen[i].tiles = this.screen[i].childNodes;
 		}
 		// the rows will all have the same height
 		// the tiles will all have the same width
 		$('body').append(`
 <style>
 row {
-	height: ${100 / this.h}%;
+	height: ${100 / this.rows}%;
 }
 tile {
-	width: ${100 / this.w}%;
+	width: ${100 / this.cols}%;
 }
 </style>`);
-
-		// if ( != 7) return;
-
-		// // setup the bitmap lcd
-		// let lcdBG = document.getElementById('bitmapBG');
-		// for (let i = 0; i < 560; i++) {
-		// 	let div = document.createElement('div');
-		// 	div.classList.add('null');
-		// 	// div.appendChild(document.createTextNode('⩀⪽⪾'));
-		// 	lcdBG.appendChild(div);
-		// }
-
-		// let lcd = document.getElementById('bitmap');
-		// for (let i = 0; i < 560; i++) {
-		// 	let div = document.createElement('div');
-		// 	// div.appendChild(document.createTextNode(' '));
-		// 	lcd.appendChild(div);
-		// }
-		// this.bitmap = lcd.childNodes;
 	}
 
 	/* Display the text character at a position */
-	drawChar(x, y, char) {
+	drawChar(row, col, char) {
 		// out of bounds check
-		if (x < 0 || y < 0 || x >= this.w || y >= this.h) return;
-		if (QuintOS.sys == 'calcu' && y == 1 && x > 4) return;
-		this.rows[y].tiles[x].childNodes[0].nodeValue = char;
+		if (col < 0 || row < 0 || col >= this.cols || row >= this.rows) return;
+		if (QuintOS.sys == 'calcu' && row == 1 && col > 4) return;
+		this.screen[row].tiles[col].childNodes[0].nodeValue = char;
 	}
 
 	/* Get the value of a character */
-	charAt(x, y) {
-		if (x < 0 || y < 0 || x >= this.w || y >= this.h || (QuintOS.sys == 'calcu' && y == 1 && x > 4)) {
+	charAt(row, col) {
+		if (col < 0 || row < 0 || col >= this.cols || row >= this.rows || (QuintOS.sys == 'calcu' && row == 1 && col > 4)) {
 			this.error(
-				`Out of bounds error! Could not retreive character at: ${x},${y}\nThe size of this screen is ${this.w}x${this.h} characters.`
+				`Out of bounds error! Could not retreive character at row: ${row} col: ${col}\nThe size of this screen is ${this.cols}x${this.rows} characters.`
 			);
 		}
-		return this.rows[y].tiles[x].childNodes[0].nodeValue;
+		return this.screen[row].tiles[col].childNodes[0].nodeValue;
 	}
 
-	_boundsCheck(x, y, w, h, type) {
+	_boundsCheck(row, col, w, h, type) {
 		type ??= 'object';
-		let x1 = x + w;
-		let y1 = y + h;
-		let b0 = x < 0 || y < 0 || x >= this.w || y >= this.h;
-		let b1 = x1 < 0 || y1 < 0 || x1 >= this.w || y1 >= this.h;
+		let x1 = col + w;
+		let y1 = row + h;
+		let b0 = col < 0 || row < 0 || col >= this.cols || row >= this.rows;
+		let b1 = x1 < 0 || y1 < 0 || x1 >= this.cols || y1 >= this.rows;
 		if (b0 || b1) {
 			console.error(
-				`ERROR: Out of bounds! Failed to create a ${type} at x: ${x} y: ${y} of width: ${w} and height: ${h}. The size of this screen is: ${this.w}x${this.h} characters.`
+				`ERROR: Out of bounds! Failed to create a ${type} at x: ${col} y: ${row} of width: ${w} and height: ${h}. The size of this screen is: ${this.cols}x${this.rows} characters.`
 			);
 			return false;
 		}
 		return true;
 	}
 
-	_textSync(lines, x, y) {
+	_textSync(lines, row, col) {
 		for (let i = 0; i < lines.length; i++) {
 			let line = lines[i];
 			for (let j = 0; j < line.length; j++) {
-				this.drawChar(x + j, y + i, line[j]);
+				this.drawChar(row + i, col + j, line[j]);
 			}
 		}
 	}
 
 	/* Display text with a characters per frame speed limit to mimic old computers */
-	async _textAsync(lines, x, y, speed) {
+	async _textAsync(lines, row, col, speed) {
 		let chars = 0;
 		let frames = 1;
 		let _speed = speed;
@@ -215,7 +194,7 @@ tile {
 			let line = lines[i];
 			for (let j = 0; j < line.length; j++) {
 				if (chars % speed == 0) await delay(); // wait till the next animation frame is drawn
-				this.drawChar(x + j, y + i, line[j]);
+				this.drawChar(row + i, col + j, line[j]);
 				chars++;
 			}
 		}
@@ -224,11 +203,11 @@ tile {
 	}
 
 	/* Display text in one frame */
-	_text(txt, x, y, w, h, speed) {
-		x ??= 0;
-		y ??= 0;
+	_text(txt, row, col, w, h, speed) {
+		col ??= 0;
+		row ??= 0;
 		if (typeof txt != 'string') txt += '';
-		w = w || this.w - x;
+		w = w || this.cols - col;
 		if (QuintOS.sys == 'gridc') {
 			speed ??= 0;
 		} else {
@@ -256,52 +235,36 @@ tile {
 			}
 			lines.push(line);
 			// don't write beyond the bounds of the screen
-			if ((h && i >= h) || lines.length >= this.h) break;
+			if ((h && i >= h) || lines.length >= this.rows) break;
 		}
-		return { lines, x, y, speed };
+		return { lines, row, col, speed };
 	}
 
 	/* Display text */
-	async text(txt, x, y, w, h, speed) {
-		txt = this._text(txt, x, y, w, h, speed);
+	async text(txt, row, col, w, h, speed) {
+		txt = this._text(txt, row, col, w, h, speed);
 		if (txt.speed) {
-			await this._textAsync(txt.lines, txt.x, txt.y, txt.speed);
+			await this._textAsync(txt.lines, txt.row, txt.col, txt.speed);
 		} else {
-			this._textSync(txt.lines, txt.x, txt.y);
+			this._textSync(txt.lines, txt.row, txt.col);
 		}
 		return txt.lines.length; // returns the height
 	}
 
-	/* Displays a block on the lcd bitmap */
-	lcd(block, x, y, direction) {
-		let idx = y * 28 + x;
-		this.bitmap[idx].className = '';
-		if (!block || block == 'none') {
-			// this.bitmap[idx].childNodes[0].nodeValue = ' ';
-			return;
-		}
-		// this.bitmap[idx].childNodes[0].nodeValue = block;
-		let list = block.split(' ');
-		if (direction) list.push(direction);
-		for (let _class of list) {
-			this.bitmap[idx].classList.add(_class);
-		}
-	}
-
 	/* Display an application window frame */
-	async frame(x, y, w, h, speed, c) {
-		x ??= 0;
-		y ??= 0;
-		w ??= this.w;
-		h ??= this.h;
+	async frame(row, col, w, h, speed, c) {
+		row ??= 0;
+		col ??= 0;
+		w ??= this.cols;
+		h ??= this.rows;
 		c ??= '─';
 		if (QuintOS.sys == 'a2') c = '*';
 		if (QuintOS.sys == 'gridc') c = '═';
-		await this.rect(x, y, w, h, speed, c);
+		await this.rect(row, col, w, h, speed, c);
 	}
 
 	/* Display a rectangle with character or character set */
-	async rect(x, y, w, h, speed, c) {
+	async rect(row, col, w, h, speed, c) {
 		if (QuintOS.sys == 'cpet') {
 			c = {
 				tl: '/',
@@ -341,49 +304,49 @@ tile {
 		}
 
 		if (speed) await delay();
-		this.drawChar(x, y, c.tl);
-		this.drawChar(x + w - 1, y, c.tr);
-		this.drawChar(x, y + h - 1, c.bl);
-		this.drawChar(x + w - 1, y + h - 1, c.br);
+		this.drawChar(row, col, c.tl);
+		this.drawChar(row, col + w - 1, c.tr);
+		this.drawChar(row + h - 1, col, c.bl);
+		this.drawChar(row + h - 1, col + w - 1, c.br);
 
 		let chars = 0;
-		for (let i = x + 1, j = y + 1; i < x + w / 2 || j < y + h / 2; i++, j++) {
+		for (let i = col + 1, j = row + 1; i < col + w / 2 || j < row + h / 2; i++, j++) {
 			if (speed && chars % speed == 0) await delay();
 			// Horizontal Lines
-			if (i < x + w / 2) {
-				this.drawChar(i, y, c.hori);
-				this.drawChar(i, y + h - 1, c.hori);
-				this.drawChar(x + w - (i - x + 1), y, c.hori);
-				this.drawChar(x + w - (i - x + 1), y + h - 1, c.hori);
+			if (i < col + w / 2) {
+				this.drawChar(row, i, c.hori);
+				this.drawChar(row + h - 1, i, c.hori);
+				this.drawChar(row, col + w - (i - col + 1), c.hori);
+				this.drawChar(row + h - 1, col + w - (i - col + 1), c.hori);
 			}
 			// Vertical Lines
-			if (j < y + h / 2) {
-				this.drawChar(x, j, c.vert);
-				this.drawChar(x + w - 1, j, c.vert);
-				this.drawChar(x, y + h - (j - y + 1), c.vert);
-				this.drawChar(x + w - 1, y + h - (j - y + 1), c.vert);
+			if (j < row + h / 2) {
+				this.drawChar(j, col, c.vert);
+				this.drawChar(j, col + w - 1, c.vert);
+				this.drawChar(row + h - (j - row + 1), col, c.vert);
+				this.drawChar(row + h - (j - row + 1), col + w - 1, c.vert);
 			}
 			chars++;
 		}
 	}
 
 	/* Display a line between two points using a character (diagonal lines not supported yet) */
-	line(x1, y1, x2, y2, c) {
-		if (y1 == y2) {
+	line(row1, col1, row2, col2, c) {
+		if (row1 == row2) {
 			c ??= '-';
-			this.text(c.repeat(Math.abs(x1 - x2)), x1, y1);
-		} else if (x1 == x2) {
+			this.text(c.repeat(Math.abs(col1 - col2)), col1, row1);
+		} else if (col1 == col2) {
 			c ??= '|';
-			this.text((c + '\n').repeat(Math.abs(y1 - y2)), x1, y1);
+			this.text((c + '\n').repeat(Math.abs(row1 - row2)), col1, row1);
 		}
 	}
 
 	overlap(a, b) {
-		if (a.x >= b.x + b.w || b.x >= a.x + a.w) {
+		if (a.col >= b.col + b.w || b.col >= a.col + a.w) {
 			return false;
 		}
 
-		if (a.y >= b.y + b.h || b.y >= a.y + a.h) {
+		if (a.row >= b.row + b.h || b.row >= a.row + a.h) {
 			return false;
 		}
 		return true;
@@ -397,8 +360,8 @@ tile {
 		let eraser = {
 			x: 1,
 			y: QuintOS.sys != 'arcv' ? 1 : 2,
-			w: this.w - 2,
-			h: this.h - 2
+			w: this.cols - 2,
+			h: this.rows - 2
 		};
 		for (let i = 0; i < this.gpu.length; i++) {
 			let el = this.gpu[i];
@@ -408,7 +371,7 @@ tile {
 			}
 		}
 		if (QuintOS.sys == 'calcu') {
-			this._textSync([' '.repeat(this.w), ' '.repeat(4)], 0, 0);
+			this._textSync([' '.repeat(this.cols), ' '.repeat(4)], 0, 0);
 			return;
 		}
 		let lines = [];
@@ -418,26 +381,26 @@ tile {
 		this._textSync(lines, eraser.x, eraser.y);
 	}
 
-	async eraseRect(x, y, w, h, speed) {
+	async eraseRect(row, col, w, h, speed) {
 		if (QuintOS.sys == 'calcu' && (typeof h == 'undefined' || h > 1)) {
-			await this.eraseRect(0, 0, this.w, 1, speed);
-			await this.eraseRect(0, 1, 4, 1, speed);
+			await this.eraseRect(0, 0, this.cols, 1, speed);
+			await this.eraseRect(1, 0, 4, 1, speed);
 			return;
 		}
-		x = x || 0;
-		y = y || 0;
-		w = w || this.w;
-		h = h || this.h;
+		row = row || 0;
+		col = col || 0;
+		w = w || this.cols;
+		h = h || this.rows;
 		speed ??= 160;
 
 		let eraser = {
-			x,
-			y,
+			col,
+			row,
 			w,
 			h
 		};
 
-		await this.text((' '.repeat(w) + '\n').repeat(h), x, y, w, h, speed);
+		await this.text((' '.repeat(w) + '\n').repeat(h), row, col, w, h, speed);
 
 		for (let i = 0; i < this.gpu.length; i++) {
 			let el = this.gpu[i];
@@ -448,17 +411,17 @@ tile {
 		}
 	}
 
-	button(txt, x, y, action) {
+	button(txt, row, col, action) {
 		// not the game title or username
 
 		let _this = this;
 		class Button {
-			constructor(txt, x, y, action) {
-				txt = _this._text(txt, x, y);
-				this.x = txt.x;
-				this.y = txt.y;
+			constructor(txt, row, col, action) {
+				txt = _this._text(txt, row, col);
+				this.row = txt.row;
+				this.col = txt.col;
 				let lines = txt.lines;
-				if (lines.length == 1 && y != 0) {
+				if (lines.length == 1 && row != 0) {
 					if (QuintOS.sys == 'cpet') {
 						lines[0] = '>' + lines[0] + '<';
 					} else if (QuintOS.sys == 'a2') {
@@ -473,7 +436,7 @@ tile {
 				this.w = w;
 				this.h = lines.length;
 
-				if (!_this._boundsCheck(this.x, this.y, this.w, this.h, 'button')) {
+				if (!_this._boundsCheck(this.row, this.col, this.w, this.h, 'button')) {
 					return;
 				}
 
@@ -482,14 +445,14 @@ tile {
 
 				// add all tiles belonging to the button, to the button
 				for (let i = 0; i < lines.length; i++) {
-					if (i != 0 && QuintOS.sys == 'calcu') break;
+					if (QuintOS.sys == 'calcu' && i != 0) break;
 					let line = lines[i];
 					for (let j = 0; j < line.length; j++) {
-						this.tiles.push(_this.rows[this.y + i].tiles[this.x + j]);
+						this.tiles.push(_this.screen[this.row + i].tiles[this.col + j]);
 					}
 				}
 
-				_this._textSync(lines, this.x, this.y);
+				_this._textSync(lines, this.row, this.col);
 
 				for (let tile of this.tiles) {
 					// when a tile in the button is clicked, do button action
@@ -526,29 +489,29 @@ tile {
 				_this.gpu.splice(_this.gpu.indexOf(this), 1);
 			}
 		}
-		let btn = new Button(txt, x, y, action);
+		let btn = new Button(txt, row, col, action);
 		this.gpu.push(btn);
 		return btn;
 	}
 
-	input(value, x, y, onSubmit, onChange) {
+	input(value, row, col, onSubmit, onChange) {
 		let _this = this;
 		class Input {
-			constructor(value, x, y, onSubmit, onChange) {
-				this.x = x;
-				this.cursorX = x;
-				this.y = y;
+			constructor(value, row, col, onSubmit, onChange) {
+				this.row = row;
+				this.col = col;
+				this.cursorX = col;
 				this.h = 1;
 				this.onSubmit = onSubmit || (() => {});
 				this.onChange = onChange || (() => {});
 				this.value = '';
 
 				this.blink = setInterval(() => {
-					$(_this.rows[this.y].tiles[this.cursorX]).toggleClass('hovered');
-					if (QuintOS.sys == 'calcu' && _this.charAt(this.cursorX, this.y) != '_') {
-						_this.drawChar(this.cursorX, this.y, '_');
+					$(_this.screen[this.row].tiles[this.cursorX]).toggleClass('hovered');
+					if (QuintOS.sys == 'calcu' && _this.charAt(this.row, this.cursorX) != '_') {
+						_this.drawChar(this.row, this.cursorX, '_');
 					} else {
-						_this.drawChar(this.cursorX, this.y, ' ');
+						_this.drawChar(this.row, this.cursorX, ' ');
 					}
 				}, 500);
 			}
@@ -556,11 +519,11 @@ tile {
 			erase() {
 				clearInterval(this.blink);
 				document.removeEventListener('keydown', this.onKeyDown);
-				let cursor = _this.rows[this.y].tiles[this.cursorX];
+				let cursor = _this.screen[this.row].tiles[this.cursorX];
 				$(cursor).off();
 				$(cursor).removeClass('hovered');
-				for (let i = 0; i < this.cursorX - this.x + 1; i++) {
-					let tile = _this.rows[this.y].tiles[this.x + i];
+				for (let i = 0; i < this.cursorX - this.col + 1; i++) {
+					let tile = _this.screen[this.row].tiles[this.col + i];
 					if (tile) tile.childNodes[0].nodeValue = ' ';
 				}
 
@@ -572,27 +535,27 @@ tile {
 				return this.value.length || 1;
 			}
 		}
-		let input = new Input(value, x, y, onSubmit, onChange);
+		let input = new Input(value, row, col, onSubmit, onChange);
 		input.onKeyDown = (e) => {
 			// log(e.key);
-			$(_this.rows[input.y].tiles[input.cursorX]).removeClass('hovered');
+			$(_this.screen[input.row].tiles[input.cursorX]).removeClass('hovered');
 
 			if (e.key == 'Enter') {
 				input.onSubmit(input.value);
 				return;
 			} else if (e.key == 'Backspace' && input.value.length > 0) {
-				if (QuintOS.sys == 'calcu' && (input.y != 1 || input.value.length != 4)) {
-					_this.drawChar(input.cursorX, input.y, ' ');
+				if (QuintOS.sys == 'calcu' && (input.row != 1 || input.value.length != 4)) {
+					_this.drawChar(input.row, input.cursorX, ' ');
 				}
 				input.value = input.value.slice(0, -1);
 				input.cursorX--;
-				_this.drawChar(input.cursorX, input.y, ' ');
+				_this.drawChar(input.row, input.cursorX, ' ');
 				return;
 			} else if (e.key.length != 1) {
 				return;
 			}
 			let c = e.key.charAt(0);
-			_this.drawChar(input.cursorX, input.y, c);
+			_this.drawChar(input.row, input.cursorX, c);
 			input.value += c;
 			input.cursorX++;
 			if (e.key != 'Backspace') {
@@ -614,11 +577,11 @@ tile {
 		return input;
 	}
 
-	async alert(txt, x, y, w, h) {
+	async alert(txt, row, col, w, h) {
 		let pu = this.popup[QuintOS.sys];
 		pu ??= this.popup[3];
-		x = x || pu.x;
-		y = y || pu.y;
+		row = row || pu.row;
+		col = col || pu.col;
 		w = w || pu.w;
 		h = h || pu.h;
 
@@ -626,28 +589,28 @@ tile {
 
 		let th;
 		if (QuintOS.sys != 'calcu') {
-			let _txt = this._text(txt, x + 2, y + 1, w - 4);
+			let _txt = this._text(txt, row + 1, col + 2, w - 4);
 			th = _txt.lines.length;
-			await this.eraseRect(x, y, w, h + th);
+			await this.eraseRect(row, col, w, h + th);
 			if (_txt.speed) {
-				await this._textAsync(_txt.lines, _txt.x, _txt.y, _txt.speed);
+				await this._textAsync(_txt.lines, _txt.row, _txt.col, _txt.speed);
 			} else {
-				this._textSync(_txt.lines, _txt.x, _txt.y);
+				this._textSync(_txt.lines, _txt.row, _txt.col);
 			}
-			await this.rect(x, y, w, h + th);
+			await this.rect(row, col, w, h + th);
 		} else {
 			this.erase();
-			th = await this.text(txt, x, y, w);
-			await this.text('OKAY', 0, 1);
+			th = await this.text(txt, row, col, w);
+			await this.text('OKAY', 1, 0);
 		}
 
-		let okayX = Math.floor(Math.min(x + w / 2, x + w - 4));
-		let okayY = y + 2 + th;
+		let okayRow = row + 2 + th;
+		let okayCol = Math.floor(Math.min(col + w / 2, col + w - 4));
 		if (QuintOS.sys == 'calcu') {
-			okayX = 0;
-			okayY = 1;
+			okayRow = 1;
+			okayCol = 0;
 		}
-		let okayBtn = await this.button('OKAY', okayX, okayY);
+		let okayBtn = await this.button('OKAY', okayRow, okayCol);
 
 		let _this = this;
 		return new Promise((resolve) => {
@@ -666,7 +629,7 @@ tile {
 				erasing = true;
 				if (QuintOS.sys != 'calcu') okayBtn.erase();
 				document.removeEventListener('keydown', onKeyDown);
-				await _this.eraseRect(x, y, w, h + th);
+				await _this.eraseRect(row, col, w, h + th);
 			};
 
 			if (QuintOS.sys == 'calcu') return;
@@ -679,11 +642,11 @@ tile {
 		});
 	}
 
-	async prompt(txt, x, y, w, h) {
+	async prompt(txt, row, col, w, h) {
 		let pu = this.popup[QuintOS.sys];
 		if (!pu) pu = this.popup.default;
-		x = x || pu.x;
-		y = y || pu.y;
+		row = row || pu.row;
+		col = col || pu.col;
 		w = w || pu.w;
 		h = h || pu.h;
 
@@ -691,36 +654,36 @@ tile {
 
 		let th;
 		if (QuintOS.sys != 'calcu') {
-			let _txt = this._text(txt, x + 2, y + 1, w - 4);
+			let _txt = this._text(txt, row + 1, col + 2, w - 4);
 			th = _txt.lines.length;
-			await this.eraseRect(x, y, w, h + th);
+			await this.eraseRect(row, col, w, h + th);
 			if (_txt.speed) {
-				await this._textAsync(_txt.lines, _txt.x, _txt.y, _txt.speed);
+				await this._textAsync(_txt.lines, _txt.row, _txt.col, _txt.speed);
 			} else {
-				this._textSync(_txt.lines, _txt.x, _txt.y);
+				this._textSync(_txt.lines, _txt.row, _txt.col);
 			}
-			await this.rect(x, y, w, h + th);
+			await this.rect(row, col, w, h + th);
 		} else {
 			this.erase();
-			th = await this.text(txt, x, y, w);
+			th = await this.text(txt, row, col, w);
 		}
-		let inX = x + 2;
-		let inY = y + 2 + th;
+		let inRow = row + 2 + th;
+		let inCol = col + 2;
 		if (QuintOS.sys == 'calcu') {
-			inX = 0;
-			inY = 1;
+			inRow = 1;
+			inCol = 0;
 		}
-		let inp = this.input('', inX, inY);
+		let inp = this.input('', inRow, inCol);
 		let enterBtn;
 		let cancelBtn;
 		if (QuintOS.sys != 'calcu') {
-			let ebX = x + w - (QuintOS.sys != 'zx' ? 18 : 4);
+			let ebCol = col + w - (QuintOS.sys != 'zx' ? 18 : 4);
 			let eLbl = QuintOS.sys != 'zx' ? 'ENTER' : '»';
-			enterBtn = this.button(eLbl, ebX, y + 2 + th);
+			enterBtn = this.button(eLbl, row + 2 + th, ebCol);
 
-			let cbX = x + w - (QuintOS.sys != 'zx' ? 10 : 2);
+			let cbCol = col + w - (QuintOS.sys != 'zx' ? 10 : 2);
 			let cLbl = QuintOS.sys != 'zx' ? 'CANCEL' : 'X';
-			cancelBtn = this.button(cLbl, cbX, y + 2 + th);
+			cancelBtn = this.button(cLbl, row + 2 + th, cbCol);
 		}
 
 		let _this = this;
@@ -731,7 +694,7 @@ tile {
 				enterBtn.erase();
 				cancelBtn.erase();
 			}
-			await _this.eraseRect(x, y, w, h + th);
+			await _this.eraseRect(row, col, w, h + th);
 		};
 		return new Promise(async (resolve, reject) => {
 			inp.onSubmit = async () => {
@@ -826,7 +789,7 @@ command+option+i then click the Console tab.`);
 		$('head title').text(title);
 		if (/(a2|gridc)/.test(QuintOS.sys)) this.frame();
 		if (QuintOS.sys != 'calcu') {
-			this.button(title, 2, 0, () => {
+			this.button(title, 0, 2, () => {
 				if (!QuintOS.game) {
 					// open the javascript source in new tab
 					open(src);
@@ -836,10 +799,10 @@ command+option+i then click the Console tab.`);
 				}
 			});
 			if (!QuintOS.username) return;
-			this.text(' by ', 2 + title.length, 0);
-			let x = QuintOS.sys != 'arcv' ? 6 + title.length : 2;
-			let y = QuintOS.sys != 'arcv' ? 0 : 1;
-			this.button(QuintOS.username, x, y, () => {
+			this.text(' by ', 0, 2 + title.length);
+			let row = QuintOS.sys != 'arcv' ? 0 : 1;
+			let col = QuintOS.sys != 'arcv' ? 6 + title.length : 2;
+			this.button(QuintOS.username, row, col, () => {
 				open('https://github.com/' + QuintOS.username);
 			});
 		}
@@ -873,7 +836,7 @@ command+option+i then click the Console tab.`);
 
 		// create an input the user can move around the screen
 		let inp = this.input('', 0, 0, () => {
-			inp.y++;
+			inp.row++;
 		});
 	}
 }
@@ -960,13 +923,13 @@ function spriteArt(txt, scale, palette) {
 }
 
 function loadAni(spriteSheetImg, size, pos, frameCount, frameDelay) {
-	let width, height;
+	let w, h;
 	if (typeof size == 'number') {
-		width = size;
-		height = size;
+		w = size;
+		h = size;
 	} else {
-		width = size[0];
-		height = size[1];
+		w = size[0];
+		h = size[1];
 	}
 
 	// add all the frames in the animation to the frames array
@@ -979,18 +942,18 @@ function loadAni(spriteSheetImg, size, pos, frameCount, frameDelay) {
 		// the line number is the location of the animation line
 		// given as a distance in tiles from the top of the image
 		if (typeof pos == 'number') {
-			x = width * i;
-			y = height * pos;
+			x = w * i;
+			y = h * pos;
 		} else {
 			// pos is the location of the animation line
 			// given as a [row,column] coordinate pair of distances in tiles
 			// from the top left corner of the image
-			x = width * (i + pos[1]); // column
-			y = height * pos[0]; // row
+			x = w * (i + pos[1]); // column
+			y = h * pos[0]; // row
 		}
 
 		frames.push({
-			frame: { x: x, y: y, width: width, height: height }
+			frame: { x: x, y: y, width: w, height: h }
 		});
 	}
 	let ani = loadAnimation(new SpriteSheet(spriteSheetImg, frames));
@@ -2253,8 +2216,8 @@ async function preload() {
 		GuessTheNumber: [
 			{
 				name: 'info',
-				x: 0,
-				y: 0,
+				col: 0,
+				row: 0,
 				speed: 1,
 				txt: 'Hello! QuintOS v0.0'
 			}
@@ -2262,8 +2225,8 @@ async function preload() {
 		PickAPath: [
 			{
 				name: 'boot',
-				x: 0,
-				y: 0,
+				col: 0,
+				row: 0,
 				speed: 2,
 				txt: `
 *** QUINTOS JAVASCRIPT 1.0 ***
@@ -2278,8 +2241,8 @@ READY
 			},
 			{
 				name: 'h1',
-				x: 5,
-				y: 8,
+				col: 5,
+				row: 8,
 				speed: 3,
 				txt: `
  █████                 ██   ██
@@ -2291,8 +2254,8 @@ READY
 			},
 			{
 				name: 'h1-b',
-				x: 5,
-				y: 14,
+				col: 5,
+				row: 14,
 				speed: 2,
 				txt: `
  █████                 ██  ██
@@ -2300,8 +2263,8 @@ READY
 			},
 			{
 				name: 'bg',
-				x: 0,
-				y: 17,
+				col: 0,
+				row: 17,
 				speed: 5,
 				txt: '.\n'.repeat(9)
 			}
@@ -2309,8 +2272,8 @@ READY
 		Pong: [
 			// 			{
 			// 				name: 'h1',
-			// 				x: 0,
-			// 				y: 3,
+			// 				col: 0,
+			// 				row: 3,
 			// 				speed: 2,
 			// 				txt: `
 			//   ────────────────▄▄───▐█
@@ -2330,15 +2293,15 @@ READY
 			// 			},
 			{
 				name: 'bg',
-				x: 0,
-				y: 0,
+				col: 0,
+				row: 0,
 				speed: 20,
 				txt: ['§', 'ж', '*', '^', '°', '#', '¤', '‡', '˜', '»'][Math.floor(Math.random() * 10)].repeat(1000)
 			},
 			{
 				name: 'info',
-				x: 12,
-				y: 20,
+				col: 12,
+				row: 20,
 				speed: 1,
 				txt: `
 JavaScript READY
@@ -2349,8 +2312,8 @@ CopyLeft 1977`
 		Hangman: [
 			{
 				name: 'bg',
-				x: 2,
-				y: 0,
+				col: 2,
+				row: 0,
 				speed: 80,
 				txt: `
     _     _     _  _     _     _
@@ -2377,8 +2340,8 @@ CopyLeft 1977`
 			},
 			{
 				name: 'logo',
-				x: 15,
-				y: 8,
+				col: 15,
+				row: 8,
 				speed: 1,
 				txt: `
 ▓▓▓ ▓▓▓ 
@@ -2389,8 +2352,8 @@ CopyLeft 1977`
 			},
 			{
 				name: 'info',
-				x: 15,
-				y: 15,
+				col: 15,
+				row: 15,
 				speed: 1,
 				txt: 'QuintOS ][e'
 			}
@@ -2398,8 +2361,8 @@ CopyLeft 1977`
 		QuickClicks: [
 			{
 				name: 'bg',
-				x: 5,
-				y: 4,
+				col: 5,
+				row: 4,
 				speed: 100,
 				txt: (() => {
 					let p = ['\\', ' ', ' ', '\\', '_', '_'];
@@ -2416,8 +2379,8 @@ CopyLeft 1977`
 			},
 			{
 				name: 'logo',
-				x: 2,
-				y: 2,
+				col: 2,
+				row: 2,
 				speed: 50,
 				txt: `
           ________\n         /\\       \\\n        /  \\       \\
@@ -2430,8 +2393,8 @@ CopyLeft 1977`
 			},
 			{
 				name: 'h1',
-				x: 20,
-				y: 10,
+				col: 20,
+				row: 10,
 				speed: 10,
 				txt: `
  ██████╗ ██╗   ██╗██╗███╗   ██╗████████╗ ██████╗ ███████╗
@@ -2443,15 +2406,15 @@ CopyLeft 1977`
 			},
 			{
 				name: 'title',
-				x: 5,
-				y: 0,
+				col: 5,
+				row: 0,
 				speed: 1,
 				txt: 'QuintOS'
 			},
 			{
 				name: 'info',
-				x: 20,
-				y: 23,
+				col: 20,
+				row: 23,
 				speed: 2,
 				txt: `
 THE Personal Computer: Powered by JavaScript™
@@ -2461,8 +2424,8 @@ Version 4.0 Copyleft QuintOS ©1981`
 		TicTacToe: [
 			{
 				name: 'logo',
-				x: 24,
-				y: 4,
+				col: 24,
+				row: 4,
 				speed: 30,
 				txt: `
              ,,,,,,
@@ -2484,8 +2447,8 @@ Version 4.0 Copyleft QuintOS ©1981`
 			},
 			{
 				name: 'info',
-				x: 23,
-				y: 24,
+				col: 23,
+				row: 24,
 				speed: 2,
 				txt: `
 QUiNT Compass qOS BIOS Version 05
@@ -2506,8 +2469,8 @@ READY.
 			},
 			{
 				name: 'logo',
-				x: 12,
-				y: 9,
+				col: 12,
+				row: 9,
 				speed: 2,
 				txt: `
 ┏━━┓ ┏┓ ┏┓┏━┳━━┓
@@ -2520,15 +2483,15 @@ READY.
 		Snake: [
 			{
 				name: 'logo',
-				x: 0,
-				y: 0,
+				col: 0,
+				row: 0,
 				speed: 1,
 				txt: 'QuintOS'
 			},
 			{
 				name: 'version',
-				x: 1,
-				y: 1,
+				col: 1,
+				row: 1,
 				speed: 1,
 				txt: 'v7'
 			}
@@ -2536,8 +2499,8 @@ READY.
 		Sokoban: [
 			{
 				name: 'logo',
-				x: 6,
-				y: 13,
+				col: 6,
+				row: 13,
 				speed: 1,
 				txt: `
 ┏━┓ ┏┓ ┏┓┏━┳━┓┏┓┏━┓
@@ -2554,7 +2517,7 @@ READY.
 	bootScreens.Sketchbook = bootScreens.Contain;
 
 	async function displayBootscreen() {
-		console.log(`QuintOS v${QuintOS.level} size: ${width}x${height} rows: ${pc.w} cols: ${pc.h}`);
+		console.log(`QuintOS v${QuintOS.level} size: ${width}x${height} rows: ${pc.rows} cols: ${pc.cols}`);
 
 		let waitForDraw = () =>
 			new Promise((resolve) => {
@@ -2581,8 +2544,8 @@ READY.
 				const STR$ = (val) => String.fromCodePoint((9380 + val) >>> 0);
 				const RND = (range) => Math.random() * range;
 				let txt = '';
-				for (let i = 0; i < pc.h; i++) {
-					for (let j = 0; j < pc.w; j++) {
+				for (let i = 0; i < pc.rows; i++) {
+					for (let j = 0; j < pc.cols; j++) {
 						txt += STR$(205.5 + RND(1));
 					}
 					txt += '\n';
@@ -2594,7 +2557,7 @@ READY.
 
 		for (let el of bootScreen) {
 			let txt = el.txt.charAt(0) == '/n' ? el.txt.slice(1) : el.txt;
-			await pc.text(txt, el.x, el.y, 0, 0, el.speed);
+			await pc.text(txt, el.row, el.col, 0, 0, el.speed);
 		}
 
 		await waitForDraw();
