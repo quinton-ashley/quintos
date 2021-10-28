@@ -1,21 +1,27 @@
 body.gridc {
 	background-color: #000;
-	color: #e5b92e;
+	color: #e5b930;
 }
 
 .gridc .screen {
 	font-family: VT323, Pixel7, monospace;
 	font-size: 1.4vw;
+	position: absolute;
+	z-index: 1;
 }
 
 .gridc .hovered,
 .gridc tile:hover {
-	color: black;
-	background-color: #e5b92e;
+	color: #653;
+	background-color: #e5b930;
+}
+
+.gridc .terminalScreen {
+	filter: drop-shadow(0 0 0.91vw #e5b930);
 }
 
 .gridc #screen0 {
-	filter: drop-shadow(0 0 0.91vw #e5b92e);
+	filter: drop-shadow(0 0 0.5vw #e5b930);
 }
 
 .gridc #screen0,
@@ -23,13 +29,21 @@ body.gridc {
 	cursor: none;
 }
 
-.gridc #screen0 {
+.gridc .terminalScreen {
 	margin-top: 1vw;
 	width: 84vw;
 	height: 48.5vw;
 	margin-left: 1vw;
-	border: solid #000 2vw;
-	background: #333;
+	border: solid #111 2vw;
+	background-color: #333;
+}
+
+.gridc main,
+.gridc #defaultCanvas0,
+.gridc #screen0 {
+	position: absolute;
+	width: 84vw;
+	height: 48.5vw;
 }
 
 .gridc .center {
@@ -41,15 +55,14 @@ body.gridc {
 
 .gridc .screenBox {
 	position: relative;
-	width: 98.18vw;
+	width: 100vw;
 	height: 76.3vw;
 	background-color: #222;
-	border-radius: 1%;
 }
 
 .gridc .frame {
 	position: absolute;
-	width: 92.95vw;
+	width: 94.95vw;
 	height: 71vw;
 	background-color: #555;
 	left: 1.96vw;
@@ -67,13 +80,13 @@ body.gridc {
 
 .gridc .screenBox3 {
 	position: absolute;
-	left: 2vw;
-	top: 1.2vw;
+	left: 2.5vw;
+	top: 2.5vw;
 	width: 90vw;
 	height: 54.5vw;
 	background-color: #7a7a7a;
 	/* border-radius: 30%/2%; */
-	background-color: #000;
+	background-color: #111;
 }
 
 .gridc .screenEffect {
@@ -126,8 +139,8 @@ body.gridc {
 	position: absolute;
 	background-color: #222;
 	width: 100%;
-	height: 10.47vw;
-	bottom: 0.31vw;
+	height: 10.5vw;
+	bottom: 0;
 	border-top: 0.65vw #444 solid;
 }
 

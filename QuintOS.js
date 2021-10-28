@@ -3,8 +3,8 @@ let log = console.log; // log becomes a shortcut for console.log
 window.QuintOS = {
 	levels: [
 		/*00*/ ['GuessTheNumber', 'calcu'],
-		/*01*/ ['PickAPath', 'cpet'], // TODO zx
-		/*02*/ ['Pong', 'zx'], // TODO arc
+		/*01*/ ['PickAPath', 'cpet'],
+		/*02*/ ['Pong', 'zx'], // TODO zx
 		/*03*/ ['Hangman', 'a2'],
 		/*04*/ ['QuickClicks', 'gridc'],
 		/*05*/ ['ClickAPath', 'gridc'],
@@ -80,7 +80,7 @@ class PC {
 			},
 			cpet: {
 				x: 0,
-				y: 1,
+				y: 2,
 				w: 40,
 				h: 4
 			},
@@ -302,7 +302,16 @@ tile {
 
 	/* Display a rectangle with character or character set */
 	async rect(x, y, w, h, speed, c) {
-		if (!c || c == '─') {
+		if (QuintOS.sys == 'cpet') {
+			c = {
+				tl: '/',
+				tr: '\\',
+				bl: '\\',
+				br: '/',
+				hori: '-',
+				vert: '!'
+			};
+		} else if (!c || c == '─') {
 			c = {
 				tl: '┌',
 				tr: '┐',
@@ -441,9 +450,6 @@ tile {
 
 	button(txt, x, y, action) {
 		// not the game title or username
-		if (y != 0) {
-			if (QuintOS.sys == 'a2') txt = '<' + txt + '>';
-		}
 
 		let _this = this;
 		class Button {
@@ -452,6 +458,13 @@ tile {
 				this.x = txt.x;
 				this.y = txt.y;
 				let lines = txt.lines;
+				if (lines.length == 1 && y != 0) {
+					if (QuintOS.sys == 'cpet') {
+						lines[0] = '>' + lines[0] + '<';
+					} else if (QuintOS.sys == 'a2') {
+						lines[0] = '<' + lines[0] + '>';
+					}
+				}
 				this.txt = lines.join('\n');
 				let w = 0; // max width of text
 				for (let line of lines) {
@@ -2253,7 +2266,7 @@ async function preload() {
 				y: 0,
 				speed: 2,
 				txt: `
-*** QUINTOS JAVASCRIPT 0.0 ***
+*** QUINTOS JAVASCRIPT 1.0 ***
 
  2902 BYTES FREE
 
@@ -2269,26 +2282,68 @@ READY
 				y: 8,
 				speed: 3,
 				txt: `
- ██████                          █████   █████
-██    ██ ██  ██ ██  ████  █████ ██   ██ ██    
-██    ██ ██  ██ ██ ██  ██  ██   ██   ██  ████
-██  ▄ ██ ██  ██ ██ ██  ██  ██   ██   ██     ██`
+ █████                 ██   ██
+█     █               █  █ █  
+█     █               █  █ █    
+█     █ █ █ █ ██  ███ █  █  █
+█     █ █ █ █ █ █  █  █  █   █
+█  █  █ ███ █ █ █  █  █  █   █`
 			},
 			{
 				name: 'h1-b',
 				x: 5,
-				y: 12,
+				y: 14,
 				speed: 2,
 				txt: `
- ██████   ████  ██ ██  ██  ██    █████  █████
-     ▀                                       `
+ █████                 ██  ██
+    █                                       `
 			},
 			{
 				name: 'bg',
 				x: 0,
-				y: 13,
+				y: 17,
 				speed: 5,
-				txt: '.\n'.repeat(21)
+				txt: '.\n'.repeat(9)
+			}
+		],
+		Pong: [
+			// 			{
+			// 				name: 'h1',
+			// 				x: 0,
+			// 				y: 3,
+			// 				speed: 2,
+			// 				txt: `
+			//   ────────────────▄▄───▐█
+			//   ────▄▄▄───▄██▄──█▀───█─▄
+			//   ──▄██▀█▌─██▄▄──▐█▀▄─▐█▀
+			//   ─▐█▀▀▌───▄▀▌─▌─█─▌──▌─▌
+			//   ─▌▀▄─▐──▀▄─▐▄─▐▄▐▄─▐▄─▐▄
+
+			// ████◣             ██◣ ██◣
+			// █    █             █  █ █
+			// █    █ █ █▐▌██◣██◣ █  █ █
+			// █    █ █ █▐▌█ █ █  █  █ ◥██◣
+			// █    █ █ █▐▌█ █ █  █  █    █
+			// █  ▗ █ ██◤▐▌█ █ █  █  █    █
+			// ◥████◤             ◥██◤ ◥██◤
+			// 	    ▘`
+			// 			},
+			{
+				name: 'bg',
+				x: 0,
+				y: 0,
+				speed: 20,
+				txt: ['§', 'ж', '*', '^', '°', '#', '¤', '‡', '˜', '»'][Math.floor(Math.random() * 10)].repeat(1000)
+			},
+			{
+				name: 'info',
+				x: 12,
+				y: 20,
+				speed: 1,
+				txt: `
+JavaScript READY
+QuintOS version 0.1
+CopyLeft 1977`
 			}
 		],
 		Hangman: [
@@ -2377,7 +2432,7 @@ READY
 				name: 'h1',
 				x: 20,
 				y: 10,
-				speed: 5,
+				speed: 10,
 				txt: `
  ██████╗ ██╗   ██╗██╗███╗   ██╗████████╗ ██████╗ ███████╗
 ██╔═══██╗██║   ██║██║████╗  ██║╚══██╔══╝██╔═══██╗██╔════╝
@@ -2397,10 +2452,10 @@ READY
 				name: 'info',
 				x: 20,
 				y: 23,
-				speed: 1,
+				speed: 2,
 				txt: `
 THE Personal Computer: Powered by JavaScript™
-Version 0.3 Copyleft QuintOS ©1981`
+Version 4.0 Copyleft QuintOS ©1981`
 			}
 		],
 		TicTacToe: [
@@ -2433,55 +2488,15 @@ Version 0.3 Copyleft QuintOS ©1981`
 				y: 24,
 				speed: 2,
 				txt: `
-QUiNT Compass qOS BIOS Version 04
+QUiNT Compass qOS BIOS Version 05
 Copyleft © 1983 QUiNT Systems Corp`
-			}
-		],
-		Pong: [
-			// 			{
-			// 				name: 'h1',
-			// 				x: 0,
-			// 				y: 3,
-			// 				speed: 2,
-			// 				txt: `
-			//   ────────────────▄▄───▐█
-			//   ────▄▄▄───▄██▄──█▀───█─▄
-			//   ──▄██▀█▌─██▄▄──▐█▀▄─▐█▀
-			//   ─▐█▀▀▌───▄▀▌─▌─█─▌──▌─▌
-			//   ─▌▀▄─▐──▀▄─▐▄─▐▄▐▄─▐▄─▐▄
-
-			// ████◣             ██◣ ██◣
-			// █    █             █  █ █
-			// █    █ █ █▐▌██◣██◣ █  █ █
-			// █    █ █ █▐▌█ █ █  █  █ ◥██◣
-			// █    █ █ █▐▌█ █ █  █  █    █
-			// █  ▗ █ ██◤▐▌█ █ █  █  █    █
-			// ◥████◤             ◥██◤ ◥██◤
-			// 	    ▘`
-			// 			},
-			{
-				name: 'bg',
-				x: 0,
-				y: 0,
-				speed: 20,
-				txt: ['§', 'ж', '*', '^', '°', '#', '¤', '‡', '˜', '»'][Math.floor(Math.random() * 10)].repeat(1000)
-			},
-			{
-				name: 'info',
-				x: 12,
-				y: 20,
-				speed: 1,
-				txt: `
-JavaScript READY
-QuintOS version 0.1
-CopyLeft 1977`
 			}
 		],
 		Contain: [
 			{
 				name: 'boot',
 				txt: `
-  **** QUINTOS 05 JAVASCRIPT ES12 ****
+  **** QUINTOS v09 JAVASCRIPT ES12 ****
 
   64GB RAM SYSTEM 38911 GIGABYTES FREE
 
@@ -2525,11 +2540,11 @@ READY.
 				y: 13,
 				speed: 1,
 				txt: `
-┏━┓ ┏┓ ┏┓┏━┳━┓┏━┓
-┃┃┣┳╋╋━┫┗┫┃┃━┫┃┃┃
-┃┃┃┃┃┃┃┃┏┫┃┃ ┃┃ ┃
-┃┃┃┃┃┃┃┃┃┫┃┣━┃┃┃┃
-┗┓┣━┻┻┻┻━┻━┻━┛┗━┛
+┏━┓ ┏┓ ┏┓┏━┳━┓┏┓┏━┓
+┃┃┣┳╋╋━┫┗┫┃┃━┫┃┃┃━┫
+┃┃┃┃┃┃┃┃┏┫┃┃ ┃┃┃┃ ┃
+┃┃┃┃┃┃┃┃┃┫┃┣━┃┃┃┣━┃
+┗┓┣━┻┻┻┻━┻━┻━┛┗┛┗━┛
  ┗┛`
 			}
 		]
@@ -2539,7 +2554,7 @@ READY.
 	bootScreens.Sketchbook = bootScreens.Contain;
 
 	async function displayBootscreen() {
-		console.log('QuintOS v' + QuintOS.level + ' size: ' + pc.w + 'x' + pc.h);
+		console.log(`QuintOS v${QuintOS.level} size: ${width}x${height} rows: ${pc.w} cols: ${pc.h}`);
 
 		let waitForDraw = () =>
 			new Promise((resolve) => {
@@ -2593,7 +2608,7 @@ READY.
 		} else if (QuintOS.sys == 'gridc') {
 			resizeCanvas(320, 240);
 		} else if (QuintOS.sys == 'zx') {
-			resizeCanvas(128, 192);
+			resizeCanvas(256, 192);
 		}
 		camera.position.x = width / 2;
 		camera.position.y = height / 2;
@@ -2731,6 +2746,7 @@ READY.
 
 	let bootScreen = bootScreens[title];
 	await displayBootscreen();
+	// await delay(111111111); // test bootscreen
 	await pc.eraseRect();
 
 	if (QuintOS.sys == 'calcu') await delay(1000);
