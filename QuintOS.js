@@ -157,7 +157,7 @@ tile {
 		let x1 = col + w;
 		let y1 = row + h;
 		let b0 = col < 0 || row < 0 || col >= this.cols || row >= this.rows;
-		let b1 = x1 < 0 || y1 < 0 || x1 >= this.cols || y1 >= this.rows;
+		let b1 = x1 < 0 || y1 < 0 || x1 > this.cols || y1 > this.rows;
 		if (b0 || b1) {
 			console.error(
 				`ERROR: Out of bounds! Failed to create a ${type} at x: ${col} y: ${row} of width: ${w} and height: ${h}. The size of this screen is: ${this.cols}x${this.rows} characters.`
@@ -2517,8 +2517,6 @@ READY.
 	bootScreens.Sketchbook = bootScreens.Contain;
 
 	async function displayBootscreen() {
-		console.log(`QuintOS v${QuintOS.level} size: ${width}x${height} rows: ${pc.rows} cols: ${pc.cols}`);
-
 		let waitForDraw = () =>
 			new Promise((resolve) => {
 				let wasDrawn = false;
@@ -2577,34 +2575,39 @@ READY.
 		camera.position.y = height / 2;
 		strokeWeight(2);
 		$('canvas').removeAttr('style');
+
+		console.log(`QuintOS v${QuintOS.level} size: ${width}x${height} rows: ${pc.rows} cols: ${pc.cols}`);
 	}
 
 	let palettes = {
 		zx: [
 			{
-				0: '#000000', // bright 0 black
-				1: '#0000d8', // bright 0 blue
-				2: '#d80000', // bright 0 red
-				3: '#d800d8', // bright 0 magenta
-				4: '#00d800', // bright 0 green
-				5: '#00d8d8', // bright 0 cyan
-				6: '#d8d800', // bright 0 yellow
-				7: '#ffffff', // bright 0 white
-				8: '#000000', // bright 1 black
-				9: '#0000ff', // bright 1 blue
-				A: '#ff0000', // bright 1 red
-				B: '#ff00ff', // bright 1 magenta
-				C: '#00ff00', // bright 1 green
-				D: '#00ffff', // bright 1 cyan
-				E: '#ffff00', // bright 1 yellow
-				F: '#ffffff' // bright 1 white
+				' ': '',
+				'.': '',
+				b: '#000000', // Black
+				u: '#0000d8', // blUe
+				r: '#d80000', // Red
+				m: '#d800d8', // Magenta
+				g: '#00d800', // Green
+				c: '#00d8d8', // Cyan
+				y: '#d8d800', // Yellow
+				w: '#ffffff', // White
+				//
+				B: '#000000', // bright 1 black
+				U: '#0000ff', // bright 1 blue
+				R: '#ff0000', // bright 1 red
+				M: '#ff00ff', // bright 1 magenta
+				G: '#00ff00', // bright 1 green
+				C: '#00ffff', // bright 1 cyan
+				Y: '#ffff00', // bright 1 yellow
+				W: '#ffffff' // bright 1 white
 			}
 		],
 		c64: [
 			{
 				' ': '',
 				'.': '',
-				k: '#000000', // blacK
+				b: '#000000', // blacK
 				d: '#626252', // Dark-gray
 				m: '#898989', // Mid-gray
 				l: '#adadad', // Light-gray
@@ -2617,7 +2620,7 @@ READY.
 				e: '#9ae29b', // light grEEn
 				g: '#5cab5e', // Green
 				t: '#6abfc6', // Teal
-				b: '#50459b', // Blue
+				u: '#50459b', // blUe
 				i: '#887ecb', // Indigo
 				p: '#a057a3' // Purple
 			}
