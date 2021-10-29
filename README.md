@@ -7,21 +7,30 @@ Use the QuintOS [template project](https://github.com/quinton-ashley/quintos-tem
 ## alert window
 
 ```js
-await pc.alert(txt, row, col, w, h, speed);
+await alert(txt, row, col, w, h, speed);
 ```
 
 ## prompt window
 
 ```js
-await pc.prompt(txt, row, col, w, h, speed);
+await prompt(txt, row, col, w, h, speed);
 ```
 
 returns the user's input, if the user entered a number it will return a number, otherwise it will return a string, if the user pressed cancel `null` will be returned
 
+## print to the console
+
+```js
+log(...args);
+```
+
+shortcut for the `console.log` function
+prints any amount of input arguments to the console
+
 ## display text
 
 ```js
-await pc.text(txt, row, col, w, h, speed);
+await text(txt, row, col, w, h, speed);
 ```
 
 returns the height of the text
@@ -29,7 +38,7 @@ returns the height of the text
 ## create a button
 
 ```js
-let btn = pc.button(txt, row, col, action);
+let btn = button(txt, row, col, action);
 ```
 
 returns the `Button` object created
@@ -39,25 +48,25 @@ returns the `Button` object created
 ## erase your program's screen
 
 ```js
-pc.erase();
+erase();
 ```
 
 ## draw the lines of a rectangle
 
 ```js
-await pc.rect(row, col, w, h, speed, c);
+await textRect(row, col, w, h, speed, c);
 ```
 
 ## erase a specific area
 
 ```js
-await pc.eraseRect(row, col, w, h, speed);
+await eraseRect(row, col, w, h, speed);
 ```
 
 ## create an input
 
 ```js
-let inp = pc.input(value, row, col, onSubmit, onChange);
+let inp = input(value, row, col, onSubmit, onChange);
 ```
 
 returns the `Input` object created

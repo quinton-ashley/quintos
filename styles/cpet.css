@@ -18,11 +18,6 @@ body.cpet {
 	filter: drop-shadow(0 0 10px #eee);
 }
 
-.cpet #screen0,
-.cpet .hovered {
-	cursor: none;
-}
-
 .cpet main,
 .cpet #screen0 {
 	position: absolute;

@@ -1,9 +1,7 @@
-.arcv :root {
-	background-color: #111;
-	background-image: radial-gradient(circle, #222, #111);
-}
-
 body.arcv {
+	background-color: #111;
+	color: #fff;
+	background-image: radial-gradient(circle, #222, #111);
 	width: 100vw;
 	height: 100vh;
 	display: flex;
@@ -16,13 +14,16 @@ body.arcv {
 .arcv .screen {
 	font-family: C64, monospace;
 	font-size: 2.8vmin;
-	position: absolute;
 	z-index: 1;
-	top: 1%;
-	left: 1%;
-	width: 99%;
-	height: 99%;
-	color: #fff;
+}
+
+.arcv main,
+.arcv #defaultCanvas0,
+.arcv #screen0 {
+	position: absolute;
+	border-radius: 2vmin;
+	width: 77vmin !important;
+	height: 96vmin !important;
 }
 
 .arcv .hovered {
@@ -87,14 +88,6 @@ body.arcv {
 .arcv #tube.clear {
 	background-color: #222;
 	border: none;
-}
-
-.arcv canvas {
-	position: relative;
-	border-radius: 2vmin;
-	z-index: 0;
-	width: 77vmin !important;
-	height: 96vmin !important;
 }
 
 .arcv #tube::before,
