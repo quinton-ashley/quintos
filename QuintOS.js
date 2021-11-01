@@ -2808,7 +2808,7 @@ READY.
 				// 	this.logged = args[0];
 				// };
 			}
-			QuintOS.game = await QuintOS.loadGame();
+			QuintOS.game ??= await QuintOS.loadGame();
 			resolve();
 		}),
 		new Promise(async (resolve, reject) => {
