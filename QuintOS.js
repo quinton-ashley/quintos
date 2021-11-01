@@ -495,6 +495,7 @@ async function alert(txt, row, col, w, h) {
 		await textRect(row, col, w, h + th);
 	} else {
 		erase();
+		txt = txt.slice(0, QuintOS.cols);
 		th = await text(txt, row, col, w);
 		await text('OKAY', 1, 0);
 	}
@@ -560,6 +561,7 @@ async function prompt(txt, row, col, w, h) {
 		await textRect(row, col, w, h + th);
 	} else {
 		window.erase();
+		txt = txt.slice(0, QuintOS.cols);
 		th = await text(txt, row, col, w);
 	}
 	let inRow = row + 2 + th;
@@ -612,8 +614,9 @@ async function prompt(txt, row, col, w, h) {
 	});
 }
 
-QuintOS.loadJS = async (src) => {
+QuintOS.runJS = async (src, file) => {
 	return new Promise(async (resolve, reject) => {
+		file ??= await QuintOS.loadCode(src);
 		const script = document.createElement('script');
 		script.async = false;
 		script.onload = function () {
@@ -631,14 +634,35 @@ command+option+i then click the Console tab.`);
 		// if (QuintOS.context == 'live') {
 		// 	src += '?' + Date.now();
 		// }
-		if (src.slice(0, 4) != 'http') {
+		if (!file) {
 			script.src = src;
 		} else {
-			script.innerHTML = await (await fetch(src)).text();
+			script.innerHTML = file;
 		}
 
 		document.body.appendChild(script);
 	});
+};
+
+QuintOS.translateJava = async (file) => {
+	file = await jdk.translate(file);
+
+	log(file);
+
+	file = file.replace(
+		/System\.out\.print(ln)*\(([^\)]*)\);\s*(.*=)(.*\.)*next(Int|Float|Double|Line|Short|Long)*\(\);/g,
+		'$3 await prompt($2);'
+	);
+
+	file = file.replace(/System\.out\.print(ln)*\(([^\)]*)\);/g, 'await alert($2);');
+
+	log(file);
+	return file;
+};
+
+QuintOS.runJava = async (src, file) => {
+	if (!file) file = await QuintOS.loadCode(src);
+	jdk.run(file);
 };
 
 QuintOS.preloadData = async () => {
@@ -648,36 +672,30 @@ QuintOS.preloadData = async () => {
 	}
 	let dir = QuintOS.dir || '.';
 	let title = QuintOS.gameTitle;
-	let src = `${dir}/${title.slice(0, 1).toLowerCase() + title.slice(1)}-preload.js`;
+	let src = `${dir}/${title.slice(0, 1).toLowerCase() + title.slice(1)}-preload.`;
+	file += QuintOS.language;
 	try {
-		await QuintOS.loadJS(src);
+		await QuintOS.runCode(src);
 	} catch (error) {
 		QuintOS.error(error);
 	}
 };
 
-QuintOS.loadGame = async () => {
-	let title = QuintOS.gameTitle;
-	if (QuintOS.game) {
+QuintOS.runCode = async (src, file) => {
+	if (QuintOS.language == 'js') {
+		await QuintOS.runJS(src, file);
+	} else if (QuintOS.language == 'java') {
+		await QuintOS.runJava(src, file);
+	}
+};
+
+QuintOS.runGame = async () => {
+	if (typeof QuintOS.game == 'function') {
 		QuintOS.game();
 	} else {
-		let dir = QuintOS.dir || '.';
-		let file = `${title.slice(0, 1).toLowerCase() + title.slice(1)}.js`;
-		let src = dir + '/' + file;
-		try {
-			await QuintOS.loadJS(src);
-		} catch (error) {
-			try {
-				dir = dir.split('/');
-				dir.pop();
-				dir = dir.join('/');
-				src = dir + '/' + file;
-				await QuintOS.loadJS(src);
-			} catch (ror) {
-				QuintOS.error(error);
-			}
-		}
+		await QuintOS.runCode(QuintOS.gameFile, QuintOS.game);
 	}
+	let title = QuintOS.gameTitle;
 	let lvl = QuintOS.level.toString();
 	if (lvl.length == 1) lvl = '0' + lvl;
 	title = lvl + '_' + title.slice(0, 1).toUpperCase() + title.slice(1);
@@ -701,6 +719,45 @@ QuintOS.loadGame = async () => {
 			open('https://github.com/' + QuintOS.username);
 		});
 	}
+};
+
+QuintOS.loadCode = async (src) => {
+	let file;
+	if (QuintOS.language == 'js') {
+		if (src.slice(0, 4) != 'http') {
+			file = await (await fetch(src)).text();
+		} else {
+			return;
+		}
+	}
+	if (QuintOS.language == 'java') {
+		file = await (await fetch(src)).text();
+		file = await QuintOS.translateJava(file);
+	}
+	return file;
+};
+
+QuintOS.loadGame = async () => {
+	let title = QuintOS.gameTitle;
+	if (QuintOS.game) return;
+	let dir = QuintOS.dir || '.';
+	let file = `${title.slice(0, 1).toLowerCase() + title.slice(1)}.`;
+	file += QuintOS.language;
+	let src = dir + '/' + file;
+	try {
+		QuintOS.game = await QuintOS.loadCode(src);
+	} catch (error) {
+		try {
+			dir = dir.split('/');
+			dir.pop();
+			dir = dir.join('/');
+			src = dir + '/' + file;
+			QuintOS.game = await QuintOS.loadCode(src);
+		} catch (ror) {
+			QuintOS.error(error);
+		}
+	}
+	QuintOS.gameFile = src;
 };
 
 QuintOS.error = async (e) => {
@@ -786,7 +843,7 @@ function spriteArt(txt, scale, palette) {
 	if (typeof palette == 'number') {
 		palette = QuintOS.palettes[palette];
 	}
-	palette ??= QuintOS.palettes[0];
+	palette ??= QuintOS.palette;
 	let lines = txt; // accepts 2D arrays of characters
 	if (typeof txt == 'string') {
 		txt = txt.replace(/^[\n\t]+|\s+$/g, ''); // trim newlines
@@ -2058,7 +2115,7 @@ async function preload() {
 	if (QuintOS.sys == 'calcu') {
 		$('#keys div p').click(function () {
 			let $this = $(this);
-			let key = $this.attr('name') || $text();
+			let key = $this.attr('name') || $this.text();
 			let count = 1;
 			if (key == 'Clear') {
 				count = 23;
@@ -2674,8 +2731,8 @@ READY.
 	/*#0f380f; #306230; #8bac0f; #9bbc0f; */
 
 	// assign palettes to the system's palette
-	QuintOS.palette = palettes[QuintOS.sys][0] || [];
 	QuintOS.palettes = palettes[QuintOS.sys] || [];
+	QuintOS.palette = QuintOS.palettes[0] || {};
 
 	let title = QuintOS.gameTitle;
 	QuintOS.dir += '/' + title[0].toUpperCase() + title.slice(1);
@@ -2734,13 +2791,36 @@ READY.
 		return sprite;
 	};
 
-	if (QuintOS.level >= 11 && !QuintOS?.preload) QuintOS.preload = true;
-	if (QuintOS.preload) QuintOS.preloadData();
-
-	if (/(a2|gridc)/.test(QuintOS.sys)) await QuintOS.frame();
+	QuintOS.language ??= 'js';
 
 	let bootScreen = bootScreens[title] || [];
-	await displayBootscreen();
+
+	await Promise.all([
+		new Promise(async (resolve, reject) => {
+			if (QuintOS.language == 'java') {
+				try {
+					await jdk.init('./node_modules/java2js');
+				} catch (ror) {
+					reject(ror);
+				}
+				System.exit = exit;
+				// jdk.log = function (...args) {
+				// 	this.logged = args[0];
+				// };
+			}
+			QuintOS.game = await QuintOS.loadGame();
+			resolve();
+		}),
+		new Promise(async (resolve, reject) => {
+			if (QuintOS.level >= 11 && !QuintOS?.preload) QuintOS.preload = true;
+			if (QuintOS.preload) QuintOS.preloadData();
+
+			if (/(a2|gridc)/.test(QuintOS.sys)) await QuintOS.frame();
+
+			await displayBootscreen();
+			resolve();
+		})
+	]);
 
 	window.text = QuintOS.text;
 	window.erase = QuintOS.erase;
@@ -2774,7 +2854,7 @@ READY.
 	// 	error(msg + ' ' + url + ':' + lineNum);
 	// };
 	p5.disableFriendlyErrors = false;
-	QuintOS.loadGame();
+	QuintOS.runGame();
 }
 
 function setup() {
