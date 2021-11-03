@@ -1567,11 +1567,11 @@ deltaTime = ((now - then) / 1000)/INTERVAL_60; // seconds since last frame
 				colorMode(RGB);
 
 				noStroke();
-				rectMode(CENTER);
-				ellipseMode(CENTER);
-				imageMode(CENTER);
+				// rectMode(CENTER);
+				// ellipseMode(CENTER);
+				// imageMode(CENTER);
 
-				translate(this.position.x, this.position.y);
+				translate(this.position.x + (dirX != -1 ? 0 : this.w), this.position.y + (dirY != -1 ? 0 : this.h));
 				scale(this._getScaleX() * dirX, this._getScaleY() * dirY);
 				if (pInst._angleMode === pInst.RADIANS) {
 					rotate(radians(this.rotation));
@@ -2800,7 +2800,7 @@ deltaTime = ((now - then) / 1000)/INTERVAL_60; // seconds since last frame
 		this.draw = function () {
 			pInst.noFill();
 			pInst.stroke(0, 255, 0);
-			pInst.rectMode(CENTER);
+			// pInst.rectMode(CENTER);
 			pInst.ellipse(this.center.x + this.offset.x, this.center.y + this.offset.y, this.radius * 2, this.radius * 2);
 		};
 
@@ -2875,10 +2875,7 @@ deltaTime = ((now - then) / 1000)/INTERVAL_60; // seconds since last frame
 		else this.offset = _offset;
 
 		this.min = function () {
-			return createVector(
-				this.center.x + this.offset.x - this.extents.x,
-				this.center.y + this.offset.y - this.extents.y
-			);
+			return createVector(this.center.x + this.offset.x, this.center.y + this.offset.y);
 		};
 
 		this.max = function () {
@@ -2889,23 +2886,23 @@ deltaTime = ((now - then) / 1000)/INTERVAL_60; // seconds since last frame
 		};
 
 		this.right = function () {
-			return this.center.x + this.offset.x + this.extents.x / 2;
+			return this.center.x + this.offset.x + this.extents.x;
 		};
 
 		this.left = function () {
-			return this.center.x + this.offset.x - this.extents.x / 2;
+			return this.center.x + this.offset.x;
 		};
 
 		this.top = function () {
-			return this.center.y + this.offset.y - this.extents.y / 2;
+			return this.center.y + this.offset.y;
 		};
 
 		this.bottom = function () {
-			return this.center.y + this.offset.y + this.extents.y / 2;
+			return this.center.y + this.offset.y + this.extents.y;
 		};
 
 		this.size = function () {
-			return createVector(this.extents.x * 2, this.extents.y * 2);
+			return createVector(this.extents.x, this.extents.y);
 		};
 
 		this.rotate = function (r) {
@@ -2928,8 +2925,8 @@ deltaTime = ((now - then) / 1000)/INTERVAL_60; // seconds since last frame
 			//fill(col);
 			pInst.noFill();
 			pInst.stroke(0, 255, 0);
-			pInst.rectMode(CENTER);
-			pInst.rect(this.center.x + this.offset.x, this.center.y + this.offset.y, this.size().x / 2, this.size().y / 2);
+			// pInst.rectMode(CENTER);
+			pInst.rect(this.center.x + this.offset.x, this.center.y + this.offset.y, this.size().x, this.size().y);
 		};
 
 		this.overlap = function (other) {
@@ -3027,7 +3024,7 @@ deltaTime = ((now - then) / 1000)/INTERVAL_60; // seconds since last frame
 		this.minkowskiDifference = function (other) {
 			var topLeft = this.min().sub(other.max());
 			var fullSize = this.size().add(other.size());
-			return new AABB(pInst, topLeft.add(fullSize.div(2)), fullSize.div(2));
+			return new AABB(pInst, topLeft, fullSize);
 		};
 
 		this.closestPointOnBoundsToPoint = function (point) {
@@ -3312,7 +3309,7 @@ deltaTime = ((now - then) / 1000)/INTERVAL_60; // seconds since last frame
 
 				//this.currentImageMode = g.imageMode;
 				pInst.push();
-				pInst.imageMode(CENTER);
+				// pInst.imageMode(CENTER);
 
 				pInst.translate(this.xpos, this.ypos);
 				if (pInst._angleMode === pInst.RADIANS) {

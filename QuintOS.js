@@ -672,8 +672,7 @@ QuintOS.preloadData = async () => {
 	}
 	let dir = QuintOS.dir || '.';
 	let title = QuintOS.gameTitle;
-	let src = `${dir}/${title.slice(0, 1).toLowerCase() + title.slice(1)}-preload.`;
-	file += QuintOS.language;
+	let src = `${dir}/${title.slice(0, 1).toLowerCase() + title.slice(1)}-preload.${QuintOS.language}`;
 	try {
 		await QuintOS.runCode(src);
 	} catch (error) {
@@ -693,7 +692,7 @@ QuintOS.runGame = async () => {
 	if (typeof QuintOS.game == 'function') {
 		QuintOS.game();
 	} else {
-		await QuintOS.runCode(QuintOS.gameFile, QuintOS.game);
+		QuintOS.runCode(QuintOS.gameFile, QuintOS.game);
 	}
 	let title = QuintOS.gameTitle;
 	let lvl = QuintOS.level.toString();
@@ -959,8 +958,8 @@ class Tiles {
 				layer = 0;
 			}
 			let sprite = createSprite(
-				_this.x + (col + 0.5) * _this.tileSize,
-				_this.y + (row + 0.5) * _this.tileSize,
+				_this.x + col * _this.tileSize,
+				_this.y + row * _this.tileSize,
 				_this.tileSize,
 				_this.tileSize
 			);
@@ -1008,7 +1007,7 @@ class Tiles {
 		sprite.destCol = destCol;
 		if (sprite.isMoving) return;
 		sprite.isMoving = direction;
-		sprite.attractionPoint(speed, this.x + (destCol + 0.5) * this.tileSize, this.y + (destRow + 0.5) * this.tileSize);
+		sprite.attractionPoint(speed, this.x + destCol * this.tileSize, this.y + destRow * this.tileSize);
 	}
 
 	/*
@@ -1021,18 +1020,18 @@ class Tiles {
 				for (let l = 1; l < this.tiles[r][c].length; l++) {
 					let sprite = this.tiles[r][c][l];
 					if (!sprite) continue;
-					let row = (sprite.position.y - this.y - 0.5 * this.tileSize) / this.tileSize;
-					let col = (sprite.position.x - this.x - 0.5 * this.tileSize) / this.tileSize;
+					let row = (sprite.position.y - this.y) / this.tileSize;
+					let col = (sprite.position.x - this.x) / this.tileSize;
 					if (row % 1 > 0.1 || col % 1 > 0.1) continue;
 					row = Math.round(row);
 					col = Math.round(col);
 					sprite.row = row;
 					sprite.col = col;
-					if (!opt.snap && (sprite.destRow != row || sprite.destCol != col)) continue;
+					if (sprite.isMoving && !opt.snap && (sprite.destRow != row || sprite.destCol != col)) continue;
 					sprite.velocity.x = 0;
 					sprite.velocity.y = 0;
-					sprite.y = this.y + (row + 0.5) * this.tileSize;
-					sprite.x = this.x + (col + 0.5) * this.tileSize;
+					sprite.y = this.y + row * this.tileSize;
+					sprite.x = this.x + col * this.tileSize;
 					sprite.isMoving = false;
 				}
 			}
