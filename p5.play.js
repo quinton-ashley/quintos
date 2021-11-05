@@ -1571,7 +1571,10 @@ deltaTime = ((now - then) / 1000)/INTERVAL_60; // seconds since last frame
 				// ellipseMode(CENTER);
 				// imageMode(CENTER);
 
-				translate(this.position.x + (dirX != -1 ? 0 : this.w), this.position.y + (dirY != -1 ? 0 : this.h));
+				translate(
+					Math.round(this.position.x + (dirX != -1 ? 0 : this.w)),
+					Math.round(this.position.y + (dirY != -1 ? 0 : this.h))
+				);
 				scale(this._getScaleX() * dirX, this._getScaleY() * dirY);
 				if (pInst._angleMode === pInst.RADIANS) {
 					rotate(radians(this.rotation));

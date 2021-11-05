@@ -11,7 +11,7 @@ window.QuintOS = {
 		/*06*/ ['TicTacToe', 'gridc'],
 		/*07*/ ['WorldWideWeb', 'macin'],
 		/*08*/ ['WheelOfFortune', 'a2'],
-		/*09*/ ['Contain', 'c64'], // TODO arc
+		/*09*/ ['Contain', 'zx'], // TODO arc
 		/*10*/ ['TicTacAIO', 'gridc'],
 		/*11*/ ['SpeakAndSpell', 'calcu'], // TODO sas
 		/*12*/ ['Snake', 'arcv'], // TODO gameboi
@@ -616,7 +616,7 @@ async function prompt(txt, row, col, w, h) {
 
 QuintOS.runJS = async (src, file) => {
 	return new Promise(async (resolve, reject) => {
-		file ??= await QuintOS.loadCode(src);
+		if (!src) file ??= await QuintOS.loadCode(src);
 		const script = document.createElement('script');
 		script.async = false;
 		script.onload = function () {
@@ -827,7 +827,7 @@ window.addEventListener('keydown', function (e) {
  * palette can be a palette object or number index
  *   in the system's palettes array
  */
-function color16(c, palette) {
+function colorPal(c, palette) {
 	if (typeof palette == 'number') {
 		palette = QuintOS.palettes[palette];
 	}
@@ -836,6 +836,8 @@ function color16(c, palette) {
 	if (!c) return color(0, 0, 0, 0);
 	return color(c);
 }
+
+window.color16 = colorPal;
 
 function spriteArt(txt, scale, palette) {
 	scale ??= 1;
@@ -2362,7 +2364,7 @@ READY
 				speed: 1,
 				txt: `
 JavaScript READY
-QuintOS version 0.1
+QuintOS version 02
 CopyLeft 1977`
 			}
 		],
@@ -2514,9 +2516,28 @@ Copyleft © 1983 QUiNT Systems Corp`
 		],
 		Contain: [
 			{
+				name: 'bg',
+				col: 0,
+				row: 0,
+				speed: 20,
+				txt: ['§', 'ж', '*', '^', '°', '#', '¤', '‡', '˜', '»'][Math.floor(Math.random() * 10)].repeat(1000)
+			},
+			{
+				name: 'info',
+				col: 12,
+				row: 20,
+				speed: 1,
+				txt: `
+JavaScript READY
+QuintOS version 09
+CopyLeft 1977`
+			}
+		],
+		Sketchbook: [
+			{
 				name: 'boot',
 				txt: `
-  **** QUINTOS v09 JAVASCRIPT ES12 ****
+  **** QUINTOS v13 JAVASCRIPT ES12 ****
 
   64GB RAM SYSTEM 38911 GIGABYTES FREE
 
@@ -2586,7 +2607,6 @@ READY.
 	};
 
 	bootScreens.WheelOfFortune = bootScreens.Hangman;
-	bootScreens.Sketchbook = bootScreens.Contain;
 	bootScreens.TicTacAIO = bootScreens.QuickClicks;
 
 	async function displayBootscreen() {
@@ -2751,22 +2771,22 @@ READY.
 		// prettier-ignore
 		Object.defineProperty(sprite, 'x', {
 				get: function () { return this.position.x },
-				set: function (x) { this.position.x = Math.round(x) }
+				set: function (x) { this.position.x = x }
 			});
 		// prettier-ignore
 		Object.defineProperty(sprite, 'y', {
 				get: function () { return this.position.y },
-				set: function (y) { this.position.y = Math.round(y) }
+				set: function (y) { this.position.y = y }
 			});
 		// prettier-ignore
 		Object.defineProperty(sprite, 'w', {
 				get: function () { return this.width },
-				set: function (w) { this.width = Math.round(w) }
+				set: function (w) { this.width = w }
 			});
 		// prettier-ignore
 		Object.defineProperty(sprite, 'h', {
 				get: function () { return this.height },
-				set: function (h) { this.height = Math.round(h) }
+				set: function (h) { this.height = h }
 			});
 
 		sprite.ani = function (name, start, end) {
