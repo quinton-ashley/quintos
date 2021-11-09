@@ -14,7 +14,7 @@ window.QuintOS = {
 		/*09*/ ['Contain', 'zx'], // TODO arc
 		/*10*/ ['TicTacAIO', 'gridc'],
 		/*11*/ ['SpeakAndSpell', 'calcu'], // TODO sas
-		/*12*/ ['Snake', 'arcv'], // TODO gameboi
+		/*12*/ ['Snake', 'gameboi'], // TODO gameboi
 		/*13*/ ['Sketchbook', 'c64'],
 		/*14*/ ['SuperJump', 'arcv'],
 		/*15*/ ['Sokoban', 'arcv']
@@ -253,7 +253,7 @@ QuintOS._overlap = (a, b) => {
 
 QuintOS.erase = () => {
 	let eraser = {
-		row: QuintOS.sys != 'arcv' ? (QuintOS.sys != 'calcu' ? 1 : 0) : 2,
+		row: !/(gameboi|arcv)/.test(QuintOS.sys) ? (QuintOS.sys != 'calcu' ? 1 : 0) : 2,
 		col: !/(a2|gridc)/.test(QuintOS.sys) ? 0 : 1,
 		w: QuintOS.cols - (!/(a2|gridc)/.test(QuintOS.sys) ? 0 : 2),
 		h: QuintOS.rows - (!/(a2|gridc)/.test(QuintOS.sys) ? 0 : 2)
@@ -574,12 +574,12 @@ async function prompt(txt, row, col, w, h) {
 	let enterBtn;
 	let cancelBtn;
 	if (QuintOS.sys != 'calcu') {
-		let ebCol = col + w - (QuintOS.sys != 'zx' ? 18 : 4);
-		let eLbl = QuintOS.sys != 'zx' ? 'ENTER' : '»';
+		let ebCol = col + w - (!/(gameboi|zx)/.test(QuintOS.sys) ? 18 : 4);
+		let eLbl = !/(gameboi|zx)/.test(QuintOS.sys) ? 'ENTER' : '»';
 		enterBtn = button(eLbl, row + 2 + th, ebCol);
 
-		let cbCol = col + w - (QuintOS.sys != 'zx' ? 10 : 2);
-		let cLbl = QuintOS.sys != 'zx' ? 'CANCEL' : 'X';
+		let cbCol = col + w - (!/(gameboi|zx)/.test(QuintOS.sys) ? 10 : 2);
+		let cLbl = !/(gameboi|zx)/.test(QuintOS.sys) ? 'CANCEL' : 'X';
 		cancelBtn = button(cLbl, row + 2 + th, cbCol);
 	}
 
@@ -712,8 +712,8 @@ QuintOS.runGame = async () => {
 		});
 		if (!QuintOS.username) return;
 		text(' by ', 0, 2 + title.length);
-		let row = QuintOS.sys != 'arcv' ? 0 : 1;
-		let col = QuintOS.sys != 'arcv' ? 6 + title.length : 2;
+		let row = !/(gameboi|arcv)/.test(QuintOS.sys) ? 0 : 1;
+		let col = !/(gameboi|arcv)/.test(QuintOS.sys) ? 6 + title.length : 2;
 		button(QuintOS.username, row, col, () => {
 			open('https://github.com/' + QuintOS.username);
 		});
@@ -1340,21 +1340,62 @@ async function preload() {
 	</div>
 </div>`,
 		gameboi: `
-<div id="pc">
-<div id="container">
-	<div id="bitmapBG-container">
-		<div id="bitmapBG" style="--grid-size:20; --grid-columns:28; --grid-rows:20;"></div>
-		<div class="info-container">
-		<div id="screen0" class="screen"></div>
+<div id="pc" class="wrapper">
+	<div class="power"></div>
+	<div class="gameboy">
+		<div class="top">
+			<div class="corner left"></div>
+			<div class="top"><span>&#x25C1; OFF&middot;ON &#x25B7;</span></div>
+			<div class="corner right"></div>
 		</div>
-		<div class="shine-container">
-			<div class="shine"></div>
+		<div class="bezel">
+			<div class="top"><span>DOT MATRIX WITH STEREO SOUND</span></div>
+			<div class="bottom">
+				<div class="battery">
+					<div class="led"></div>
+					<span>BATTERY</span>
+				</div>
+				<div class="gamescreen">
+					<div id="screen0" class="screen"></div>
+				</div>
+			</div>
+		</div>
+		<div class="brand"><span>QuintOS</span><span>GAME BOI</span><sub>&trade;</sub></div>
+		<div class="controls">
+			<div class="cross">
+				<div class="cursor up"></div>
+				<div class="cursor left"></div>
+				<div class="cursor center">
+					<div class="circle"></div>
+				</div>
+				<div class="cursor right"></div>
+				<div class="cursor down"></div>
+			</div>
+			<div class="buttons">
+				<div class="button B" data-button="B"></div>
+				<div class="button A" data-button="A"></div>
+			</div>
+		</div>
+		<div class="speaker">
+			<div class="band"></div>
+			<div class="band"></div>
+			<div class="band"></div>
+			<div class="band"></div>
+			<div class="band"></div>
+			<div class="band"></div>
+		</div>
+		<div class="bottom">
+			<div class="gamecontrols">
+				<div class="gap">
+					<div class="button select" data-button="SELECT"></div>
+				</div>
+				<div class="gap">
+					<div class="button start" data-button="START"></div>
+				</div>
+			</div>
+			<div class="phones">&#x1F3A7;PHONES</div>
 		</div>
 	</div>
-	<div id="bitmap-container">
-		<div id="bitmap" style="--grid-size:20; --grid-columns:28; --grid-rows:20;"></div>
-  </div>
-</div>
 </div>`,
 		gridc: `
 <div id="pc" class="center">
@@ -2183,6 +2224,9 @@ async function preload() {
 	} else if (QuintOS.sys == 'zx') {
 		rows = 24;
 		cols = 32;
+	} else if (QuintOS.sys == 'gameboi') {
+		rows = 18;
+		cols = 20;
 	}
 	QuintOS.cols = cols;
 	QuintOS.rows = rows;
@@ -2224,6 +2268,12 @@ async function preload() {
 			row: 2,
 			col: 3,
 			w: 50,
+			h: 4
+		},
+		gameboi: {
+			row: 5,
+			col: 0,
+			w: 20,
 			h: 4
 		},
 		zx: {
@@ -2674,7 +2724,10 @@ READY.
 			resizeCanvas(320, 240);
 		} else if (QuintOS.sys == 'zx') {
 			resizeCanvas(256, 192);
+		} else if (QuintOS.sys == 'gameboi') {
+			resizeCanvas(160, 144);
 		}
+
 		camera.position.x = width / 2;
 		camera.position.y = height / 2;
 		strokeWeight(2);

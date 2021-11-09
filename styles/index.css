@@ -55,6 +55,16 @@ canvas {
 }
 
 @font-face {
+	font-family: Early_GameBoy;
+	src: url('../fonts/Early_GameBoy.ttf');
+}
+
+@font-face {
+	font-family: PokemonGb;
+	src: url('../fonts/PokemonGb.ttf');
+}
+
+@font-face {
 	font-family: FSEX302;
 	src: url('../fonts/FSEX302.ttf');
 }

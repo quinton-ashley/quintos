@@ -85,7 +85,7 @@ returns the p5 graphics object created
 
 - `txt` is the sprite to paint
 - `scale` is the scale the sprite should be, `2` by default
-- `palette` is the color palette that should be used, C64 palatte object by default
+- `palette` is the color palette that should be used, the system's first palatte is used by default
 
 ```js
 {
@@ -113,8 +113,10 @@ returns the p5 graphics object created
 ## get a color letter's p5.js color
 
 ```js
-color16(c, palette);
+colorPal(c, palette);
 ```
+
+returns a p5.js color to use with p5.js functions like background, fill, and stroke
 
 - `c` is the color letter
 - `palette` is the color palette that should be used, C64 palatte object by default
@@ -151,12 +153,15 @@ Press Start 2P https://fonts.google.com/specimen/Press+Start+2P#standard-styles
 
 ### Pixel Art
 
-SuperJump:
+#### SuperJump
+
 https://www.gamedevmarket.net/asset/slime-pack-4-slime-variants/
 https://www.gamedevmarket.net/asset/ancient-city/
 
-Sokoban:
-8bit assets
+#### Sokoban
+
+bitBoi:
+
 https://www.gamedevmarket.net/asset/oracle-1-bit-asset/
 
 "Hi! That's wonderful! Glad that you liked my assets. Looking forward to seeing some projects using my art! Have a great day!"
@@ -164,30 +169,33 @@ https://www.gamedevmarket.net/asset/oracle-1-bit-asset/
 - blueapollo\_ Sep 9, 2021, 7:21 PM
 
 https://www.gamedevmarket.net/asset/platform-dirt-rock-tileset-pack-1bit-16x16-8x8-bonus-characters-items/
-
-16bit assets
-https://www.gamedevmarket.net/asset/rpg-dungeon-crawl-tileset/
-https://www.gamedevmarket.net/asset/pixel-art-adventurer-sprites/
-
-16bit alt assets
-https://www.gamedevmarket.net/asset/dungeon-mini-tileset-6382/
-https://www.gamedevmarket.net/asset/pixel-tribe-man-2/
-
-OneBit:
 https://www.gamedevmarket.net/asset/1bit-house/
 https://www.gamedevmarket.net/asset/platform-dirt-rock-tileset-pack-1bit-16x16-8x8-bonus-characters-items/
 
-PigeonSimulator:
+questKid:
+
+https://www.gamedevmarket.net/asset/rpg-dungeon-crawl-tileset/
+https://www.gamedevmarket.net/asset/pixel-art-adventurer-sprites/
+
+tribeMan:
+
+https://www.gamedevmarket.net/asset/dungeon-mini-tileset-6382/
+https://www.gamedevmarket.net/asset/pixel-tribe-man-2/
+
+#### PigeonSimulator
+
 https://www.gamedevmarket.net/asset/pigeons-2d-pixel-asset-pack/
 https://www.gamedevmarket.net/asset/tiny-tiny-heroes-animals/
 https://www.gamedevmarket.net/asset/pixel-sidescroller-background-city/
 
-## Sounds
+### Sounds
 
 SpeakAndSpell:
+
 https://sha.nnoncarey.com/
 
 8 Bit sounds:
+
 https://www.gamedevmarket.net/asset/retro-8-bit-sounds-9524/
 
 ### Codepens

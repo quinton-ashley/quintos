@@ -2,7 +2,7 @@
 @import url('http://db.onlinewebfonts.com/c/487390d5558cff7a17ce35d7d92a0540?family=Pretendo');
 
 /* Layout */
-.gameboi body {
+body.gameboi {
 	background-color: #000;
 	background-image: repeating-linear-gradient(
 			132deg,
@@ -16,6 +16,28 @@
 	flex-direction: column;
 	align-items: center;
 	height: 98vh;
+}
+
+.gameboi .screen {
+	font-family: Early_GameBoy, monospace;
+	font-size: 2.2vw;
+	position: absolute;
+	z-index: 1;
+	color: #306230;
+}
+
+.gridc .hovered,
+.gridc tile:hover {
+	color: #8bac0f;
+	background-color: #0f380f;
+}
+
+.gameboi main,
+.gameboi #defaultCanvas0,
+.gameboi #screen0 {
+	position: absolute;
+	width: 40vw;
+	height: 36vw;
 }
 
 .gameboi h1 {
@@ -119,7 +141,7 @@
 }
 
 /* GameBoy complete screen (gray + green) */
-.gameboi .screen {
+.gameboi .bezel {
 	background: #767189;
 	width: calc(var(--gameboy-height) / 2);
 	box-shadow: 0 0 0.4vw #514c65;
@@ -127,12 +149,12 @@
 	height: 50vw;
 	margin: 0.1em auto;
 }
-.gameboi .screen span {
+.gameboi .bezel span {
 	font-family: Arial, sans-serif;
 	font-size: 2vw;
 	color: #fff;
 }
-.gameboi .screen .top {
+.gameboi .bezel .top {
 	margin: 0 3vw;
 	height: 6vw;
 	background: linear-gradient(
@@ -144,7 +166,7 @@
 	);
 	position: relative;
 }
-.gameboi .screen .top span {
+.gameboi .bezel .top span {
 	padding: 0 1.6vw;
 	background: #767189;
 
@@ -152,21 +174,21 @@
 	right: 6vw;
 	top: 1.6vw;
 }
-.gameboi .screen .bottom {
+.gameboi .bezel .bottom {
 	display: flex;
 }
-.gameboi .screen .bottom .led {
+.gameboi .bezel .bottom .led {
 	width: 2vw;
 	height: 2vw;
 	background: #4a4748;
 	border-radius: 50%;
 	margin: 1.2vw;
 }
-.gameboi .screen .bottom .led.on {
+.gameboi .bezel .bottom .led.on {
 	background: #d81e07;
 	box-shadow: 0 0 1vw #d81e07;
 }
-.gameboi .screen .bottom .battery {
+.gameboi .bezel .bottom .battery {
 	padding: 0 2vw;
 	display: flex;
 	flex-direction: column;
@@ -176,11 +198,10 @@
 
 /* Game Screen (only green screen) */
 .gameboi .gamescreen {
-	background: #9ca04c;
+	background: #9bbc0f;
 	width: 40vw;
-	height: 38vw;
-	box-shadow: 1vw 1vw 2vw rgba(0, 0, 0, 0.5) inset, -0.4vw -0.4vw 2vw rgba(0, 0, 0, 0.25) inset;
-
+	height: 36vw;
+	box-shadow: -0.1vw 0.2vw 1vw rgb(0 0 0 / 50%) inset, -0.4vw -0.4vw 2vw rgb(0 0 0 / 25%) inset;
 	display: flex;
 	justify-content: center;
 	align-items: flex-start;
