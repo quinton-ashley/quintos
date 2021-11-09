@@ -473,8 +473,7 @@ function input(value, row, col, onSubmit, onChange) {
 }
 
 async function alert(txt, row, col, w, h) {
-	let pu = QuintOS.popup[QuintOS.sys];
-	pu ??= QuintOS.popup[3];
+	let pu = QuintOS.popup;
 	row = row || pu.row;
 	col = col || pu.col;
 	w = w || pu.w;
@@ -485,7 +484,8 @@ async function alert(txt, row, col, w, h) {
 	let th;
 	if (QuintOS.sys != 'calcu') {
 		let _txt = QuintOS._text(txt, row + 1, col + 2, w - 4);
-		th = _txt.lines.length;
+		th = _txt.lines.length + 2;
+		if (th > 0) h += 2;
 		await eraseRect(row, col, w, h + th);
 		if (_txt.speed) {
 			await QuintOS._textAsync(_txt.lines, _txt.row, _txt.col, _txt.speed);
@@ -539,8 +539,7 @@ async function alert(txt, row, col, w, h) {
 }
 
 async function prompt(txt, row, col, w, h) {
-	let pu = QuintOS.popup[QuintOS.sys];
-	if (!pu) pu = QuintOS.popup.default;
+	let pu = QuintOS.popup;
 	row = row || pu.row;
 	col = col || pu.col;
 	w = w || pu.w;
@@ -552,6 +551,7 @@ async function prompt(txt, row, col, w, h) {
 	if (QuintOS.sys != 'calcu') {
 		let _txt = QuintOS._text(txt, row + 1, col + 2, w - 4);
 		th = _txt.lines.length;
+		if (txt != '') th += 2;
 		await eraseRect(row, col, w, h + th);
 		if (_txt.speed) {
 			await QuintOS._textAsync(_txt.lines, _txt.row, _txt.col, _txt.speed);
@@ -564,7 +564,7 @@ async function prompt(txt, row, col, w, h) {
 		txt = txt.slice(0, QuintOS.cols);
 		th = await text(txt, row, col, w);
 	}
-	let inRow = row + 2 + th;
+	let inRow = row + th;
 	let inCol = col + 2;
 	if (QuintOS.sys == 'calcu') {
 		inRow = 1;
@@ -575,12 +575,15 @@ async function prompt(txt, row, col, w, h) {
 	let cancelBtn;
 	if (QuintOS.sys != 'calcu') {
 		let ebCol = col + w - (!/(gameboi|zx)/.test(QuintOS.sys) ? 18 : 4);
+		if (QuintOS.sys == 'a2') ebCol += 5;
 		let eLbl = !/(gameboi|zx)/.test(QuintOS.sys) ? 'ENTER' : '»';
-		enterBtn = button(eLbl, row + 2 + th, ebCol);
+		if (QuintOS.sys == 'a2') eLbl = 'ENTER';
+		enterBtn = button(eLbl, row + th, ebCol);
 
 		let cbCol = col + w - (!/(gameboi|zx)/.test(QuintOS.sys) ? 10 : 2);
-		let cLbl = !/(gameboi|zx)/.test(QuintOS.sys) ? 'CANCEL' : 'X';
-		cancelBtn = button(cLbl, row + 2 + th, cbCol);
+		if (QuintOS.sys == 'a2') cbCol += 5;
+		let cLbl = !/(a2|gameboi|zx)/.test(QuintOS.sys) ? 'CANCEL' : 'X';
+		cancelBtn = button(cLbl, row + th, cbCol);
 	}
 
 	let _this = this;
@@ -740,7 +743,8 @@ QuintOS.loadGame = async () => {
 	let title = QuintOS.gameTitle;
 	if (QuintOS.game) return;
 	let dir = QuintOS.dir || '.';
-	let file = `${title.slice(0, 1).toLowerCase() + title.slice(1)}.`;
+	let file = title + '.';
+	if (QuintOS.language == 'js') file = `${title.slice(0, 1).toLowerCase() + title.slice(1)}.`;
 	file += QuintOS.language;
 	let src = dir + '/' + file;
 	try {
@@ -2233,24 +2237,21 @@ async function preload() {
 	QuintOS.gpu = [];
 
 	// default values for alerts and prompts for each system
-	QuintOS.popup = {
+	let popup = {
 		a2: {
 			row: 2,
 			col: 2,
-			w: 36,
-			h: 4
+			w: 36
 		},
 		arcv: {
 			row: 16,
 			col: 4,
-			w: 20,
-			h: 4
+			w: 20
 		},
 		c64: {
 			row: 10,
 			col: 10,
-			w: 20,
-			h: 4
+			w: 20
 		},
 		calcu: {
 			row: 0,
@@ -2261,28 +2262,26 @@ async function preload() {
 		cpet: {
 			row: 2,
 			col: 0,
-			w: 40,
-			h: 4
+			w: 40
 		},
 		gridc: {
 			row: 2,
 			col: 3,
-			w: 50,
-			h: 4
+			w: 50
 		},
 		gameboi: {
 			row: 5,
 			col: 0,
-			w: 20,
-			h: 4
+			w: 20
 		},
 		zx: {
 			row: 2,
 			col: 0,
-			w: 32,
-			h: 4
+			w: 32
 		}
 	};
+	QuintOS.popup = popup[QuintOS.sys];
+	QuintOS.popup.h ??= 2;
 
 	let screen0 = document.getElementById('screen0');
 
@@ -2864,6 +2863,9 @@ READY.
 	};
 
 	QuintOS.language ??= 'js';
+	if (QuintOS.dir.includes('games_java')) {
+		QuintOS.language = 'java';
+	}
 
 	let bootScreen = bootScreens[title] || [];
 
@@ -2880,7 +2882,11 @@ READY.
 				// 	this.logged = args[0];
 				// };
 			}
-			QuintOS.game ??= await QuintOS.loadGame();
+			if (!QuintOS.game) {
+				QuintOS.game = await QuintOS.loadGame();
+			} else if (QuintOS.language == 'java') {
+				QuintOS.game = await QuintOS.translateJava(QuintOS.game);
+			}
 			resolve();
 		}),
 		new Promise(async (resolve, reject) => {

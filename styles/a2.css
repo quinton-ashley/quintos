@@ -1,9 +1,25 @@
-/* source http://www.kreativekorp.com/software/fonts/apple2.shtml */
-/* @font-face {
-	
-	font-family: 'Terminal';
-	src: url('https://closure.vps.wbsprt.com/files/apple2/PrintChar21_txuajc.ttf');
-} */
+.a2 :root {
+	--object-box-shadow: 0vmin 0.1vmin 0.4vmin 0.1vmin #111, 0.5vmin 1vmin 1.5vmin 0.1vmin #888;
+	--object-box-shadow-floppy: 0vmin 0vmin 0.8vmin 0.4vmin #111, 0 1vmin 2.5vmin 0.5vmin #888;
+	--object-box-shadow-monitor: 0 1.6vmin 0.8vmin 0.2vmin #222;
+}
+
+.a2 *,
+.a2 *::before,
+.a2 *::after {
+	box-sizing: border-box;
+}
+
+body.a2 {
+	margin: 0;
+	padding: 0;
+	width: 100%;
+	height: 100vh;
+	display: grid;
+	place-items: center;
+	color: #1fda6c;
+	/* transform: scale(1.6); */
+}
 
 .a2 .screen {
 	font-family: Apple2, monospace;
@@ -18,36 +34,6 @@
 
 .a2 #screen0 {
 	filter: drop-shadow(0 0 10px #1fda6c);
-}
-
-body.a2 {
-	color: #1fda6c;
-}
-
-.a2 *,
-.a2 *::before,
-.a2 *::after {
-	box-sizing: border-box;
-}
-
-.a2 .a2 :root {
-	--object-box-shadow: 0vmin 0.1vmin 0.4vmin 0.1vmin #111, 0.5vmin 1vmin 1.5vmin 0.1vmin #888;
-	--object-box-shadow-floppy: 0vmin 0vmin 0.8vmin 0.4vmin #111, 0 1vmin 2.5vmin 0.5vmin #888;
-	--object-box-shadow-monitor: 0 1.6vmin 0.8vmin 0.2vmin #222;
-}
-
-.a2 html {
-	width: 100%;
-}
-
-body.a2 {
-	margin: 0;
-	padding: 0;
-	width: 100%;
-	height: 100vh;
-	display: grid;
-	place-items: center;
-	/* transform: scale(1.6); */
 }
 
 .a2 .bg {
@@ -89,7 +75,9 @@ body.a2 {
 	/* left: -4vw; */
 	/* top: 10vmin; */
 }
-.a2 /* .keys-container {
+
+/*
+.a2 .keys-container {
   --size: 3vmin;
   --size-half: calc(var(--size) / 2);
   --height: 1.5vmin;
@@ -106,8 +94,9 @@ body.a2 {
   font-family: Verdana;
   font-variant: small-caps;
   font-size: 1vmin;
-} */
-.a2 /* .keys-container::before {
+}
+
+.a2 .keys-container::before {
   display: none;
   position: absolute;
   left: 0;
@@ -119,15 +108,18 @@ body.a2 {
   margin: 0 6vmin;
   transform: translateZ(calc(-1 * var(--size-half)));
   box-shadow: 0 0 1.5vmin #524239;
-} */
+}
 
-.a2 /* .key {
+.a2 .key {
   width: 100%;
   height: var(--size);
   position: relative;
   transform-style: preserve-3d;
   overflow: visible;
-} */
+}
+
+*/
+
 .a2 .key--template {
 	display: none;
 }
@@ -711,7 +703,7 @@ body.a2 {
 	width: 40.05vmin;
 	height: 30.3vmin;
 	border-radius: 95%/10%;
-	background: radial-gradient(#282a12 0%, #13130e 90%);
+	background: radial-gradient(#182a12 0%, #13130e 90%);
 }
 .a2 .monitor__screen-2:not(.bottom-shadow),
 .a2 .monitor__screen-2:not(.top-shadow) {
