@@ -2873,7 +2873,9 @@ READY.
 		new Promise(async (resolve, reject) => {
 			if (QuintOS.language == 'java') {
 				try {
-					await jdk.init('./node_modules/java2js');
+					let root = './node_modules/java2js';
+					if (QuintOS.game) root = 'https://unpkg.com/java2js';
+					await jdk.init(root);
 				} catch (ror) {
 					reject(ror);
 				}
@@ -2881,12 +2883,11 @@ READY.
 				// jdk.log = function (...args) {
 				// 	this.logged = args[0];
 				// };
+				if (QuintOS.game) {
+					QuintOS.game = await QuintOS.translateJava(QuintOS.game);
+				}
 			}
-			if (!QuintOS.game) {
-				QuintOS.game = await QuintOS.loadGame();
-			} else if (QuintOS.language == 'java') {
-				QuintOS.game = await QuintOS.translateJava(QuintOS.game);
-			}
+			QuintOS.game ??= await QuintOS.loadGame();
 			resolve();
 		}),
 		new Promise(async (resolve, reject) => {
