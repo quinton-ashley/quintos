@@ -650,7 +650,7 @@ command+option+i then click the Console tab.`);
 QuintOS.translateJava = async (file) => {
 	file = await jdk.translate(file);
 
-	log(file);
+	// log(file);
 
 	file = file.replace(
 		/System\.out\.print(ln)*\(([^\)]*)\);\s*(.*=)(.*\.)*next(Int|Float|Double|Line|Short|Long)*\(\);/g,
@@ -659,7 +659,7 @@ QuintOS.translateJava = async (file) => {
 
 	file = file.replace(/System\.out\.print(ln)*\(([^\)]*)\);/g, 'await alert($2);');
 
-	log(file);
+	// log(file);
 	return file;
 };
 
