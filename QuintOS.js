@@ -484,8 +484,8 @@ async function alert(txt, row, col, w, h) {
 	let th;
 	if (QuintOS.sys != 'calcu') {
 		let _txt = QuintOS._text(txt, row + 1, col + 2, w - 4);
-		th = _txt.lines.length + 2;
-		if (th > 0) h += 2;
+		th = _txt.lines.length;
+		if (txt) th += 2;
 		await eraseRect(row, col, w, h + th);
 		if (_txt.speed) {
 			await QuintOS._textAsync(_txt.lines, _txt.row, _txt.col, _txt.speed);
@@ -500,7 +500,7 @@ async function alert(txt, row, col, w, h) {
 		await text('OKAY', 1, 0);
 	}
 
-	let okayRow = row + 2 + th;
+	let okayRow = row + th;
 	let okayCol = Math.floor(Math.min(col + w / 2, col + w - 4));
 	if (QuintOS.sys == 'calcu') {
 		okayRow = 1;
@@ -551,7 +551,7 @@ async function prompt(txt, row, col, w, h) {
 	if (QuintOS.sys != 'calcu') {
 		let _txt = QuintOS._text(txt, row + 1, col + 2, w - 4);
 		th = _txt.lines.length;
-		if (txt != '') th += 2;
+		if (txt) th += 2;
 		await eraseRect(row, col, w, h + th);
 		if (_txt.speed) {
 			await QuintOS._textAsync(_txt.lines, _txt.row, _txt.col, _txt.speed);
@@ -2561,6 +2561,22 @@ Version 4.0 Copyleft QuintOS ©1981`
 				txt: `
 QUiNT Compass qOS BIOS Version 05
 Copyleft © 1983 QUiNT Systems Corp`
+			}
+		],
+		ClickAPath: [
+			{
+				name: 'logo',
+				row: 6,
+				col: 25,
+				speed: 20,
+				txt: `
+          ________\n         /\\       \\\n        /  \\       \\
+       /    \\       \\\n      /      \\_______\\\n      \\      /       /
+    ___\\    /   ____/___\n   /\\   \\  /   /\\       \\
+  /  \\   \\/___/  \\       \\\n /    \\       \\   \\       \\
+/      \\_______\\   \\_______\\\n\\      /       /   /       /
+ \\    /       /   /       /\n  \\  /       /\\  /       /
+   \\/_______/  \\/_______/`
 			}
 		],
 		Contain: [
