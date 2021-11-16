@@ -15,7 +15,7 @@ window.QuintOS = {
 		/*10*/ ['TicTacAIO', 'gridc'],
 		/*11*/ ['SpeakAndSpell', 'calcu'], // TODO sas
 		/*12*/ ['Snake', 'gameboi'], // TODO gameboi
-		/*13*/ ['Sketchbook', 'c64'],
+		/*13*/ ['SketchBook', 'c64'],
 		/*14*/ ['SuperJump', 'arcv'],
 		/*15*/ ['Sokoban', 'arcv']
 	]
@@ -648,18 +648,30 @@ command+option+i then click the Console tab.`);
 };
 
 QuintOS.translateJava = async (file) => {
-	file = await jdk.translate(file);
+	if (QuintOS.language == 'pde') {
+		file = `
+public class ${QuintOS.gameTitle} {
+  ${file.replaceAll('\n', '\n  ')}
+  public static void main(String[] args) {}
+}`;
+		log(file);
+	}
 
-	// log(file);
+	log(file);
+
+	file = await jdk.translate(file);
 
 	file = file.replace(
 		/System\.out\.print(ln)*\(([^\)]*)\);\s*(.*=)(.*\.)*next(Int|Float|Double|Line|Short|Long)*\(\);/g,
 		'$3 await prompt($2);'
 	);
 
-	file = file.replace(/System\.out\.print(ln)*\(([^\)]*)\);/g, 'await alert($2);');
+	file = file.replace(/(alert|prompt|eraseRect)\(/gm, 'await $1(');
+	file = file.replace(/System\.out\.print(ln)*\(([^\)]*)\);/gm, 'await alert($2);');
 
-	// log(file);
+	file = file.replace(/size\(.*\);/gm, '');
+
+	log(file);
 	return file;
 };
 
@@ -686,7 +698,7 @@ QuintOS.preloadData = async () => {
 QuintOS.runCode = async (src, file) => {
 	if (QuintOS.language == 'js') {
 		await QuintOS.runJS(src, file);
-	} else if (QuintOS.language == 'java') {
+	} else if (/(java|pde)/.test(QuintOS.language)) {
 		await QuintOS.runJava(src, file);
 	}
 };
@@ -732,7 +744,7 @@ QuintOS.loadCode = async (src) => {
 			return;
 		}
 	}
-	if (QuintOS.language == 'java') {
+	if (/(java|pde)/.test(QuintOS.language)) {
 		file = await (await fetch(src)).text();
 		file = await QuintOS.translateJava(file);
 	}
@@ -743,24 +755,32 @@ QuintOS.loadGame = async () => {
 	let title = QuintOS.gameTitle;
 	if (QuintOS.game) return;
 	let dir = QuintOS.dir || '.';
-	let file = title + '.';
-	if (QuintOS.language == 'js') file = `${title.slice(0, 1).toLowerCase() + title.slice(1)}.`;
-	file += QuintOS.language;
-	let src = dir + '/' + file;
+	let fileBase = title + '.';
+	if (QuintOS.language == 'js') fileBase = `${title.slice(0, 1).toLowerCase() + title.slice(1)}.`;
+	fileBase += QuintOS.language;
+	let src = dir + '/' + fileBase;
+	let game;
 	try {
-		QuintOS.game = await QuintOS.loadCode(src);
+		game = await QuintOS.loadCode(src);
 	} catch (error) {
 		try {
 			dir = dir.split('/');
 			dir.pop();
 			dir = dir.join('/');
-			src = dir + '/' + file;
-			QuintOS.game = await QuintOS.loadCode(src);
+			src = dir + '/' + fileBase;
+			game = await QuintOS.loadCode(src);
 		} catch (ror) {
 			QuintOS.error(error);
 		}
 	}
+	if (game && QuintOS.language == 'pde') {
+		game += `\nlet game = new ${QuintOS.gameTitle}();`;
+		game += `\nwindow.setup = () => {game.setup();}`;
+		game += `\nwindow.draw = () => {game.draw();}`;
+		log(game);
+	}
 	QuintOS.gameFile = src;
+	return game;
 };
 
 QuintOS.error = async (e) => {
@@ -1060,6 +1080,10 @@ async function preload() {
 			QuintOS.gameTitle = 'GuessTheNumber';
 		}
 	}
+
+	createCanvas(320, 200);
+	frameRate(60);
+	noStroke();
 
 	QuintOS.level = QuintOS?.level || QuintOS.levels.findIndex((l) => l[0] == QuintOS.gameTitle);
 
@@ -2881,13 +2905,16 @@ READY.
 	QuintOS.language ??= 'js';
 	if (QuintOS.dir.includes('games_java')) {
 		QuintOS.language = 'java';
+		if (/(Pong|Contain|SketchBook|SuperJump|Sokoban)/.test(QuintOS.gameTitle)) {
+			QuintOS.language = 'pde';
+		}
 	}
 
 	let bootScreen = bootScreens[title] || [];
 
 	await Promise.all([
 		new Promise(async (resolve, reject) => {
-			if (QuintOS.language == 'java') {
+			if (/(java|pde)/.test(QuintOS.language)) {
 				try {
 					let root = './node_modules/java2js';
 					if (QuintOS.game) root = 'https://unpkg.com/java2js';
@@ -2950,12 +2977,10 @@ READY.
 	// };
 	p5.disableFriendlyErrors = false;
 	QuintOS.runGame();
+	await delay(100);
+	setup();
 }
 
-function setup() {
-	createCanvas(320, 200);
-	frameRate(60);
-	noStroke();
-}
+function setup() {}
 
 function draw() {}
