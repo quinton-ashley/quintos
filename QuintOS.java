@@ -14,19 +14,19 @@ public class QuintOS {
 
 	}
 
-	public static void alert(String txt, int x) {
+	public static void alert(String txt, int row) {
 
 	}
 
-	public static void alert(String txt, int x, int y) {
+	public static void alert(String txt, int row, int col) {
 
 	}
 
-	public static void alert(String txt, int x, int y, int w) {
+	public static void alert(String txt, int row, int col, int w) {
 
 	}
 
-	public static void alert(String txt, int x, int y, int w, int h) {
+	public static void alert(String txt, int row, int col, int w, int h) {
 
 	}
 
@@ -38,15 +38,19 @@ public class QuintOS {
 
 	}
 
-	public static void text(String txt, int x, int y) {
+	public static void text(String txt, int row) {
 
 	}
 
-	public static void text(String txt, int x, int y, int w) {
+	public static void text(String txt, int row, int col) {
 
 	}
 
-	public static void text(String txt, int x, int y, int w, int h) {
+	public static void text(String txt, int row, int col, int w) {
+
+	}
+
+	public static void text(String txt, int row, int col, int w, int h) {
 
 	}
 
@@ -58,15 +62,15 @@ public class QuintOS {
 
 	}
 
-	public static void button(String txt, int x) {
+	public static void button(String txt, int row) {
 
 	}
 
-	public static void button(String txt, int x, int y) {
+	public static void button(String txt, int row, int col) {
 
 	}
 
-	public static void button(String txt, int x, int y, Runnable cb) {
+	public static void button(String txt, int row, int col, Runnable cb) {
 
 	}
 
@@ -74,19 +78,19 @@ public class QuintOS {
 
 	}
 
-	public static void eraseRect(int x) {
+	public static void eraseRect(int row) {
 
 	}
 
-	public static void eraseRect(int x, int y) {
+	public static void eraseRect(int row, int col) {
 
 	}
 
-	public static void eraseRect(int x, int y, int w) {
+	public static void eraseRect(int row, int col, int w) {
 
 	}
 
-	public static void eraseRect(int x, int y, int w, int h) {
+	public static void eraseRect(int row, int col, int w, int h) {
 
 	}
 

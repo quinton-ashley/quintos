@@ -654,10 +654,9 @@ public class ${QuintOS.gameTitle} {
   ${file.replaceAll('\n', '\n  ')}
   public static void main(String[] args) {}
 }`;
-		log(file);
 	}
 
-	log(file);
+	if (QuintOS.dev) log(file);
 
 	file = await jdk.translate(file);
 
@@ -671,7 +670,7 @@ public class ${QuintOS.gameTitle} {
 
 	file = file.replace(/size\(.*\);/gm, '');
 
-	log(file);
+	if (QuintOS.dev) log(file);
 	return file;
 };
 
