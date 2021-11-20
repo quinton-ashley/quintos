@@ -2852,8 +2852,8 @@ READY.
 	window.createSprite = (x, y, w, h) => {
 		let img;
 		if (typeof x == 'object') img = x;
-		x ??= width / 2;
-		y ??= height / 2;
+		x ??= 0;
+		y ??= 0;
 
 		let sprite = _createSprite(x, y, w, h);
 
@@ -2946,13 +2946,13 @@ READY.
 	window.text = QuintOS.text;
 	window.erase = QuintOS.erase;
 
-	let _image = image;
+	QuintOS._image = image;
 
 	window.image = (img, ...args) => {
 		for (let i = 0; i < args.length; i++) {
 			args[i] = Math.round(args[i]);
 		}
-		_image(img, ...args);
+		QuintOS._image(img, ...args);
 	};
 
 	// await delay(111111111); // test bootscreen
