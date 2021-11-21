@@ -737,11 +737,10 @@ QuintOS.runGame = async () => {
 QuintOS.loadCode = async (src) => {
 	let file;
 	if (QuintOS.language == 'js') {
-		if (src.slice(0, 4) != 'http') {
+		if (src.slice(0, 4) == 'http') {
 			file = await (await fetch(src)).text();
-		} else {
-			return;
 		}
+		return;
 	}
 	if (/(java|pde)/.test(QuintOS.language)) {
 		file = await (await fetch(src)).text();
