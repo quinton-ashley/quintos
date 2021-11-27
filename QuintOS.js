@@ -684,7 +684,7 @@ QuintOS.preloadData = async () => {
 		await QuintOS.preload();
 		return;
 	}
-	let dir = QuintOS.dir || '.';
+	let dir = QuintOS.dir;
 	let title = QuintOS.gameTitle;
 	let src = `${dir}/${title.slice(0, 1).toLowerCase() + title.slice(1)}-preload.${QuintOS.language}`;
 	try {
@@ -739,6 +739,7 @@ QuintOS.loadCode = async (src) => {
 	if (QuintOS.language == 'js') {
 		if (src.slice(0, 4) == 'http') {
 			file = await (await fetch(src)).text();
+			return file;
 		}
 		return;
 	}
@@ -752,7 +753,7 @@ QuintOS.loadCode = async (src) => {
 QuintOS.loadGame = async () => {
 	let title = QuintOS.gameTitle;
 	if (QuintOS.game) return;
-	let dir = QuintOS.dir || '.';
+	let dir = QuintOS.dir;
 	let fileBase = title + '.';
 	if (QuintOS.language == 'js') fileBase = `${title.slice(0, 1).toLowerCase() + title.slice(1)}.`;
 	fileBase += QuintOS.language;
@@ -2843,9 +2844,6 @@ READY.
 	QuintOS.palettes = palettes[QuintOS.sys] || [];
 	QuintOS.palette = QuintOS.palettes[0] || {};
 
-	let title = QuintOS.gameTitle;
-	QuintOS.dir += '/' + title[0].toUpperCase() + title.slice(1);
-
 	let _createSprite = createSprite;
 
 	window.createSprite = (x, y, w, h) => {
@@ -2900,13 +2898,25 @@ READY.
 		return sprite;
 	};
 
+	let title = QuintOS.gameTitle;
+
 	QuintOS.language ??= 'js';
-	if (QuintOS.dir.includes('games_java')) {
+	if (QuintOS.language == 'java' || QuintOS.dir?.includes('games_java')) {
 		QuintOS.language = 'java';
 		if (/(Pong|Contain|SketchBook|SuperJump|Sokoban)/.test(QuintOS.gameTitle)) {
 			QuintOS.language = 'pde';
 		}
 	}
+
+	if (!QuintOS.dir) {
+		QuintOS.dir = 'https://raw.githubusercontent.com/' + QuintOS.username + '/quintos-games/main';
+		if (QuintOS.language == 'js') {
+			QuintOS.dir += '/GAMES';
+		} else if (/(java|pde)/.test(QuintOS.language)) {
+			QuintOS.dir += '/games_java';
+		}
+	}
+	QuintOS.dir += '/' + title[0].toUpperCase() + title.slice(1);
 
 	let bootScreen = bootScreens[title] || [];
 
