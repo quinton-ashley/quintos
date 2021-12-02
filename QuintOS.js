@@ -17,7 +17,7 @@ window.QuintOS = {
 		/*12*/ ['Snake', 'gameboi'], // TODO gameboi
 		/*13*/ ['SketchBook', 'c64'],
 		/*14*/ ['SuperJump', 'arcv'],
-		/*15*/ ['Sokoban', 'arcv']
+		/*15*/ ['Sokoban', 'c64']
 	]
 };
 
@@ -715,7 +715,7 @@ QuintOS.runGame = async () => {
 	$('head title').text(title);
 	if (/(a2|gridc)/.test(QuintOS.sys)) QuintOS.frame();
 	if (QuintOS.sys != 'calcu') {
-		let col = !/(gameboi|arcv)/.test(QuintOS.sys) ? 2 : 0;
+		let col = !/(c64|gameboi|arcv)/.test(QuintOS.sys) ? 2 : 0;
 		button(title, 0, col, () => {
 			if (!QuintOS.game) {
 				// open the javascript source in new tab
@@ -729,6 +729,7 @@ QuintOS.runGame = async () => {
 		text(' by ', 0, col + title.length);
 		let row = !/(gameboi|arcv)/.test(QuintOS.sys) ? 0 : 1;
 		col = !/(gameboi|arcv)/.test(QuintOS.sys) ? 6 + title.length : 0;
+		if (QuintOS.sys == 'c64') col = 4 + title.length;
 		button(QuintOS.username, row, col, () => {
 			open('https://github.com/' + QuintOS.username);
 		});
@@ -946,10 +947,7 @@ function loadAni(spriteSheetImg, size, pos, frameCount, frameDelay) {
 }
 
 class Tiles {
-	constructor(rows, cols, layers, tileSize, x, y, depth) {
-		this.rows = rows;
-		this.cols = cols;
-		this.layers = layers;
+	constructor(tileSize, x, y, depth) {
 		this.tileSize = tileSize;
 		this.x = x || 0;
 		this.y = y || 0;
@@ -959,6 +957,13 @@ class Tiles {
 	}
 
 	createSprite(ani, row, col, layer) {
+		if (typeof ani == 'number') {
+			// shift parameters over
+			layer = col;
+			col = row;
+			row = ani;
+			ani = null;
+		}
 		let groupName = 'default';
 		if (ani) {
 			for (groupName of this.groupNames) {
@@ -1008,6 +1013,7 @@ class Tiles {
 				layer = col;
 				col = row;
 				row = ani;
+				ani = null;
 			}
 			let sprite = createSprite(0, 0, _this.tileSize, _this.tileSize);
 			// prettier-ignore
@@ -1110,7 +1116,7 @@ async function preload() {
 		}
 	}
 
-	createCanvas(320, 200);
+	createCanvas();
 	frameRate(60);
 	noStroke();
 
@@ -2786,7 +2792,9 @@ READY.
 		$('#screen0').parent().append($('main'));
 		$('main').css('display', 'block');
 
-		if (QuintOS.sys == 'arcv') {
+		if (QuintOS.sys == 'c64') {
+			resizeCanvas(320, 200);
+		} else if (QuintOS.sys == 'arcv') {
 			resizeCanvas(320, 400);
 		} else if (QuintOS.sys == 'gridc') {
 			resizeCanvas(320, 240);
