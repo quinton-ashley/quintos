@@ -87,6 +87,8 @@ returns the p5 graphics object created
 - `scale` is the scale the sprite should be, `2` by default
 - `palette` is the color palette that should be used, the system's first palatte is used by default
 
+Here is the C64's color palattee for example:
+
 ```js
 {
 	' ': '',

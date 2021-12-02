@@ -26,8 +26,10 @@ body.gameboi {
 	color: #306230;
 }
 
-.gridc .hovered,
-.gridc tile:hover {
+.gameboi tile {
+}
+
+.gameboi .hovered {
 	color: #8bac0f;
 	background-color: #0f380f;
 }
@@ -38,6 +40,11 @@ body.gameboi {
 	position: absolute;
 	width: 40vw;
 	height: 36vw;
+}
+
+.gameboi #screen0 {
+	margin-top: -0.6vw;
+	margin-left: -0.05vw;
 }
 
 .gameboi h1 {
@@ -189,7 +196,7 @@ body.gameboi {
 	box-shadow: 0 0 1vw #d81e07;
 }
 .gameboi .bezel .bottom .battery {
-	padding: 0 2vw;
+	padding: 0 1.5vw;
 	display: flex;
 	flex-direction: column;
 	justify-content: center;
@@ -206,6 +213,7 @@ body.gameboi {
 	justify-content: center;
 	align-items: flex-start;
 	overflow: hidden;
+	padding: 1vw;
 }
 .gameboi .gamescreen span {
 	display: none;

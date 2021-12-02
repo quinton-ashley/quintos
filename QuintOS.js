@@ -715,7 +715,8 @@ QuintOS.runGame = async () => {
 	$('head title').text(title);
 	if (/(a2|gridc)/.test(QuintOS.sys)) QuintOS.frame();
 	if (QuintOS.sys != 'calcu') {
-		button(title, 0, 2, () => {
+		let col = !/(gameboi|arcv)/.test(QuintOS.sys) ? 2 : 0;
+		button(title, 0, col, () => {
 			if (!QuintOS.game) {
 				// open the javascript source in new tab
 				open(src);
@@ -725,9 +726,9 @@ QuintOS.runGame = async () => {
 			}
 		});
 		if (!QuintOS.username) return;
-		text(' by ', 0, 2 + title.length);
+		text(' by ', 0, col + title.length);
 		let row = !/(gameboi|arcv)/.test(QuintOS.sys) ? 0 : 1;
-		let col = !/(gameboi|arcv)/.test(QuintOS.sys) ? 6 + title.length : 2;
+		col = !/(gameboi|arcv)/.test(QuintOS.sys) ? 6 + title.length : 0;
 		button(QuintOS.username, row, col, () => {
 			open('https://github.com/' + QuintOS.username);
 		});
@@ -839,7 +840,15 @@ function delay(millisec) {
 }
 
 window.addEventListener('keydown', function (e) {
-	if ((e.key == ' ' || e.key == '/') && e.target == document.body) {
+	if (
+		(e.key == ' ' ||
+			e.key == '/' ||
+			e.key == 'ArrowUp' ||
+			e.key == 'ArrowDown' ||
+			e.key == 'ArrowLeft' ||
+			e.key == 'ArrowRight') &&
+		e.target == document.body
+	) {
 		e.preventDefault();
 	}
 });
@@ -937,36 +946,52 @@ function loadAni(spriteSheetImg, size, pos, frameCount, frameDelay) {
 }
 
 class Tiles {
-	constructor(rows, cols, layers, tileSize, x, y) {
+	constructor(rows, cols, layers, tileSize, x, y, depth) {
 		this.rows = rows;
 		this.cols = cols;
 		this.layers = layers;
 		this.tileSize = tileSize;
-		this.x = x;
-		this.y = y;
-		this.tiles = [];
-		for (let row = 0; row < rows; row++) {
-			this.tiles.push([]);
-			for (let col = 0; col < cols; col++) {
-				this.tiles[row].push([]);
-				for (let layer = 0; layer < layers; layer++) {
-					this.tiles[row][col].push(null);
+		this.x = x || 0;
+		this.y = y || 0;
+		this.depth = depth || 0;
+		this.groupNames = [];
+		this.createGroup('default');
+	}
+
+	createSprite(ani, row, col, layer) {
+		let groupName = 'default';
+		if (ani) {
+			for (groupName of this.groupNames) {
+				if (Object.keys(this[groupName].animations).includes(ani)) {
+					break;
 				}
 			}
 		}
+		return this[groupName].createSprite(ani, row, col, layer);
 	}
 
-	tile(row, col, layer, ani) {
-		this.addGroup('default');
-		return this.default.tile(row, col, layer, ani);
+	loadAni(name, atlas) {
+		this.default.loadAni(name, atlas);
 	}
 
-	addGroup(group) {
+	removeSprites() {
+		for (let groupName of this.groupNames) {
+			this[groupName].removeSprites();
+		}
+	}
+
+	createGroup(groupName) {
 		let _this = this;
-		if (_this[group]) return;
-		_this[group] = new Group();
-		_this[group].animations = [];
-		_this[group].loadAni = function (name, atlas) {
+		if (_this[groupName]) return;
+
+		let group = new Group();
+
+		group.animations = {};
+
+		/*
+		 *
+		 */
+		group.loadAni = function (name, atlas) {
 			let { size, pos, line, frames, delay } = atlas;
 			size ??= _this.tileSize;
 			pos ??= line || 0;
@@ -974,26 +999,39 @@ class Tiles {
 			this.animations[name] = loadAni(sheet, size, pos, frames, delay);
 		};
 		/*
-		 * tile(row, col, layer, ani)
+		 * createSprite
 		 * layer is optional, defaults to zero
 		 */
-		_this[group].tile = function (row, col, layer, ani) {
-			if (typeof layer != 'number') {
-				ani = layer;
-				layer = 0;
+		group.createSprite = function (ani, row, col, layer) {
+			if (typeof ani == 'number') {
+				// shift parameters over
+				layer = col;
+				col = row;
+				row = ani;
 			}
-			let sprite = createSprite(
-				_this.x + col * _this.tileSize,
-				_this.y + row * _this.tileSize,
-				_this.tileSize,
-				_this.tileSize
-			);
+			let sprite = createSprite(0, 0, _this.tileSize, _this.tileSize);
+			// prettier-ignore
+			Object.defineProperty(sprite, 'row', {
+				get: function () { return this._row },
+				set: function (row) {
+					this._row = row;
+					this.destRow = row;
+					this.y = _this.y + row * _this.tileSize;
+				}
+			});
+			// prettier-ignore
+			Object.defineProperty(sprite, 'col', {
+				get: function () { return this._col },
+				set: function (col) {
+					this._col = col;
+					this.destCol = col;
+					this.x = _this.x + col * _this.tileSize;
+				}
+			});
 			sprite.row = row;
 			sprite.col = col;
-			sprite.destRow = row;
-			sprite.destCol = col;
 			sprite.layer = layer;
-			sprite.depth = layer;
+			sprite.depth = layer ? _this.depth + layer : 0;
 			// always start animations at frame 0
 			// if false, by default p5.play will save which frame an animation is on
 			// when the animation is changed so if the animation hadn't finished
@@ -1002,65 +1040,57 @@ class Tiles {
 			// the default so I added this boolean flag for changing that behavior
 			sprite.autoResetAnimations = true;
 			if (ani) sprite.addAnimation(ani, this.animations[ani] || _this.animations[ani]);
+
+			/*
+			 * move(sprite | group, speed, direction | destinationRow, destinationcol)
+			 * Moves the sprite/group in a direction by one tile
+			 * or to a destination row, col
+			 */
+			sprite.move = function (speed, destRow, destCol) {
+				let direction = true;
+				// if destRow is actually the direction
+				if (typeof destRow == 'string') {
+					direction = destRow;
+					destRow = sprite.destRow;
+					destCol = sprite.destCol;
+					if (direction == 'up') destRow--;
+					if (direction == 'down') destRow++;
+					if (direction == 'left') destCol--;
+					if (direction == 'right') destCol++;
+				}
+				sprite.destRow = destRow;
+				sprite.destCol = destCol;
+				if (sprite.isMoving) return;
+				sprite.isMoving = direction;
+				sprite.attractionPoint(speed, _this.x + destCol * _this.tileSize, _this.y + destRow * _this.tileSize);
+
+				(async () => {
+					while (sprite.isMoving) {
+						await delay();
+						let row = (sprite.position.y - _this.y) / _this.tileSize;
+						let col = (sprite.position.x - _this.x) / _this.tileSize;
+						if (row % 1 > 0.1 || col % 1 > 0.1) continue;
+						row = Math.round(row);
+						col = Math.round(col);
+						sprite._row = row;
+						sprite._col = col;
+						if (sprite.isMoving && (sprite.destRow != row || sprite.destCol != col)) continue;
+						sprite.velocity.x = 0;
+						sprite.velocity.y = 0;
+						sprite.y = _this.y + row * _this.tileSize;
+						sprite.x = _this.x + col * _this.tileSize;
+						sprite.isMoving = false;
+					}
+				})();
+			};
+
 			sprite.addToGroup(this);
-			_this.tiles[row][col][layer] = sprite;
 			return sprite;
 		};
-	}
 
-	/*
-	 * move(sprite | group, speed, direction | destinationRow, destinationcol)
-	 * Moves the sprite/group in a direction by one tile
-	 * or to a destination row, col
-	 */
-	move(sprite, speed, destRow, destCol) {
-		if (sprite.layer == 0) {
-			throw 'QuintOS Error: Only sprites on layer 1 and higher can be moved';
-		}
-		let direction = true;
-		// if destRow is actually the direction
-		if (typeof destRow == 'string') {
-			direction = destRow;
-			destRow = sprite.destRow;
-			destCol = sprite.destCol;
-			if (direction == 'up') destRow--;
-			if (direction == 'down') destRow++;
-			if (direction == 'left') destCol--;
-			if (direction == 'right') destCol++;
-		}
-		sprite.destRow = destRow;
-		sprite.destCol = destCol;
-		if (sprite.isMoving) return;
-		sprite.isMoving = direction;
-		sprite.attractionPoint(speed, this.x + destCol * this.tileSize, this.y + destRow * this.tileSize);
-	}
-
-	/*
-	 * update()
-	 * Updates the row col position of each sprite
-	 */
-	update(opt) {
-		for (let r = 0; r < this.tiles.length; r++) {
-			for (let c = 0; c < this.tiles[r].length; c++) {
-				for (let l = 1; l < this.tiles[r][c].length; l++) {
-					let sprite = this.tiles[r][c][l];
-					if (!sprite) continue;
-					let row = (sprite.position.y - this.y) / this.tileSize;
-					let col = (sprite.position.x - this.x) / this.tileSize;
-					if (row % 1 > 0.1 || col % 1 > 0.1) continue;
-					row = Math.round(row);
-					col = Math.round(col);
-					sprite.row = row;
-					sprite.col = col;
-					if (sprite.isMoving && !opt.snap && (sprite.destRow != row || sprite.destCol != col)) continue;
-					sprite.velocity.x = 0;
-					sprite.velocity.y = 0;
-					sprite.y = this.y + row * this.tileSize;
-					sprite.x = this.x + col * this.tileSize;
-					sprite.isMoving = false;
-				}
-			}
-		}
+		_this[groupName] = group;
+		_this.groupNames.push(groupName);
+		return group;
 	}
 }
 
@@ -2822,6 +2852,8 @@ READY.
 		],
 		gameboi: [
 			{
+				' ': '',
+				'.': '',
 				0: '#0f380f',
 				1: '#306230',
 				2: '#8bac0f',
@@ -2858,24 +2890,24 @@ READY.
 
 		// prettier-ignore
 		Object.defineProperty(sprite, 'x', {
-				get: function () { return this.position.x },
-				set: function (x) { this.position.x = x }
-			});
+			get: function () { return this.position.x },
+			set: function (x) { this.position.x = x }
+		});
 		// prettier-ignore
 		Object.defineProperty(sprite, 'y', {
-				get: function () { return this.position.y },
-				set: function (y) { this.position.y = y }
-			});
+			get: function () { return this.position.y },
+			set: function (y) { this.position.y = y }
+		});
 		// prettier-ignore
 		Object.defineProperty(sprite, 'w', {
-				get: function () { return this.width },
-				set: function (w) { this.width = w }
-			});
+			get: function () { return this.width },
+			set: function (w) { this.width = w }
+		});
 		// prettier-ignore
 		Object.defineProperty(sprite, 'h', {
-				get: function () { return this.height },
-				set: function (h) { this.height = h }
-			});
+			get: function () { return this.height },
+			set: function (h) { this.height = h }
+		});
 
 		sprite.ani = function (name, start, end) {
 			return new Promise((resolve, reject) => {

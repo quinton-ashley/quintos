@@ -80,7 +80,6 @@ body.arcv {
 	position: relative;
 	border-radius: 2vmin;
 	user-select: none;
-	cursor: none;
 	width: 77vmin;
 	height: 96vmin;
 }
