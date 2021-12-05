@@ -946,68 +946,48 @@ function loadAni(spriteSheetImg, size, pos, frameCount, frameDelay) {
 	return ani;
 }
 
-class Tiles {
-	constructor(tileSize, x, y, depth) {
-		this.tileSize = tileSize;
-		this.x = x || 0;
-		this.y = y || 0;
-		this.depth = depth || 0;
-		this.groupNames = [];
-		this.createGroup('default');
-	}
-
-	createSprite(ani, row, col, layer) {
-		if (typeof ani == 'number') {
-			// shift parameters over
-			layer = col;
-			col = row;
-			row = ani;
-			ani = null;
+{
+	class Tiles {
+		constructor(tileSize, x, y, depth) {
+			this.tileSize = tileSize;
+			this._x = x || 0;
+			this._y = y || 0;
+			this.depth = depth || 0;
+			this.groupNames = [];
+			this.createGroup('default');
 		}
-		let groupName = 'default';
-		if (ani) {
-			for (groupName of this.groupNames) {
-				if (Object.keys(this[groupName].animations).includes(ani)) {
-					break;
+
+		get x() {
+			return this._x;
+		}
+
+		set x(val) {
+			this._x = val;
+			for (let groupName of this.groupNames) {
+				let group = this[groupName];
+				for (let i = 0; i < group.length; i++) {
+					let sprite = group[i];
+					sprite.col = sprite.col;
 				}
 			}
 		}
-		return this[groupName].createSprite(ani, row, col, layer);
-	}
 
-	loadAni(name, atlas) {
-		this.default.loadAni(name, atlas);
-	}
-
-	removeSprites() {
-		for (let groupName of this.groupNames) {
-			this[groupName].removeSprites();
+		get y() {
+			return this._y;
 		}
-	}
 
-	createGroup(groupName) {
-		let _this = this;
-		if (_this[groupName]) return;
+		set y(val) {
+			this._y = val;
+			for (let groupName of this.groupNames) {
+				let group = this[groupName];
+				for (let i = 0; i < group.length; i++) {
+					let sprite = group[i];
+					sprite.row = sprite.row;
+				}
+			}
+		}
 
-		let group = new Group();
-
-		group.animations = {};
-
-		/*
-		 *
-		 */
-		group.loadAni = function (name, atlas) {
-			let { size, pos, line, frames, delay } = atlas;
-			size ??= _this.tileSize;
-			pos ??= line || 0;
-			let sheet = this.spriteSheet || _this.spriteSheet;
-			this.animations[name] = loadAni(sheet, size, pos, frames, delay);
-		};
-		/*
-		 * createSprite
-		 * layer is optional, defaults to zero
-		 */
-		group.createSprite = function (ani, row, col, layer) {
+		createSprite(ani, row, col, layer) {
 			if (typeof ani == 'number') {
 				// shift parameters over
 				layer = col;
@@ -1015,9 +995,79 @@ class Tiles {
 				row = ani;
 				ani = null;
 			}
-			let sprite = createSprite(0, 0, _this.tileSize, _this.tileSize);
-			// prettier-ignore
-			Object.defineProperty(sprite, 'row', {
+			let groupName = 'default';
+			if (ani) {
+				for (groupName of this.groupNames) {
+					if (Object.keys(this[groupName].animations).includes(ani)) {
+						break;
+					}
+				}
+			}
+			return this[groupName].createSprite(ani, row, col, layer);
+		}
+
+		loadAni(name, atlas) {
+			this.default.loadAni(name, atlas);
+		}
+
+		removeSprites() {
+			for (let groupName of this.groupNames) {
+				this[groupName].removeSprites();
+			}
+		}
+
+		createGroup(groupName) {
+			let _this = this;
+			if (_this[groupName]) return;
+
+			let group = new Group();
+
+			group.animations = {};
+
+			/*
+			 *
+			 */
+			group.loadAni = function (name, atlas) {
+				let { size, pos, line, frames, delay } = atlas;
+				size ??= _this.tileSize;
+				pos ??= line || 0;
+				let sheet = this.spriteSheet || _this.spriteSheet;
+				this.animations[name] = loadAni(sheet, size, pos, frames, delay);
+			};
+
+			group.snap = function (o, dist) {
+				if (o.isMoving) return;
+				dist ??= 1;
+				for (let i = 0; i < this.length; i++) {
+					let sprite = this[i];
+					let row = (sprite.position.y - _this.y) / _this.tileSize;
+					let col = (sprite.position.x - _this.x) / _this.tileSize;
+					if (Math.abs(row) % 1 >= dist || Math.abs(col) % 1 >= dist) continue;
+					row = Math.round(row);
+					col = Math.round(col);
+					sprite._row = row;
+					sprite._col = col;
+					sprite.velocity.x = 0;
+					sprite.velocity.y = 0;
+					sprite.y = _this.y + row * _this.tileSize;
+					sprite.x = _this.x + col * _this.tileSize;
+				}
+			};
+			/*
+			 * createSprite
+			 * layer is optional, defaults to zero
+			 */
+			group.createSprite = function (ani, row, col, layer) {
+				if (typeof ani == 'number') {
+					// shift parameters over
+					layer = col;
+					col = row;
+					row = ani;
+					ani = null;
+				}
+				let sprite = createSprite(0, 0, _this.tileSize, _this.tileSize);
+				// prettier-ignore
+				Object.defineProperty(sprite, 'row', {
 				get: function () { return this._row },
 				set: function (row) {
 					this._row = row;
@@ -1025,8 +1075,8 @@ class Tiles {
 					this.y = _this.y + row * _this.tileSize;
 				}
 			});
-			// prettier-ignore
-			Object.defineProperty(sprite, 'col', {
+				// prettier-ignore
+				Object.defineProperty(sprite, 'col', {
 				get: function () { return this._col },
 				set: function (col) {
 					this._col = col;
@@ -1034,70 +1084,78 @@ class Tiles {
 					this.x = _this.x + col * _this.tileSize;
 				}
 			});
-			sprite.row = row;
-			sprite.col = col;
-			sprite.layer = layer;
-			sprite.depth = layer ? _this.depth + layer : 0;
-			// always start animations at frame 0
-			// if false, by default p5.play will save which frame an animation is on
-			// when the animation is changed so if the animation hadn't finished
-			// when the sprite uses that animation again it will continue at the frame
-			// it was at before, this is not ideal for most use cases idk why it's
-			// the default so I added this boolean flag for changing that behavior
-			sprite.autoResetAnimations = true;
-			if (ani) sprite.addAnimation(ani, this.animations[ani] || _this.animations[ani]);
+				sprite.row = row;
+				sprite.col = col;
+				sprite.layer = layer;
+				sprite.depth = layer ? _this.depth + layer : 0;
+				// always start animations at frame 0
+				// if false, by default p5.play will save which frame an animation is on
+				// when the animation is changed so if the animation hadn't finished
+				// when the sprite uses that animation again it will continue at the frame
+				// it was at before, this is not ideal for most use cases idk why it's
+				// the default so I added this boolean flag for changing that behavior
+				sprite.autoResetAnimations = true;
+				if (ani) sprite.addAnimation(ani, this.animations[ani] || _this.animations[ani]);
 
-			/*
-			 * move(sprite | group, speed, direction | destinationRow, destinationcol)
-			 * Moves the sprite/group in a direction by one tile
-			 * or to a destination row, col
-			 */
-			sprite.move = function (speed, destRow, destCol) {
-				let direction = true;
-				// if destRow is actually the direction
-				if (typeof destRow == 'string') {
-					direction = destRow;
-					destRow = sprite.destRow;
-					destCol = sprite.destCol;
-					if (direction == 'up') destRow--;
-					if (direction == 'down') destRow++;
-					if (direction == 'left') destCol--;
-					if (direction == 'right') destCol++;
-				}
-				sprite.destRow = destRow;
-				sprite.destCol = destCol;
-				if (sprite.isMoving) return;
-				sprite.isMoving = direction;
-				sprite.attractionPoint(speed, _this.x + destCol * _this.tileSize, _this.y + destRow * _this.tileSize);
-
-				(async () => {
-					while (sprite.isMoving) {
-						await delay();
-						let row = (sprite.position.y - _this.y) / _this.tileSize;
-						let col = (sprite.position.x - _this.x) / _this.tileSize;
-						if (row % 1 > 0.1 || col % 1 > 0.1) continue;
-						row = Math.round(row);
-						col = Math.round(col);
-						sprite._row = row;
-						sprite._col = col;
-						if (sprite.isMoving && (sprite.destRow != row || sprite.destCol != col)) continue;
-						sprite.velocity.x = 0;
-						sprite.velocity.y = 0;
-						sprite.y = _this.y + row * _this.tileSize;
-						sprite.x = _this.x + col * _this.tileSize;
-						sprite.isMoving = false;
+				/*
+				 * move(direction, speed)
+				 * move(destinationRow, destinationCol, speed)
+				 * Moves the sprite/group in a direction by one tile
+				 * or to a destination row, col
+				 */
+				sprite.move = function (destRow, destCol, speed) {
+					let direction = true;
+					// if destRow is actually the direction
+					if (typeof destRow == 'string') {
+						direction = destRow;
+						speed = destCol;
+						destRow = sprite.destRow;
+						destCol = sprite.destCol;
+						if (direction == 'up') destRow--;
+						if (direction == 'down') destRow++;
+						if (direction == 'left') destCol--;
+						if (direction == 'right') destCol++;
 					}
-				})();
+					speed ??= 1;
+					sprite.destRow = destRow;
+					sprite.destCol = destCol;
+					if (sprite.isMoving) return;
+					sprite.isMoving = direction;
+					sprite.attractionPoint(speed, _this.x + destCol * _this.tileSize, _this.y + destRow * _this.tileSize);
+
+					(async () => {
+						while (sprite.isMoving) {
+							await delay();
+							let row = (sprite.position.y - _this.y) / _this.tileSize;
+							let col = (sprite.position.x - _this.x) / _this.tileSize;
+							if (Math.abs(row) % 1 >= 0.1 || Math.abs(col) % 1 >= 0.1) continue;
+							row = Math.round(row);
+							col = Math.round(col);
+							sprite._row = row;
+							sprite._col = col;
+							if (sprite.isMoving && (sprite.destRow != row || sprite.destCol != col)) continue;
+							sprite.velocity.x = 0;
+							sprite.velocity.y = 0;
+							sprite.y = _this.y + row * _this.tileSize;
+							sprite.x = _this.x + col * _this.tileSize;
+							sprite.isMoving = false;
+						}
+					})();
+				};
+
+				sprite.addToGroup(this);
+				return sprite;
 			};
 
-			sprite.addToGroup(this);
-			return sprite;
-		};
-
-		_this[groupName] = group;
-		_this.groupNames.push(groupName);
-		return group;
+			_this[groupName] = group;
+			_this.groupNames.push(groupName);
+			return group;
+		}
 	}
+
+	window.createTiles = (tileSize, x, y, depth) => {
+		return new Tiles(tileSize, x, y, depth);
+	};
 }
 
 /********************************************************************
@@ -2256,17 +2314,6 @@ async function preload() {
 
 	$('canvas').removeAttr('style');
 	pixelDensity(1);
-
-	// window.pc = new PC();
-	// window.prompt = async (msg) => {
-	// 	return await prompt(msg);
-	// };
-	// window.alert = async (msg) => {
-	// 	return await alert(msg);
-	// };
-	// window.exit = async () => {
-	// 	return await exit();
-	// };
 
 	let rows, cols;
 	if (QuintOS.sys == 'a2') {

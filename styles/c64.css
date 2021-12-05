@@ -84,7 +84,6 @@ body.c64 {
 	position: relative;
 	border-radius: 2vmin;
 	user-select: none;
-	cursor: none;
 	width: 96vmin;
 	height: 60vmin;
 }
