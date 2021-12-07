@@ -23,15 +23,12 @@ body.gameboi {
 	font-size: 2.2vw;
 	position: absolute;
 	z-index: 1;
-	color: #306230;
-}
-
-.gameboi tile {
+	color: #306850;
 }
 
 .gameboi .hovered {
-	color: #8bac0f;
-	background-color: #0f380f;
+	color: #e0f8cf;
+	background-color: #306850;
 }
 
 .gameboi main,
@@ -47,23 +44,6 @@ body.gameboi {
 	margin-left: -0.05vw;
 }
 
-.gameboi h1 {
-	font-family: 'Press Start 2P', sans-serif;
-	margin-bottom: 2em;
-	text-align: center;
-	max-width: 160vw;
-	line-height: 130%;
-	color: #8bac0f;
-	text-shadow: 0.31vw 0.31vw 0 #fff;
-	margin: 0;
-}
-
-.gameboi h1 + p {
-	font-family: Lato, sans-serif;
-	font-size: 3.2vw;
-	color: #fff;
-	margin-bottom: 2em;
-}
 .gameboi p a {
 	color: #c78dff;
 }
@@ -205,7 +185,7 @@ body.gameboi {
 
 /* Game Screen (only green screen) */
 .gameboi .gamescreen {
-	background: #9bbc0f;
+	background: #86c06c;
 	width: 40vw;
 	height: 36vw;
 	box-shadow: -0.1vw 0.2vw 1vw rgb(0 0 0 / 50%) inset, -0.4vw -0.4vw 2vw rgb(0 0 0 / 25%) inset;

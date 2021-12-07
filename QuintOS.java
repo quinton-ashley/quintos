@@ -46,7 +46,7 @@ public class QuintOS {
 		int col;
 		Runnable onChange;
 		Runnable onSubmit;
-		
+
 		public Input() {
 
 		}
@@ -189,6 +189,10 @@ public class QuintOS {
 	}
 
 	public static void erase() {
+
+	}
+
+	public static void exit() {
 
 	}
 }
