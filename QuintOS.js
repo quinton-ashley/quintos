@@ -1103,11 +1103,12 @@ function loadAni(spriteSheetImg, size, pos, frameCount, frameDelay) {
 				 * Moves the sprite/group in a direction by one tile
 				 * or to a destination row, col
 				 */
-				sprite.move = function (destRow, destCol, speed) {
+				sprite.move = function (destRow, destCol, speed, cb) {
 					let direction = true;
 					// if destRow is actually the direction
 					if (typeof destRow == 'string') {
 						direction = destRow;
+						cb = speed;
 						speed = destCol;
 						destRow = sprite.destRow;
 						destCol = sprite.destCol;
@@ -1139,6 +1140,7 @@ function loadAni(spriteSheetImg, size, pos, frameCount, frameDelay) {
 							sprite.y = _this.y + row * _this.tileSize;
 							sprite.x = _this.x + col * _this.tileSize;
 							sprite.isMoving = false;
+							if (typeof cb == 'function') cb();
 						}
 					})();
 				};
