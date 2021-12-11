@@ -1103,27 +1103,27 @@ function loadAni(spriteSheetImg, size, pos, frameCount, frameDelay) {
 				 * or to a destination row, col
 				 */
 				sprite.move = function (destRow, destCol, speed, cb) {
-					let direction = true;
-					// if destRow is actually the direction
-					if (typeof destRow == 'string') {
-						direction = destRow;
-						cb = speed;
-						speed = destCol;
-						destRow = sprite.destRow;
-						destCol = sprite.destCol;
-						if (direction == 'up') destRow--;
-						if (direction == 'down') destRow++;
-						if (direction == 'left') destCol--;
-						if (direction == 'right') destCol++;
-					}
-					speed ??= 1;
-					sprite.destRow = destRow;
-					sprite.destCol = destCol;
-					if (sprite.isMoving) return;
-					sprite.isMoving = direction;
-					sprite.attractionPoint(speed, _this.x + destCol * _this.tileSize, _this.y + destRow * _this.tileSize);
+					return new Promise(async (resolve) => {
+						let direction = true;
+						// if destRow is actually the direction
+						if (typeof destRow == 'string') {
+							direction = destRow;
+							cb = speed;
+							speed = destCol;
+							destRow = sprite.destRow;
+							destCol = sprite.destCol;
+							if (direction == 'up') destRow--;
+							if (direction == 'down') destRow++;
+							if (direction == 'left') destCol--;
+							if (direction == 'right') destCol++;
+						}
+						speed ??= 1;
+						sprite.destRow = destRow;
+						sprite.destCol = destCol;
+						if (sprite.isMoving) return;
+						sprite.isMoving = direction;
+						sprite.attractionPoint(speed, _this.x + destCol * _this.tileSize, _this.y + destRow * _this.tileSize);
 
-					(async () => {
 						while (sprite.isMoving) {
 							await delay();
 							let row = (sprite.position.y - _this.y) / _this.tileSize;
@@ -1140,8 +1140,9 @@ function loadAni(spriteSheetImg, size, pos, frameCount, frameDelay) {
 							sprite.x = _this.x + col * _this.tileSize;
 							sprite.isMoving = false;
 							if (typeof cb == 'function') cb();
+							resolve();
 						}
-					})();
+					});
 				};
 
 				sprite.addToGroup(this);
