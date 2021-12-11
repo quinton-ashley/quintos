@@ -1626,8 +1626,8 @@ deltaTime = ((now - then) / 1000)/INTERVAL_60; // seconds since last frame
 		 * @method draw
 		 */
 		this.draw = function () {
-			if (currentAnimation !== '' && animations) {
-				if (animations[currentAnimation]) animations[currentAnimation].draw(0, 0, 0);
+			if (currentAnimation !== '') {
+				if (this.animation) this.animation.draw(0, 0, 0);
 			} else {
 				noStroke();
 				fill(this.shapeColor);
@@ -1913,10 +1913,14 @@ deltaTime = ((now - then) / 1000)/INTERVAL_60; // seconds since last frame
 		 * @param {String} label Animation identifier
 		 */
 		this.changeAnimation = function (label) {
-			if (!animations[label]) print('changeAnimation error: no animation labeled ' + label);
+			let anims = Object.assign({}, animations);
+			for (let g of this.groups) {
+				if (g.animations) anims = Object.assign(anims, g.animations);
+			}
+			if (!anims[label]) print('changeAnimation error: no animation labeled ' + label);
 			else {
 				currentAnimation = label;
-				this.animation = animations[label];
+				this.animation = anims[label];
 				if (this.autoResetAnimations) this.animation.changeFrame(0); // reset to frame 0 of that animation
 			}
 		};
@@ -3380,7 +3384,10 @@ deltaTime = ((now - then) / 1000)/INTERVAL_60; // seconds since last frame
 					if (frame < this.images.length - 1) frame++;
 				}
 			}
-			if (frame == this.images.length - 1 && this.onComplete != undefined) this.onComplete(); //fire when on last frame
+			if (this.onComplete && ((targetFrame == -1 && frame == this.images.length - 1) || frame == targetFrame)) {
+				if (this.looping) targetFrame = -1;
+				this.onComplete(); //fire when on last frame
+			}
 
 			if (previousFrame !== frame) this.frameChanged = true;
 		}; //end update

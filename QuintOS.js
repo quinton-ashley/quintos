@@ -1068,22 +1068,22 @@ function loadAni(spriteSheetImg, size, pos, frameCount, frameDelay) {
 				let sprite = createSprite(0, 0, _this.tileSize, _this.tileSize);
 				// prettier-ignore
 				Object.defineProperty(sprite, 'row', {
-				get: function () { return this._row },
-				set: function (row) {
-					this._row = row;
-					this.destRow = row;
-					this.y = _this.y + row * _this.tileSize;
-				}
-			});
+					get: function () { return this._row },
+					set: function (row) {
+						this._row = row;
+						this.destRow = row;
+						this.y = _this.y + row * _this.tileSize;
+					}
+				});
 				// prettier-ignore
 				Object.defineProperty(sprite, 'col', {
-				get: function () { return this._col },
-				set: function (col) {
-					this._col = col;
-					this.destCol = col;
-					this.x = _this.x + col * _this.tileSize;
-				}
-			});
+					get: function () { return this._col },
+					set: function (col) {
+						this._col = col;
+						this.destCol = col;
+						this.x = _this.x + col * _this.tileSize;
+					}
+				});
 				sprite.row = row;
 				sprite.col = col;
 				sprite.layer = layer;
@@ -1095,7 +1095,6 @@ function loadAni(spriteSheetImg, size, pos, frameCount, frameDelay) {
 				// it was at before, this is not ideal for most use cases idk why it's
 				// the default so I added this boolean flag for changing that behavior
 				sprite.autoResetAnimations = true;
-				if (ani) sprite.addAnimation(ani, this.animations[ani] || _this.animations[ani]);
 
 				/*
 				 * move(direction, speed)
@@ -1146,6 +1145,7 @@ function loadAni(spriteSheetImg, size, pos, frameCount, frameDelay) {
 				};
 
 				sprite.addToGroup(this);
+				if (ani) sprite.changeAnimation(ani);
 				return sprite;
 			};
 
@@ -2911,10 +2911,10 @@ READY.
 			{
 				' ': '',
 				'.': '',
-				0: '#0f380f',
-				1: '#306230',
-				2: '#8bac0f',
-				3: '#9bbc0f'
+				0: '#071821',
+				1: '#306850',
+				2: '#86c06c',
+				3: '#e0f8cf'
 			}
 			// {
 			// 	0: '#000000',
@@ -2966,14 +2966,57 @@ READY.
 			set: function (h) { this.height = h }
 		});
 
-		sprite.ani = function (name, start, end) {
-			return new Promise((resolve, reject) => {
-				this.changeAnimation(name);
-				if (start) this.animation.changeFrame(start);
-				if (end) this.animation.goToFrame(end);
-				this.animation.onComplete = () => {
-					resolve();
+		// sprite.ani = function (name, start, end) {
+		// 	return new Promise((resolve, reject) => {
+		// 		this.changeAnimation(name);
+		// 		if (start) this.animation.changeFrame(start);
+		// 		if (end) this.animation.goToFrame(end);
+		// 		this.animation.onComplete = () => {
+		// 			resolve();
+		// 		};
+		// 	});
+		// };
+
+		sprite._aniChanged = 0;
+
+		sprite.ani = function (...anis) {
+			return new Promise(async (resolve) => {
+				let count = ++sprite._aniChanged;
+
+				for (let i = 0; i < anis.length; i++) {
+					if (typeof anis[i] == 'string') anis[i] = { name: anis[i] };
+					let ani = anis[i];
+					if (ani.name[0] == '!') {
+						ani.name = ani.name.slice(1);
+						ani.start = -1;
+						ani.end = 0;
+					}
+				}
+
+				let _ani = (name, start, end) => {
+					return new Promise((resolve1) => {
+						this.changeAnimation(name);
+						if (start < 0) {
+							start = this.animation.images.length + start;
+						}
+						if (start) this.animation.changeFrame(start);
+						if (end != undefined) this.animation.goToFrame(end);
+						this.animation.onComplete = () => {
+							resolve1();
+						};
+					});
 				};
+
+				for (let i = 0; i < anis.length; i++) {
+					let ani = anis[i];
+					if (ani.name == '*') {
+						if (count == sprite._aniChanged) i = 0;
+						continue;
+					}
+					let { name, start, end } = ani;
+					await _ani(name, start, end);
+				}
+				resolve();
 			});
 		};
 

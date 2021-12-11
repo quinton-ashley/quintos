@@ -123,21 +123,6 @@ returns a p5.js color to use with p5.js functions like background, fill, and str
 - `c` is the color letter
 - `palette` is the color palette that should be used, C64 palatte object by default
 
-## easy way to load an animation
-
-```js
-loadAni(sprite, img, name, width, height, frameCount, line, frameDelay);
-```
-
-- `sprite` the p5.play sprite object
-- `img` image path
-- `name` name of the animation
-- `width` width of the animation
-- `height` width of the animation
-- `frameCount` is the amount of frames in the animation
-- `line` is the line that the animation is on in the sprite sheet
-- `frameDelay` is the delay between frames when the animation is played
-
 ## Credits
 
 Quinton Ashley (quinton-ashley) is the creator of QuintOS
