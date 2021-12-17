@@ -1581,6 +1581,9 @@ deltaTime = ((now - then) / 1000)/INTERVAL_60; // seconds since last frame
 				} else {
 					rotate(this.rotation);
 				}
+				if (this.rotation == 90) {
+					translate(0, -this.w);
+				}
 				this.draw();
 				//draw debug info
 				pop();

@@ -55,6 +55,29 @@ body.gameboi {
 	width: var(--gameboy-width);
 	height: var(--gameboy-height);
 	position: relative;
+	transform: translateY(6%) scale(1.25);
+}
+
+@media screen and (max-width: 1100px) {
+	.gameboi .wrapper {
+		transform: translateY(13%) scale(1.25);
+	}
+}
+
+@media screen and (max-width: 800px) {
+	.gameboi .wrapper {
+		transform: translateY(20%) scale(1.5);
+	}
+}
+@media screen and (max-width: 600px) {
+	.gameboi .wrapper {
+		transform: translateY(40%) scale(1.75);
+	}
+}
+@media screen and (max-width: 500px) {
+	.gameboi .wrapper {
+		transform: translate(-5%, 40%) scale(2.25);
+	}
 }
 
 /* GameBoy console body */
