@@ -1103,7 +1103,17 @@ function loadAni(spriteSheetImg, size, pos, frameCount, frameDelay) {
 				 * or to a destination row, col
 				 */
 				sprite.move = function (destRow, destCol, speed, cb) {
-					return new Promise(async (resolve) => {
+					return new Promise(async (resolve, reject) => {
+						if (typeof destRow == 'undefined') {
+							reject('sprite.move ERROR: movement direction or destination not defined');
+							return;
+						}
+						if (sprite.isMoving) {
+							sprite.row = sprite.destRow;
+							sprite.col = sprite.destCol;
+							sprite.velocity.x = 0;
+							sprite.velocity.y = 0;
+						}
 						let direction = true;
 						// if destRow is actually the direction
 						if (typeof destRow == 'string') {
@@ -1118,9 +1128,12 @@ function loadAni(spriteSheetImg, size, pos, frameCount, frameDelay) {
 							if (direction == 'right') destCol++;
 						}
 						speed ??= 1;
+						if (speed <= 0) {
+							reject('sprite.move ERROR: speed must be a positive number');
+							return;
+						}
 						sprite.destRow = destRow;
 						sprite.destCol = destCol;
-						if (sprite.isMoving) return;
 						sprite.isMoving = direction;
 						sprite.attractionPoint(speed, _this.x + destCol * _this.tileSize, _this.y + destRow * _this.tileSize);
 
