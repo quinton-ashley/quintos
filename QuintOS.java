@@ -124,6 +124,46 @@ public class QuintOS {
 
 	}
 
+	public static void text(double num) {
+
+	}
+
+	public static void text(double num, int row) {
+
+	}
+
+	public static void text(double num, int row, int col) {
+
+	}
+
+	public static void text(double num, int row, int col, int w) {
+
+	}
+
+	public static void text(double num, int row, int col, int w, int h) {
+
+	}
+
+	public static void text(int num) {
+
+	}
+
+	public static void text(int num, int row) {
+
+	}
+
+	public static void text(int num, int row, int col) {
+
+	}
+
+	public static void text(int num, int row, int col, int w) {
+
+	}
+
+	public static void text(int num, int row, int col, int w, int h) {
+
+	}
+
 	public static Button button() {
 		return new Button();
 	}
