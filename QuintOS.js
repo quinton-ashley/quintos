@@ -3054,7 +3054,10 @@ READY.
 		QuintOS.language = 'java';
 	}
 	QuintOS.fileType = QuintOS.language;
-	if (QuintOS.language == 'java' && /(Pong|Contain|SketchBook|SuperJump|Sokoban)/.test(QuintOS.gameTitle)) {
+	if (
+		QuintOS.language == 'java' &&
+		/(Pong|Contain|SketchBook|SpeakAndSpell|SuperJump|Sokoban)/.test(QuintOS.gameTitle)
+	) {
 		QuintOS.fileType = 'pde';
 	}
 
@@ -3098,7 +3101,7 @@ READY.
 			resolve();
 		}),
 		new Promise(async (resolve, reject) => {
-			if (!QuintOS.language == 'java') {
+			if (QuintOS.language != 'java') {
 				if (QuintOS.level >= 11 && !QuintOS?.preload) QuintOS.preload = true;
 				if (QuintOS.preload) QuintOS.preloadData();
 			}
