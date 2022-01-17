@@ -684,6 +684,11 @@ public class ${QuintOS.gameTitle} {
 
 QuintOS.runJava = async (src, file) => {
 	file ??= await QuintOS.loadCode(src);
+	if (QuintOS.fileType == 'pde') {
+		let inst = new window[QuintOS.gameTitle]();
+		setup = inst.setup;
+		draw = inst.draw;
+	}
 	jdk.run();
 };
 
@@ -719,7 +724,9 @@ QuintOS.runGame = async () => {
 	let title = QuintOS.gameTitle;
 	let lvl = QuintOS.level.toString();
 	if (lvl.length == 1) lvl = '0' + lvl;
-	title = lvl + '_' + title.slice(0, 1).toUpperCase() + title.slice(1);
+	if (lvl) {
+		title = lvl + '_' + title.slice(0, 1).toUpperCase() + title.slice(1);
+	}
 	$('head title').text(title);
 	if (/(a2|gridc)/.test(QuintOS.sys)) QuintOS.frame();
 	if (QuintOS.sys != 'calcu') {
