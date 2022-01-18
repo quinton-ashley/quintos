@@ -3166,6 +3166,4 @@ READY.
 
 function setup() {}
 
-function draw() {
-	log('loading');
-}
+function draw() {}
