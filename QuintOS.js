@@ -3136,7 +3136,6 @@ READY.
 	// };
 	p5.disableFriendlyErrors = false;
 	QuintOS.runGame();
-	await delay(100);
 
 	// $('#screen0').parent().addClass('clear');
 	$('#screen0').parent().append($('main'));
@@ -3161,6 +3160,7 @@ READY.
 
 	console.log(`QuintOS v${QuintOS.level} size: ${width}x${height} rows: ${rows} cols: ${cols}`);
 
+	await delay(100);
 	setup();
 }
 
