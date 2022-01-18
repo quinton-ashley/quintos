@@ -684,11 +684,6 @@ public class ${QuintOS.gameTitle} {
 
 QuintOS.runJava = async (src, file) => {
 	file ??= await QuintOS.loadCode(src);
-	if (QuintOS.fileType == 'pde') {
-		let inst = new window[QuintOS.gameTitle]();
-		setup = inst.setup;
-		draw = inst.draw;
-	}
 	jdk.run();
 };
 
@@ -2807,16 +2802,16 @@ READY.
 	bootScreens.TicTacAIO = bootScreens.QuickClicks;
 
 	async function displayBootscreen() {
-		let waitForDraw = () =>
-			new Promise((resolve) => {
-				let wasDrawn = false;
-				window.draw = () => {
-					if (!wasDrawn) {
-						wasDrawn = true;
-						resolve();
-					}
-				};
-			});
+		// let waitForDraw = () =>
+		// 	new Promise((resolve) => {
+		// 		let wasDrawn = false;
+		// 		window.draw = () => {
+		// 			if (!wasDrawn) {
+		// 				wasDrawn = true;
+		// 				resolve();
+		// 			}
+		// 		};
+		// 	});
 
 		if (QuintOS.sys == 'calcu') {
 			let txt0 = "'-.⎽⎽.-'⎺⎺".repeat(3);
@@ -2857,32 +2852,9 @@ READY.
 		// 	}
 		// }
 
-		await waitForDraw();
+		// await waitForDraw();
 
-		if (QuintOS.sys == 'calcu') return;
-
-		// $('#screen0').parent().addClass('clear');
-		$('#screen0').parent().append($('main'));
-		$('main').css('display', 'block');
-
-		if (QuintOS.sys == 'c64') {
-			resizeCanvas(320, 200);
-		} else if (QuintOS.sys == 'arcv') {
-			resizeCanvas(320, 400);
-		} else if (QuintOS.sys == 'gridc') {
-			resizeCanvas(320, 240);
-		} else if (QuintOS.sys == 'zx') {
-			resizeCanvas(256, 192);
-		} else if (QuintOS.sys == 'gameboi') {
-			resizeCanvas(160, 144);
-		}
-
-		camera.position.x = width / 2;
-		camera.position.y = height / 2;
-		strokeWeight(2);
-		$('canvas').removeAttr('style');
-
-		console.log(`QuintOS v${QuintOS.level} size: ${width}x${height} rows: ${rows} cols: ${cols}`);
+		// if (QuintOS.sys == 'calcu') return;
 	}
 
 	let palettes = {
@@ -3102,8 +3074,19 @@ READY.
 			if (QuintOS.language == 'java') {
 				jdk.load(QuintOS.game);
 			}
-			if (QuintOS.fileType == 'pde' && typeof QuintOS.preload == 'function') {
-				QuintOS.preload();
+			if (QuintOS.fileType == 'pde') {
+				let inst = new window[QuintOS.gameTitle]();
+				if (typeof inst.preload == 'function') inst.preload();
+				if (typeof inst.setup == 'function') {
+					setup = () => {
+						inst.setup();
+					};
+				}
+				if (typeof inst.draw == 'function') {
+					draw = () => {
+						inst.draw();
+					};
+				}
 			}
 			resolve();
 		}),
@@ -3154,9 +3137,35 @@ READY.
 	p5.disableFriendlyErrors = false;
 	QuintOS.runGame();
 	await delay(100);
+
+	// $('#screen0').parent().addClass('clear');
+	$('#screen0').parent().append($('main'));
+	$('main').css('display', 'block');
+
+	if (QuintOS.sys == 'c64') {
+		resizeCanvas(320, 200);
+	} else if (QuintOS.sys == 'arcv') {
+		resizeCanvas(320, 400);
+	} else if (QuintOS.sys == 'gridc') {
+		resizeCanvas(320, 240);
+	} else if (QuintOS.sys == 'zx') {
+		resizeCanvas(256, 192);
+	} else if (QuintOS.sys == 'gameboi') {
+		resizeCanvas(160, 144);
+	}
+
+	camera.position.x = width / 2;
+	camera.position.y = height / 2;
+	strokeWeight(2);
+	$('canvas').removeAttr('style');
+
+	console.log(`QuintOS v${QuintOS.level} size: ${width}x${height} rows: ${rows} cols: ${cols}`);
+
 	setup();
 }
 
 function setup() {}
 
-function draw() {}
+function draw() {
+	log('loading');
+}
