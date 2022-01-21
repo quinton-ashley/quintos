@@ -393,9 +393,9 @@ function input(value, row, col, onSubmit, onChange) {
 	let _this = this;
 	class Input {
 		constructor(value, row, col, onSubmit, onChange) {
-			this.row = row;
-			this.col = col;
-			this.cursorX = col;
+			this.row = row || 0;
+			this.col = col || 0;
+			this.cursorX = this.col;
 			this.h = 1;
 			this.onSubmit = onSubmit || (() => {});
 			this.onChange = onChange || (() => {});
@@ -1112,15 +1112,15 @@ function loadAni(spriteSheetImg, size, pos, frameCount, frameDelay) {
 							reject('sprite.move ERROR: movement direction or destination not defined');
 							return;
 						}
+						// if the sprite is moving stop it from moving in the direction it used to be moving in
 						if (sprite.isMoving) {
-							sprite.row = sprite.destRow;
-							sprite.col = sprite.destCol;
 							sprite.velocity.x = 0;
 							sprite.velocity.y = 0;
 						}
 						let direction = true;
-						// if destRow is actually the direction
+						// if destRow is actually the direction (up, down, left, or right)
 						if (typeof destRow == 'string') {
+							// shift input parameters over by one
 							direction = destRow;
 							cb = speed;
 							speed = destCol;
@@ -1130,32 +1130,51 @@ function loadAni(spriteSheetImg, size, pos, frameCount, frameDelay) {
 							if (direction == 'down') destRow++;
 							if (direction == 'left') destCol--;
 							if (direction == 'right') destCol++;
+							sprite.direction = direction;
 						}
 						speed ??= 1;
 						if (speed <= 0) {
-							reject('sprite.move ERROR: speed must be a positive number');
-							return;
+							console.warn('sprite.move: speed should be a positive number');
+							speed = Math.abs(speed);
 						}
 						sprite.destRow = destRow;
 						sprite.destCol = destCol;
-						sprite.isMoving = direction;
+						sprite.isMoving = true;
 						sprite.attractionPoint(speed, _this.x + destCol * _this.tileSize, _this.y + destRow * _this.tileSize);
+
+						let dist = Math.max(Math.abs(sprite.row - destRow), Math.abs(sprite.col - destCol));
+						let frames = 0;
+						if (dist == 1) frames = Math.floor((dist * _this.tileSize) / speed);
+
+						let margin = (speed * 1.5) / _this.tileSize;
 
 						while (sprite.isMoving) {
 							await delay();
+							// skip calculations if not close enough to destination yet
+							if (frames > 0) {
+								frames--;
+								continue;
+							}
+							// calculate the sprite's row, col grid position without rounding
 							let row = (sprite.position.y - _this.y) / _this.tileSize;
 							let col = (sprite.position.x - _this.x) / _this.tileSize;
-							if (Math.abs(row) % 1 >= 0.1 || Math.abs(col) % 1 >= 0.1) continue;
+							// see if the sprite is too far from a whole number row, col coordinate
+							if (Math.abs(row - Math.round(row)) % 1 > margin || Math.abs(col - Math.round(col)) % 1 > margin)
+								continue;
 							row = Math.round(row);
 							col = Math.round(col);
 							sprite._row = row;
 							sprite._col = col;
+							// check if the sprite has reached it's destination
 							if (sprite.isMoving && (sprite.destRow != row || sprite.destCol != col)) continue;
+							// stop moving the sprite
 							sprite.velocity.x = 0;
 							sprite.velocity.y = 0;
+							// move the sprite to the exact row, col coordinate position
 							sprite.y = _this.y + row * _this.tileSize;
 							sprite.x = _this.x + col * _this.tileSize;
 							sprite.isMoving = false;
+							// if a callback was given, call it
 							if (typeof cb == 'function') cb();
 							resolve();
 						}
