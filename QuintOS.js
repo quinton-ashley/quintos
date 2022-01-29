@@ -874,7 +874,65 @@ function colorPal(c, palette) {
 	return color(c);
 }
 
-window.color16 = colorPal;
+let keyCodes = {
+	_: 189,
+	'-': 189,
+	',': 188,
+	';': 188,
+	':': 190,
+	'!': 49,
+	'?': 219,
+	'.': 190,
+	'"': 50,
+	'(': 56,
+	')': 57,
+	'§': 51,
+	'*': 187,
+	'/': 55,
+	'&': 54,
+	'#': 191,
+	'%': 53,
+	'°': 220,
+	'+': 187,
+	'=': 48,
+	"'": 191,
+	$: 52,
+	Alt: 18,
+	ArrowUp: 38,
+	ArrowDown: 40,
+	ArrowLeft: 37,
+	ArrowRight: 39,
+	CapsLock: 20,
+	Clear: 12,
+	Control: 17,
+	Delete: 46,
+	Escape: 27,
+	Insert: 45,
+	PageDown: 34,
+	PageUp: 33,
+	Shift: 16,
+	Tab: 9
+};
+
+/**
+ * Get the keyCode of a key
+ * @param {string} keyName
+ * @returns {number} keyCode
+ */
+function getKeyCode(keyName) {
+	let code = keyCodes[keyName];
+	if (code) return code;
+	return keyName.toUpperCase().charCodeAt(0);
+}
+
+/**
+ * Check if key is down
+ * @param {string} keyName
+ * @returns {boolean} true if key is down
+ */
+function isKeyDown(keyName) {
+	return keyIsDown(getKeyCode(keyName));
+}
 
 function spriteArt(txt, scale, palette) {
 	scale ??= 1;
@@ -901,7 +959,7 @@ function spriteArt(txt, scale, palette) {
 		for (let j = 0; j < lines[i].length; j++) {
 			for (let sX = 0; sX < scale; sX++) {
 				for (let sY = 0; sY < scale; sY++) {
-					let c = color16(lines[i][j], palette);
+					let c = colorPal(lines[i][j], palette);
 					img.set(j * scale + sX, i * scale + sY, c);
 				}
 			}
