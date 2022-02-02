@@ -668,15 +668,15 @@ public class ${QuintOS.gameTitle} {
 
 	file = await jdk.translate(file);
 
+	file = file.replace(/(?!\s)(alert|prompt|erase|eraseRect|text|textRect|frame)\(/gm, 'await $1(');
+
 	file = file.replace(
 		/System\.out\.print(ln)*\(([^\)]*)\);\s*(.*=)(.*\.)*next(Int|Float|Double|Line|Short|Long)*\(\);/g,
 		'$3 await prompt($2);'
 	);
+	file = file.replace(/System\.out\.print(ln)*\(([^\(\)]*(\([^\(\)]*\))*)*\);/gm, 'await alert($2);');
 
-	file = file.replace(/(alert|prompt|eraseRect)\(/gm, 'await $1(');
-	file = file.replace(/System\.out\.print(ln)*\(([^\)]*)\);/gm, 'await alert($2);');
-
-	file = file.replace(/size\(.*\);/gm, '');
+	// file = file.replace(/size\(.*\);/gm, '');
 
 	if (QuintOS.dev) log(file);
 	return file;
@@ -1165,47 +1165,60 @@ function loadAni(spriteSheetImg, size, pos, frameCount, frameDelay) {
 				 * or to a destination row, col
 				 */
 				sprite.move = function (destRow, destCol, speed, cb) {
-					return new Promise(async (resolve, reject) => {
-						if (typeof destRow == 'undefined') {
-							reject('sprite.move ERROR: movement direction or destination not defined');
-							return;
+					if (typeof destRow == 'undefined') {
+						console.error('sprite.move ERROR: movement direction or destination not defined');
+						return;
+					}
+					// if the sprite is moving stop it from moving in the direction it used to be moving in
+					if (sprite.isMoving) {
+						sprite.velocity.x = 0;
+						sprite.velocity.y = 0;
+					}
+					let direction = true;
+					// if destRow is actually the direction (up, down, left, or right)
+					if (typeof destRow == 'string') {
+						// shift input parameters over by one
+						direction = destRow;
+						cb = speed;
+						speed = destCol;
+						destRow = sprite.destRow;
+						destCol = sprite.destCol;
+						if (direction == 'up') destRow--;
+						if (direction == 'down') destRow++;
+						if (direction == 'left') destCol--;
+						if (direction == 'right') destCol++;
+						if (/(up|down)/.test(direction)) {
+							sprite.destRow = destRow;
 						}
-						// if the sprite is moving stop it from moving in the direction it used to be moving in
-						if (sprite.isMoving) {
-							sprite.velocity.x = 0;
-							sprite.velocity.y = 0;
+						if (/(left|right)/.test(direction)) {
+							sprite.destCol = destCol;
 						}
-						let direction = true;
-						// if destRow is actually the direction (up, down, left, or right)
-						if (typeof destRow == 'string') {
-							// shift input parameters over by one
-							direction = destRow;
-							cb = speed;
-							speed = destCol;
-							destRow = sprite.destRow;
-							destCol = sprite.destCol;
-							if (direction == 'up') destRow--;
-							if (direction == 'down') destRow++;
-							if (direction == 'left') destCol--;
-							if (direction == 'right') destCol++;
-							sprite.direction = direction;
-						}
-						speed ??= 1;
-						if (speed <= 0) {
-							console.warn('sprite.move: speed should be a positive number');
-							speed = Math.abs(speed);
-						}
+						sprite.direction = direction;
+					} else {
 						sprite.destRow = destRow;
 						sprite.destCol = destCol;
-						sprite.isMoving = true;
-						sprite.attractionPoint(speed, _this.x + destCol * _this.tileSize, _this.y + destRow * _this.tileSize);
+					}
+					if (speed == 0) {
+						sprite.row = destRow;
+						sprite.col = destCol;
+						return;
+					}
 
-						let dist = Math.max(Math.abs(sprite.row - destRow), Math.abs(sprite.col - destCol));
-						let frames = 0;
-						if (dist == 1) frames = Math.floor((dist * _this.tileSize) / speed);
+					speed ??= 1;
+					if (speed <= 0) {
+						console.warn('sprite.move: speed should be a positive number');
+						speed = Math.abs(speed);
+					}
+					sprite.isMoving = true;
+					sprite.attractionPoint(speed, _this.x + destCol * _this.tileSize, _this.y + destRow * _this.tileSize);
 
-						let margin = (speed * 1.5) / _this.tileSize;
+					let dist = Math.max(Math.abs(sprite.row - destRow), Math.abs(sprite.col - destCol));
+					let frames = 0;
+					if (dist == 1) frames = Math.floor((dist * _this.tileSize) / speed);
 
+					let margin = (speed * 1.5) / _this.tileSize;
+
+					return new Promise(async (resolve, reject) => {
 						while (sprite.isMoving) {
 							await delay();
 							// skip calculations if not close enough to destination yet
