@@ -100,6 +100,70 @@ public class QuintOS {
 
 	}
 
+	public static void log(char x) {
+
+	}
+
+	public static void log(double x) {
+
+	}
+
+	public static void log(float x) {
+
+	}
+
+	public static void log(int x) {
+
+	}
+
+	public static void log(String x) {
+
+	}
+
+	public static void log(char[] x) {
+
+	}
+
+	public static void log(double[] x) {
+
+	}
+
+	public static void log(float[] x) {
+
+	}
+
+	public static void log(int[] x) {
+
+	}
+
+	public static void log(String[] x) {
+
+	}
+
+	public static void log(char[][] x) {
+
+	}
+
+	public static void log(double[][] x) {
+
+	}
+
+	public static void log(float[][] x) {
+
+	}
+
+	public static void log(int[][] x) {
+
+	}
+
+	public static void log(String[][] x) {
+
+	}
+
+	public static void log(Object x) {
+
+	}
+
 	public static void text() {
 
 	}
