@@ -228,6 +228,14 @@ public class QuintOS {
 
 	}
 
+	public static void textRect(int row, int col, int w, int h) {
+
+	}
+
+	public static void delay(int timeInMS) {
+
+	}
+
 	public static Button button() {
 		return new Button();
 	}
