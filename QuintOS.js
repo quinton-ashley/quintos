@@ -668,7 +668,7 @@ public class ${QuintOS.gameTitle} {
 
 	file = await jdk.translate(file);
 
-	file = file.replace(/(?!\s)(alert|prompt|erase|eraseRect|text|textRect|frame)\(/gm, 'await $1(');
+	file = file.replace(/(?!\s)(alert|prompt|erase|eraseRect|delay|text|textRect|frame)\(/gm, 'await $1(');
 
 	file = file.replace(
 		/System\.out\.print(ln)*\(([^\)]*)\);\s*(.*=)(.*\.)*next(Int|Float|Double|Line|Short|Long)*\(\);/g,
