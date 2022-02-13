@@ -3166,14 +3166,17 @@ READY.
 			}
 			if (QuintOS.fileType == 'pde') {
 				let inst = new window[QuintOS.gameTitle]();
+				let loaded = false;
 				if (typeof inst.preload == 'function') inst.preload();
 				if (typeof inst.setup == 'function') {
 					setup = () => {
 						inst.setup();
+						loaded = true;
 					};
 				}
 				if (typeof inst.draw == 'function') {
 					draw = () => {
+						if (!loaded) return;
 						inst.draw();
 					};
 				}
