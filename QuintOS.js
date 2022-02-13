@@ -671,7 +671,7 @@ public class ${QuintOS.gameTitle} {
 	file = file.replace(/(?!\s)(alert|prompt|erase|eraseRect|delay|text|textRect|frame)\(/gm, 'await $1(');
 
 	file = file.replace(
-		/System\.out\.print(ln)*\(([^\)]*)\);\s*(.*=)(.*\.)*next(Int|Float|Double|Line|Short|Long)*\(\);/g,
+		/System\.out\.print(ln)*\(([^\)]*)\);\s*(.*=)(.*\.)*next(Int|Float|Double|Line|Short|Long)*\(\);/gm,
 		'$3 await prompt($2);'
 	);
 	file = file.replace(/System\.out\.print(ln)*\(([^\(\)]*(\([^\(\)]*\))*)*\);/gm, 'await alert($2);');

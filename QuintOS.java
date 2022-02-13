@@ -236,6 +236,26 @@ public class QuintOS {
 
 	}
 
+	public static String prompt(String txt) {
+		return "";
+	}
+
+	public static String prompt(String txt, int row) {
+		return "";
+	}
+
+	public static String prompt(String txt, int row, int col) {
+		return "";
+	}
+
+	public static String prompt(String txt, int row, int col, int w) {
+		return "";
+	}
+
+	public static String prompt(String txt, int row, int col, int w, int h) {
+		return "";
+	}
+
 	public static Button button() {
 		return new Button();
 	}
