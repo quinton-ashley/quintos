@@ -3024,6 +3024,8 @@ READY.
 		if (typeof x == 'object') img = x;
 		x ??= 0;
 		y ??= 0;
+		this.position.x = x;
+		this.position.y = y;
 
 		let sprite = _createSprite(x, y, w, h);
 
