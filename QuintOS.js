@@ -666,13 +666,13 @@ public class ${QuintOS.gameTitle} {
 
 	if (QuintOS.dev) log(file);
 
-	file = await jdk.translate(file);
-
 	file = file.replace(
-		/await System\.out\.print(ln)*\(([^\)]*)\);\s*(.*=)(.*\.)*next(Int|Float|Double|Line|Short|Long)*\(\);/gm,
-		'$3 await prompt($2);'
+		/System\.out\.print(ln)*\(([^\)]*)\);\s*(.*=)(.*\.)*next(Int|Float|Double|Line|Short|Long)*\(\);/gm,
+		'$3 prompt($2);'
 	);
 	file = file.replace(/System\.out\.print(ln)*\(([^\(\)]*(\([^\(\)]*\))*)*\);/gm, 'alert($2);');
+
+	file = await jdk.transpile(file);
 
 	// file = file.replace(/size\(.*\);/gm, '');
 
@@ -3161,9 +3161,9 @@ READY.
 				}
 			}
 			QuintOS.game ??= await QuintOS.loadGame();
-			if (QuintOS.language == 'java') {
-				jdk.load(QuintOS.game);
-			}
+			// if (QuintOS.language == 'java') {
+			// 	jdk.load(QuintOS.game);
+			// }
 			if (QuintOS.fileType == 'pde') {
 				let inst = new window[QuintOS.gameTitle]();
 				let loaded = false;
