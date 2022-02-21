@@ -604,7 +604,7 @@ async function prompt(txt, row, col, w, h) {
 		}
 		await eraseRect(row, col, w, h + th);
 	};
-	return new Promise(async (resolve, reject) => {
+	return new Promise((resolve) => {
 		inp.onSubmit = async () => {
 			if (erasing) return;
 			await eraseBtn();
@@ -625,7 +625,7 @@ async function prompt(txt, row, col, w, h) {
 	});
 }
 
-QuintOS.runJS = async (src, file) => {
+QuintOS.runJS = (src, file) => {
 	return new Promise(async (resolve, reject) => {
 		if (!src) file ??= await QuintOS.loadCode(src);
 		const script = document.createElement('script');
@@ -1216,7 +1216,7 @@ function loadAni(spriteSheetImg, size, pos, frameCount, frameDelay) {
 
 					let margin = (speed * 1.5) / _this.tileSize;
 
-					return new Promise(async (resolve, reject) => {
+					return (async () => {
 						while (sprite.isMoving) {
 							await delay();
 							// skip calculations if not close enough to destination yet
@@ -1245,9 +1245,8 @@ function loadAni(spriteSheetImg, size, pos, frameCount, frameDelay) {
 							sprite.isMoving = false;
 							// if a callback was given, call it
 							if (typeof cb == 'function') cb();
-							resolve();
 						}
-					});
+					})();
 				};
 
 				sprite.addToGroup(this);
@@ -3063,45 +3062,42 @@ READY.
 
 		sprite._aniChanged = 0;
 
-		sprite.ani = function (...anis) {
-			return new Promise(async (resolve) => {
-				let count = ++sprite._aniChanged;
+		sprite.ani = async function (...anis) {
+			let count = ++sprite._aniChanged;
 
-				for (let i = 0; i < anis.length; i++) {
-					if (typeof anis[i] == 'string') anis[i] = { name: anis[i] };
-					let ani = anis[i];
-					if (ani.name[0] == '!') {
-						ani.name = ani.name.slice(1);
-						ani.start = -1;
-						ani.end = 0;
-					}
+			for (let i = 0; i < anis.length; i++) {
+				if (typeof anis[i] == 'string') anis[i] = { name: anis[i] };
+				let ani = anis[i];
+				if (ani.name[0] == '!') {
+					ani.name = ani.name.slice(1);
+					ani.start = -1;
+					ani.end = 0;
 				}
+			}
 
-				let _ani = (name, start, end) => {
-					return new Promise((resolve1) => {
-						this.changeAnimation(name);
-						if (start < 0) {
-							start = this.animation.images.length + start;
-						}
-						if (start) this.animation.changeFrame(start);
-						if (end != undefined) this.animation.goToFrame(end);
-						this.animation.onComplete = () => {
-							resolve1();
-						};
-					});
-				};
-
-				for (let i = 0; i < anis.length; i++) {
-					let ani = anis[i];
-					if (ani.name == '*') {
-						if (count == sprite._aniChanged) i = 0;
-						continue;
+			let _ani = (name, start, end) => {
+				return new Promise((resolve) => {
+					this.changeAnimation(name);
+					if (start < 0) {
+						start = this.animation.images.length + start;
 					}
-					let { name, start, end } = ani;
-					await _ani(name, start, end);
+					if (start) this.animation.changeFrame(start);
+					if (end != undefined) this.animation.goToFrame(end);
+					this.animation.onComplete = () => {
+						resolve();
+					};
+				});
+			};
+
+			for (let i = 0; i < anis.length; i++) {
+				let ani = anis[i];
+				if (ani.name == '*') {
+					if (count == sprite._aniChanged) i = 0;
+					continue;
 				}
-				resolve();
-			});
+				let { name, start, end } = ani;
+				await _ani(name, start, end);
+			}
 		};
 
 		sprite.loadAni = function (name, atlas) {
@@ -3141,14 +3137,15 @@ READY.
 	let bootScreen = bootScreens[title] || [];
 
 	await Promise.all([
-		new Promise(async (resolve, reject) => {
+		(async () => {
 			if (QuintOS.language == 'java') {
 				try {
-					let root = './node_modules/java2js';
-					if (QuintOS.game) root = 'https://unpkg.com/java2js';
+					let root = './node_modules/java2js/jdk';
+					if (QuintOS.game) root = 'https://unpkg.com/java2js/jdk';
 					await jdk.init(root);
 				} catch (ror) {
-					reject(ror);
+					console.error(ror);
+					return;
 				}
 				System.exit = exit;
 				// jdk.log = function (...args) {
@@ -3179,9 +3176,8 @@ READY.
 					};
 				}
 			}
-			resolve();
-		}),
-		new Promise(async (resolve, reject) => {
+		})(),
+		(async () => {
 			if (QuintOS.language != 'java') {
 				if (QuintOS.level >= 11 && !QuintOS?.preload) QuintOS.preload = true;
 				if (QuintOS.preload) QuintOS.preloadData();
@@ -3190,8 +3186,7 @@ READY.
 			if (/(a2|gridc)/.test(QuintOS.sys)) await QuintOS.frame();
 
 			await displayBootscreen();
-			resolve();
-		})
+		})()
 	]);
 
 	window.text = QuintOS.text;
