@@ -1070,6 +1070,10 @@ function loadAni(spriteSheetImg, size, pos, frameCount, frameDelay) {
 			this.default.loadAni(name, atlas);
 		}
 
+		loadImg(name, atlas) {
+			this.loadAni(name, atlas);
+		}
+
 		removeSprites() {
 			for (let groupName of this.groupNames) {
 				this[groupName].removeSprites();
@@ -1084,9 +1088,6 @@ function loadAni(spriteSheetImg, size, pos, frameCount, frameDelay) {
 
 			group.animations = {};
 
-			/*
-			 *
-			 */
 			group.loadAni = function (name, atlas) {
 				let { size, pos, line, frames, delay } = atlas;
 				size ??= _this.tileSize;
@@ -1095,13 +1096,17 @@ function loadAni(spriteSheetImg, size, pos, frameCount, frameDelay) {
 				this.animations[name] = loadAni(sheet, size, pos, frames, delay);
 			};
 
+			group.loadImg = function (name, atlas) {
+				this.loadAni(name, atlas);
+			};
+
 			group.snap = function (o, dist) {
 				if (o.isMoving) return;
 				dist ??= 1;
 				for (let i = 0; i < this.length; i++) {
 					let sprite = this[i];
-					let row = (sprite.position.y - _this.y) / _this.tileSize;
-					let col = (sprite.position.x - _this.x) / _this.tileSize;
+					let row = (sprite.position.y - _this.y) / sprite.w;
+					let col = (sprite.position.x - _this.x) / sprite.h;
 					if (Math.abs(row) % 1 >= dist || Math.abs(col) % 1 >= dist) continue;
 					row = Math.round(row);
 					col = Math.round(col);
@@ -1109,8 +1114,8 @@ function loadAni(spriteSheetImg, size, pos, frameCount, frameDelay) {
 					sprite._col = col;
 					sprite.velocity.x = 0;
 					sprite.velocity.y = 0;
-					sprite.y = _this.y + row * _this.tileSize;
-					sprite.x = _this.x + col * _this.tileSize;
+					sprite.y = _this.y + row * sprite.w;
+					sprite.x = _this.x + col * sprite.h;
 				}
 			};
 			/*
@@ -1125,14 +1130,20 @@ function loadAni(spriteSheetImg, size, pos, frameCount, frameDelay) {
 					row = ani;
 					ani = null;
 				}
-				let sprite = createSprite(0, 0, _this.tileSize, _this.tileSize);
+				let w = _this.tileSize;
+				let h = _this.tileSize;
+				if (typeof _this.tileSize != 'number') {
+					w = _this.tileSize[0];
+					h = _this.tileSize[1];
+				}
+				let sprite = createSprite(0, 0, w, h);
 				// prettier-ignore
 				Object.defineProperty(sprite, 'row', {
 					get: function () { return this._row },
 					set: function (row) {
 						this._row = row;
 						this.destRow = row;
-						this.y = _this.y + row * _this.tileSize;
+						this.y = _this.y + row * h;
 					}
 				});
 				// prettier-ignore
@@ -1141,7 +1152,7 @@ function loadAni(spriteSheetImg, size, pos, frameCount, frameDelay) {
 					set: function (col) {
 						this._col = col;
 						this.destCol = col;
-						this.x = _this.x + col * _this.tileSize;
+						this.x = _this.x + col * w;
 					}
 				});
 				sprite.row = row;
@@ -1208,13 +1219,13 @@ function loadAni(spriteSheetImg, size, pos, frameCount, frameDelay) {
 						speed = Math.abs(speed);
 					}
 					sprite.isMoving = true;
-					sprite.attractionPoint(speed, _this.x + destCol * _this.tileSize, _this.y + destRow * _this.tileSize);
+					sprite.attractionPoint(speed, _this.x + destCol * sprite.w, _this.y + destRow * sprite.h);
 
 					let dist = Math.max(Math.abs(sprite.row - destRow), Math.abs(sprite.col - destCol));
 					let frames = 0;
-					if (dist == 1) frames = Math.floor((dist * _this.tileSize) / speed);
+					if (dist == 1) frames = Math.floor((dist * sprite.w) / speed);
 
-					let margin = (speed * 1.5) / _this.tileSize;
+					let margin = (speed * 1.5) / sprite.w;
 
 					return (async () => {
 						while (sprite.isMoving) {
@@ -1225,8 +1236,8 @@ function loadAni(spriteSheetImg, size, pos, frameCount, frameDelay) {
 								continue;
 							}
 							// calculate the sprite's row, col grid position without rounding
-							let row = (sprite.position.y - _this.y) / _this.tileSize;
-							let col = (sprite.position.x - _this.x) / _this.tileSize;
+							let row = (sprite.position.y - _this.y) / sprite.w;
+							let col = (sprite.position.x - _this.x) / sprite.h;
 							// see if the sprite is too far from a whole number row, col coordinate
 							if (Math.abs(row - Math.round(row)) % 1 > margin || Math.abs(col - Math.round(col)) % 1 > margin)
 								continue;
@@ -1240,8 +1251,8 @@ function loadAni(spriteSheetImg, size, pos, frameCount, frameDelay) {
 							sprite.velocity.x = 0;
 							sprite.velocity.y = 0;
 							// move the sprite to the exact row, col coordinate position
-							sprite.y = _this.y + row * _this.tileSize;
-							sprite.x = _this.x + col * _this.tileSize;
+							sprite.y = _this.y + row * sprite.h;
+							sprite.x = _this.x + col * sprite.w;
 							sprite.isMoving = false;
 							// if a callback was given, call it
 							if (typeof cb == 'function') cb();
@@ -3100,11 +3111,19 @@ READY.
 			}
 		};
 
+		sprite.img = function (img) {
+			return sprite.ani(img);
+		};
+
 		sprite.loadAni = function (name, atlas) {
 			let { size, pos, line, frames, delay } = atlas;
 			size ??= [this.w / this.scale, this.h / this.scale];
 			pos ??= line || 0;
 			this.addAnimation(name, loadAni(this.spriteSheet, size, pos, frames, delay));
+		};
+
+		sprite.loadImg = function (name, atlas) {
+			this.loadAni(name, atlas);
 		};
 
 		return sprite;
