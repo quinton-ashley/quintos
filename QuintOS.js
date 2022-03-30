@@ -319,8 +319,6 @@ function button(txt, row, col, action) {
 			if (lines.length == 1 && row != 0) {
 				if (QuintOS.sys == 'cpet') {
 					lines[0] = '>' + lines[0] + '<';
-				} else if (QuintOS.sys == 'a2') {
-					lines[0] = '<' + lines[0] + '>';
 				}
 			}
 			this.txt = lines.join('\n');
@@ -582,15 +580,16 @@ async function prompt(txt, row, col, w, h) {
 	let enterBtn;
 	let cancelBtn;
 	if (QuintOS.sys != 'calcu') {
-		let ebCol = col + w - (!/(gameboi|zx)/.test(QuintOS.sys) ? 18 : 4);
-		if (QuintOS.sys == 'a2') ebCol += 5;
+		let ebCol = col + w - (!/(a2|gameboi|zx)/.test(QuintOS.sys) ? 18 : 4);
+		if (QuintOS.sys == 'a2') ebCol--;
 		let eLbl = !/(gameboi|zx)/.test(QuintOS.sys) ? 'ENTER' : '»';
-		if (QuintOS.sys == 'a2') eLbl = 'ENTER';
+		if (QuintOS.sys == 'a2') eLbl = '↵';
 		enterBtn = button(eLbl, row + th, ebCol);
 
-		let cbCol = col + w - (!/(gameboi|zx)/.test(QuintOS.sys) ? 10 : 2);
-		if (QuintOS.sys == 'a2') cbCol += 5;
-		let cLbl = !/(a2|gameboi|zx)/.test(QuintOS.sys) ? 'CANCEL' : 'X';
+		let cbCol = col + w - (!/(a2|gameboi|zx)/.test(QuintOS.sys) ? 10 : 2);
+		if (QuintOS.sys == 'a2') cbCol--;
+		let cLbl = !/(gameboi|zx)/.test(QuintOS.sys) ? 'CANCEL' : 'X';
+		if (QuintOS.sys == 'a2') cLbl = 'x';
 		cancelBtn = button(cLbl, row + th, cbCol);
 	}
 
@@ -609,7 +608,7 @@ async function prompt(txt, row, col, w, h) {
 			if (erasing) return;
 			await eraseBtn();
 			let val = inp.value;
-			val = isNaN(val) ? val : Number(val);
+			if (val != '') val = isNaN(val) ? val : Number(val);
 			resolve(val);
 		};
 
