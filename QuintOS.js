@@ -21,10 +21,11 @@ window.QuintOS = {
 	]
 };
 
-$('head').append('<link rel="icon" href="node_modules/quintos/img/favicon.png" />');
-
 {
 	let url = location.href.split('?');
+	if (url[0].includes('QuintOS_live')) {
+		$('head').append('<link rel="icon" href="node_modules/quintos/img/favicon.png" />');
+	}
 	if (url.length > 1) {
 		let params = new URLSearchParams(url[1]);
 		// Display the key/value pairs
@@ -1324,6 +1325,7 @@ async function preload() {
 		} else {
 			console.error('ERROR: There was an error in your load file or QuintOS.gameTitle is not defined.');
 			QuintOS.gameTitle = 'GuessTheNumber';
+			QuintOS.level = 0;
 		}
 	} else {
 		for (let i in QuintOS.levels) {
