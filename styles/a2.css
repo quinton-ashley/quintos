@@ -765,18 +765,7 @@ body.a2 {
 	background-image: url('https://raw.githubusercontent.com/ant-design/ant-design-icons/master/packages/icons-svg/svg/filled/apple.svg');
 }
 
-/* Keyboard */
-
-/* -------------------------------------
- * style
- * ------------------------------------- */
-@import url(https://fonts.googleapis.com/css?family=Average+Sans);
-
 /*------- Keyboard ------- */
-.a2 .keys-container {
-	font-family: 'Average Sans', sans-serif;
-}
-
 .a2 .lvl03 #keyboard {
 	filter: brightness(0.82) grayscale(1) sepia(1);
 }

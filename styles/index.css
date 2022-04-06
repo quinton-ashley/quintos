@@ -75,6 +75,16 @@ canvas {
 }
 
 @font-face {
+	font-family: Pretendo;
+	src: url('../fonts/Pretendo.woff2');
+}
+
+@font-face {
+	font-family: Press_Start_2P;
+	src: url('../fonts/Press_Start_2P.woff2');
+}
+
+@font-face {
 	font-family: Orbitron;
 	font-style: normal;
 	font-weight: 400;

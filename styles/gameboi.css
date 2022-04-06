@@ -1,6 +1,3 @@
-@import url('https://fonts.googleapis.com/css?family=Lato|Press+Start+2P');
-@import url('https://db.onlinewebfonts.com/c/487390d5558cff7a17ce35d7d92a0540?family=Pretendo');
-
 /* Layout */
 body.gameboi {
 	background-color: #000;
@@ -16,6 +13,7 @@ body.gameboi {
 	flex-direction: column;
 	align-items: center;
 	height: 98vh;
+	user-select: none;
 }
 
 .gameboi .screen {
@@ -220,7 +218,7 @@ body.gameboi {
 }
 .gameboi .gamescreen span {
 	display: none;
-	font-family: 'Press Start 2P';
+	font-family: Press_Start_2P;
 	font-weight: bold;
 	font-size: 3.6vw;
 	letter-spacing: -0.31vw;
