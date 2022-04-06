@@ -23,6 +23,20 @@ window.QuintOS = {
 
 $('head').append('<link rel="icon" href="node_modules/quintos/img/favicon.png" />');
 
+{
+	let url = location.href.split('?');
+	if (url.length > 1) {
+		let params = new URLSearchParams(url[1]);
+		// Display the key/value pairs
+		for (let pair of params.entries()) {
+			let k = pair[0].toLowerCase();
+			if (k == 'gametitle') k = 'gameTitle';
+			QuintOS[k] = pair[1];
+		}
+		log(QuintOS);
+	}
+}
+
 /* Display the text character at a position */
 QuintOS._drawChar = (row, col, char) => {
 	// out of bounds check
@@ -387,6 +401,28 @@ function button(txt, row, col, action) {
 	return btn;
 }
 
+function upload(txt, row, col, type, action) {
+	return button(txt, row, col, () => {
+		let el = document.createElement('input');
+		el.type = 'file';
+		el.accept = type + '/*';
+
+		el.addEventListener('change', (evt) => {
+			let file = evt.path[0].files[0];
+			let reader = new FileReader();
+			reader.onload = () => {
+				let data = reader.result;
+				if (type == 'json') data = JSON.parse(data);
+				file.data = data;
+				action(file);
+			};
+			reader.readAsText(file);
+		});
+
+		el.dispatchEvent(new MouseEvent('click'));
+	});
+}
+
 function input(value, row, col, onSubmit, onChange) {
 	let _this = this;
 	class Input {
@@ -691,7 +727,7 @@ QuintOS.preloadData = async () => {
 	}
 	let dir = QuintOS.dir;
 	let title = QuintOS.gameTitle;
-	let src = `${dir}/${title.slice(0, 1).toLowerCase() + title.slice(1)}-preload.${QuintOS.fileType}`;
+	let src = `${dir}/${title[0].toLowerCase() + title.slice(1)}-preload.${QuintOS.fileType}`;
 	try {
 		await QuintOS.runCode(src);
 	} catch (error) {
@@ -717,7 +753,7 @@ QuintOS.runGame = async () => {
 	let lvl = QuintOS.level.toString();
 	if (lvl.length == 1) lvl = '0' + lvl;
 	if (lvl) {
-		title = lvl + '_' + title.slice(0, 1).toUpperCase() + title.slice(1);
+		title = lvl + '_' + title;
 	}
 	$('head title').text(title);
 	if (/(a2|gridc)/.test(QuintOS.sys)) QuintOS.frame();
@@ -1289,14 +1325,21 @@ async function preload() {
 			console.error('ERROR: There was an error in your load file or QuintOS.gameTitle is not defined.');
 			QuintOS.gameTitle = 'GuessTheNumber';
 		}
+	} else {
+		for (let i in QuintOS.levels) {
+			let l = QuintOS.levels[i];
+			if (l[0].toLowerCase() == QuintOS.gameTitle.toLowerCase()) {
+				QuintOS.gameTitle = l[0];
+				QuintOS.level = Number(i);
+				break;
+			}
+		}
+		QuintOS.level = QuintOS?.level || '';
 	}
 
 	createCanvas();
 	frameRate(60);
 	noStroke();
-
-	QuintOS.level = QuintOS?.level || QuintOS.levels.findIndex((l) => l[0] == QuintOS.gameTitle);
-	if (QuintOS.level == -1) QuintOS.level = '';
 
 	let sys = QuintOS?.sys || QuintOS?.system || QuintOS.levels[QuintOS.level || 0][1];
 	QuintOS.sys = sys;
@@ -3145,7 +3188,11 @@ READY.
 	if (!QuintOS.dir) {
 		QuintOS.dir = 'https://raw.githubusercontent.com/' + QuintOS.username + '/quintos-games/main';
 		if (QuintOS.language == 'js') {
-			QuintOS.dir += '/GAMES';
+			if (QuintOS.username != 'quinton-ashley') {
+				QuintOS.dir += '/GAMES';
+			} else {
+				QuintOS.dir += '/games_js';
+			}
 		} else if (QuintOS.language == 'java') {
 			QuintOS.dir += '/games_java';
 		}

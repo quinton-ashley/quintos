@@ -4,11 +4,44 @@ Learn how to make games with QuintOS by taking Quinton's [IntroToJS](https://git
 
 Use the QuintOS [template project](https://github.com/quinton-ashley/quintos-template) to get started making your own retro games.
 
+# QuintOS API Documentation
+
+- [QuintOS](#quintos)
+- [QuintOS API Documentation](#quintos-api-documentation)
+	- [alert window](#alert-window)
+	- [prompt window](#prompt-window)
+	- [print to the console](#print-to-the-console)
+	- [display text](#display-text)
+	- [create a button](#create-a-button)
+	- [erase your program's screen](#erase-your-programs-screen)
+	- [draw the lines of a rectangle in text](#draw-the-lines-of-a-rectangle-in-text)
+	- [erase a specific area](#erase-a-specific-area)
+	- [create an input](#create-an-input)
+	- [create a sprite art p5.js image](#create-a-sprite-art-p5js-image)
+	- [get a color letter's p5.js color](#get-a-color-letters-p5js-color)
+	- [check if a key is held](#check-if-a-key-is-held)
+	- [create a tile world](#create-a-tile-world)
+	- [spritesheet](#spritesheet)
+- [Credits](#credits)
+		- [Fonts](#fonts)
+		- [Pixel Art](#pixel-art)
+			- [SuperJump](#superjump)
+			- [Sokoban](#sokoban)
+			- [PigeonSimulator](#pigeonsimulator)
+		- [Sounds](#sounds)
+		- [Codepens](#codepens)
+
 ## alert window
 
 ```js
 await alert(txt, row, col, w, h, speed);
 ```
+
+Creates an alert window with the specified text. If no optional parameters are provided, defaults are used which are different for each QuintOS computer.
+
+- `row` and `col` (optional) specify the row and column values of the top left corner of the alert window
+- `width` and `height` (optional)
+- `speed` (optional) letters drawn per frame
 
 ## prompt window
 
@@ -16,7 +49,9 @@ await alert(txt, row, col, w, h, speed);
 await prompt(txt, row, col, w, h, speed);
 ```
 
-returns the user's input, if the user entered a number it will return a number, otherwise it will return a string, if the user pressed cancel `null` will be returned
+Creates a prompt window, which displays a message to the user and allows them to respond with text or press the cancel button.
+
+Returns the user's input. If the user entered a number `prompt` will return a number, otherwise it will return a string unless the user pressed cancel, then `null` will be returned.
 
 ## print to the console
 
@@ -24,8 +59,7 @@ returns the user's input, if the user entered a number it will return a number, 
 log(...args);
 ```
 
-shortcut for the `console.log` function
-prints any amount of input arguments to the console
+Shortcut for the `console.log` function, which prints any amount of input arguments to the Javascript console.
 
 ## display text
 
@@ -33,7 +67,7 @@ prints any amount of input arguments to the console
 await text(txt, row, col, w, h, speed);
 ```
 
-returns the height of the text
+Displays text and returns the amount of lines required to display the text after width limiting is performed.
 
 ## create a button
 
@@ -41,9 +75,9 @@ returns the height of the text
 let btn = button(txt, row, col, action);
 ```
 
-returns the `Button` object created
+Returns the `Button` object created.
 
-`action` is a function that will run if the user presses the button
+- `action` is a function that will run if the user presses the button
 
 ## erase your program's screen
 
@@ -51,11 +85,13 @@ returns the `Button` object created
 erase();
 ```
 
-## draw the lines of a rectangle
+## draw the lines of a rectangle in text
 
 ```js
 await textRect(row, col, w, h, speed, c);
 ```
+
+- `c` is optionally the character for the rectangle
 
 ## erase a specific area
 
@@ -69,25 +105,25 @@ await eraseRect(row, col, w, h, speed);
 let inp = input(value, row, col, onSubmit, onChange);
 ```
 
-returns the `Input` object created
+Returns the `Input` object created.
 
 - `value` is the initial text in the input, set to an empty string by default
-- `onSubmit` called when the user presses the enter key
-- `onChange` called when the user types any key that changes the input's value
+- `onSubmit` (optional) called when the user presses the enter key
+- `onChange` (optional) called when the user types any key that changes the input's value
 
-## draw sprite art in p5.js
+## create a sprite art p5.js image
 
 ```js
 let img = spriteArt(txt, scale, palette);
 ```
 
-returns the p5 graphics object created
+Returns the p5.js image object created.
 
-- `txt` is the sprite to paint
-- `scale` is the scale the sprite should be, `2` by default
-- `palette` is the color palette that should be used, the system's first palatte is used by default
+- `txt` should be a string that only contains valid color letters and newlines
+- `scale` (optional) scale of the image
+- `palette` (optional) a color palette object that overrides the default QuintOS color palette.
 
-Here is the C64's color palattee for example:
+Here's the c64's color palatte for example of proper palette formatting:
 
 ```js
 {
@@ -118,12 +154,32 @@ Here is the C64's color palattee for example:
 colorPal(c, palette);
 ```
 
-returns a p5.js color to use with p5.js functions like background, fill, and stroke
+returns a hex color string to use with p5.js functions like background, fill, and stroke
 
 - `c` is the color letter
-- `palette` is the color palette that should be used, C64 palatte object by default
+- `palette` (optional) defaults to the system's default palette
 
-## Credits
+## check if a key is held
+
+```js
+isKeyDown(keyName);
+```
+
+Checks if a key is being held.
+
+- `keyName` a string containing the simple name of the key
+
+## create a tile world
+
+```js
+let tiles = createTiles(tileSize, x, y);
+```
+
+## spritesheet
+
+`.spriteSheet` is a property of Sprite objects used by QuintOS to load sprite animations.
+
+# Credits
 
 Quinton Ashley (quinton-ashley) is the creator of QuintOS
 
