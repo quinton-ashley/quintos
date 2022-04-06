@@ -34,7 +34,6 @@ window.QuintOS = {
 			if (k == 'gametitle') k = 'gameTitle';
 			QuintOS[k] = pair[1];
 		}
-		log(QuintOS);
 	}
 }
 
