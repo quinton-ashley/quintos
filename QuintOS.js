@@ -1319,6 +1319,7 @@ function loadAni(spriteSheetImg, size, pos, frameCount, frameDelay) {
 p5.disableFriendlyErrors = true;
 
 async function preload() {
+	if (!QuintOS?.username) QuintOS.username = 'quinton-ashley';
 	if (!QuintOS?.gameTitle) {
 		if (typeof QuintOS?.level != 'undefined') {
 			QuintOS.gameTitle = QuintOS.levels[QuintOS.level][0];
