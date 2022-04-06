@@ -662,7 +662,7 @@ async function prompt(txt, row, col, w, h) {
 
 QuintOS.runJS = (src, file) => {
 	return new Promise(async (resolve, reject) => {
-		if (!src) file ??= await QuintOS.loadCode(src);
+		file ??= await QuintOS.loadCode(src);
 		const script = document.createElement('script');
 		script.async = false;
 		script.onload = function () {
@@ -716,7 +716,6 @@ public class ${QuintOS.gameTitle} {
 };
 
 QuintOS.runJava = async (src, file) => {
-	file ??= await QuintOS.loadCode(src);
 	jdk.run();
 };
 
@@ -3208,7 +3207,7 @@ READY.
 			if (QuintOS.language == 'java') {
 				try {
 					let root = './node_modules/java2js/jdk';
-					if (QuintOS.game) root = 'https://unpkg.com/java2js/jdk';
+					if (QuintOS.game) root = 'https://quinton-ashley.github.io/java2js/jdk';
 					await jdk.init(root);
 				} catch (ror) {
 					console.error(ror);
