@@ -751,10 +751,8 @@ QuintOS.runGame = async () => {
 		QuintOS.runCode(QuintOS.gameFile, QuintOS.gameCode);
 	}
 	let title = QuintOS.game;
-	let lvl = QuintOS.level.toString();
-	if (lvl.length == 1) lvl = '0' + lvl;
-	if (lvl) {
-		title = lvl + '_' + title;
+	if (QuintOS.level >= 0) {
+		title = QuintOS.level.toString().padStart(2, '0') + '_' + title;
 	}
 	$('head title').text(title);
 	if (/(a2|gridc)/.test(QuintOS.sys)) QuintOS.frame();
