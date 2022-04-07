@@ -722,7 +722,7 @@ QuintOS.runJava = async (src, file) => {
 };
 
 QuintOS.preloadData = async () => {
-	if (QuintOS?.preloadCode) {
+	if (QuintOS.preloadCode) {
 		await QuintOS.preloadCode();
 		return;
 	}
@@ -1311,9 +1311,9 @@ function loadAni(spriteSheetImg, size, pos, frameCount, frameDelay) {
 p5.disableFriendlyErrors = true;
 
 async function preload() {
-	if (!QuintOS?.username) QuintOS.username = 'quinton-ashley';
-	if (!QuintOS?.game) {
-		if (typeof QuintOS?.level != 'undefined') {
+	if (!QuintOS.username) QuintOS.username = 'quinton-ashley';
+	if (!QuintOS.game) {
+		if (typeof QuintOS.level != 'undefined') {
 			QuintOS.game = QuintOS.levels[QuintOS.level][0];
 		} else {
 			console.error('ERROR: There was an error in your load file or QuintOS.game is not defined.');
@@ -1329,14 +1329,14 @@ async function preload() {
 				break;
 			}
 		}
-		QuintOS.level = QuintOS?.level || '';
+		QuintOS.level = QuintOS.level || -1;
 	}
 
 	createCanvas();
 	frameRate(60);
 	noStroke();
 
-	let sys = QuintOS?.sys || QuintOS?.system || QuintOS.levels[QuintOS.level || 0][1];
+	let sys = QuintOS.sys || QuintOS.system || QuintOS.levels[QuintOS.level || 0][1];
 	QuintOS.sys = sys;
 	QuintOS.system = sys;
 
@@ -3175,7 +3175,7 @@ READY.
 		QuintOS.fileType = 'pde';
 	}
 
-	if (!QuintOS.dir && QuintOS.level != '') {
+	if (!QuintOS.dir && QuintOS.level != -1) {
 		QuintOS.dir = 'https://raw.githubusercontent.com/' + QuintOS.username + '/quintos-games/main';
 		if (QuintOS.language == 'js') {
 			if (QuintOS.username != 'quinton-ashley') {
@@ -3236,7 +3236,11 @@ READY.
 		})(),
 		(async () => {
 			if (QuintOS.language != 'java') {
-				if ((!QuintOS?.preload && (QuintOS.level >= 11 || QuintOS.level == '')) || QuintOS?.preloadCode) {
+				if (
+					QuintOS.preload ||
+					QuintOS.preloadCode ||
+					(!QuintOS.preload && (QuintOS.level >= 11 || QuintOS.level == -1))
+				) {
 					QuintOS.preloadData();
 				}
 			}
@@ -3301,7 +3305,9 @@ READY.
 	strokeWeight(2);
 	$('canvas').removeAttr('style');
 
-	console.log(`QuintOS v${QuintOS.level} size: ${width}x${height} rows: ${rows} cols: ${cols}`);
+	console.log(
+		`QuintOS${QuintOS.level < 0 ? ' v' + QuintOS.level : ''} size: ${width}x${height} rows: ${rows} cols: ${cols}`
+	);
 
 	await delay(100);
 	QuintOS.runGame();
