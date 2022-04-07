@@ -3236,7 +3236,9 @@ READY.
 		})(),
 		(async () => {
 			if (QuintOS.language != 'java') {
-				if (QuintOS.level >= 11 && !QuintOS?.preload) QuintOS.preload = true;
+				if ((QuintOS.level >= 11 && !QuintOS?.preload) || QuintOS?.preloadCode) {
+					QuintOS.preload = true;
+				}
 				if (QuintOS.preload) QuintOS.preloadData();
 			}
 
