@@ -28,7 +28,6 @@ window.QuintOS = {
 	}
 	if (url.length > 1) {
 		let params = new URLSearchParams(url[1]);
-		// Display the key/value pairs
 		for (let pair of params.entries()) {
 			let k = pair[0].toLowerCase();
 			if (k == 'gametitle' || k == 'game') k = 'game';
@@ -321,7 +320,7 @@ async function eraseRect(row, col, w, h, speed) {
 }
 
 function button(txt, row, col, action) {
-	// not the game title or username
+	// not the game title or user
 
 	let _this = this;
 	class Button {
@@ -767,13 +766,13 @@ QuintOS.runGame = async () => {
 				open(window.location.href + '?editors=0011');
 			}
 		});
-		if (!QuintOS.username) return;
+		if (!QuintOS.user) return;
 		text(' by ', 0, col + title.length);
 		let row = !/(gameboi|arcv)/.test(QuintOS.sys) ? 0 : 1;
 		col = !/(gameboi|arcv)/.test(QuintOS.sys) ? 6 + title.length : 0;
 		if (QuintOS.sys == 'c64') col = 4 + title.length;
-		button(QuintOS.username, row, col, () => {
-			open('https://github.com/' + QuintOS.username);
+		button(QuintOS.user, row, col, () => {
+			open('https://github.com/' + QuintOS.user);
 		});
 	}
 };
@@ -1309,7 +1308,9 @@ function loadAni(spriteSheetImg, size, pos, frameCount, frameDelay) {
 p5.disableFriendlyErrors = true;
 
 async function preload() {
-	if (!QuintOS.username) QuintOS.username = 'quinton-ashley';
+	if (QuintOS.username) QuintOS.user = QuintOS.username;
+	if (QuintOS.gameTitle) QuintOS.game = QuintOS.gameTitle;
+	if (!QuintOS.user) QuintOS.user = 'quinton-ashley';
 	if (!QuintOS.game) {
 		if (typeof QuintOS.level != 'undefined') {
 			QuintOS.game = QuintOS.levels[QuintOS.level][0];
@@ -1327,7 +1328,7 @@ async function preload() {
 				break;
 			}
 		}
-		QuintOS.level = QuintOS.level || -1;
+		QuintOS.level ??= -1;
 	}
 
 	createCanvas();
@@ -3174,9 +3175,9 @@ READY.
 	}
 
 	if (!QuintOS.dir && QuintOS.level != -1) {
-		QuintOS.dir = 'https://raw.githubusercontent.com/' + QuintOS.username + '/quintos-games/main';
+		QuintOS.dir = 'https://raw.githubusercontent.com/' + QuintOS.user + '/quintos-games/main';
 		if (QuintOS.language == 'js') {
-			if (QuintOS.username != 'quinton-ashley') {
+			if (QuintOS.user != 'quinton-ashley') {
 				QuintOS.dir += '/GAMES';
 			} else {
 				QuintOS.dir += '/games_js';
@@ -3185,7 +3186,7 @@ READY.
 			QuintOS.dir += '/games_java';
 		}
 	} else if (!QuintOS.dir) {
-		QuintOS.dir = 'https://raw.githubusercontent.com/' + QuintOS.username + '/' + QuintOS.game + '/main';
+		QuintOS.dir = 'https://raw.githubusercontent.com/' + QuintOS.user + '/' + QuintOS.game + '/main';
 	}
 	QuintOS.dir += '/' + QuintOS.game;
 
