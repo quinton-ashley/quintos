@@ -682,8 +682,10 @@ command+option+i then click the Console tab.`);
 		// }
 		if (!file) {
 			script.src = src;
+		} else if (file == '404: Not Found' && !src.includes('preload')) {
+			script.innerHTML = 'QuintOS.error(`File not found: ' + src + '`);';
 		} else {
-			script.innerHTML = file;
+			script.innerHTML = 'log(`running: ' + src + '`);\n' + file;
 		}
 
 		document.body.appendChild(script);
@@ -720,8 +722,8 @@ QuintOS.runJava = async (src, file) => {
 };
 
 QuintOS.preloadData = async () => {
-	if (QuintOS?.preload && typeof QuintOS.preload != 'boolean') {
-		await QuintOS.preload();
+	if (QuintOS?.preloadCode) {
+		await QuintOS.preloadCode();
 		return;
 	}
 	let dir = QuintOS.dir;
@@ -3164,8 +3166,6 @@ READY.
 		return sprite;
 	};
 
-	let title = QuintOS.game;
-
 	QuintOS.language ??= 'js';
 	if (QuintOS.dir?.includes('games_java')) {
 		QuintOS.language = 'java';
@@ -3175,8 +3175,8 @@ READY.
 		QuintOS.fileType = 'pde';
 	}
 
-	if (!QuintOS.dir) {
-		QuintOS.dir = ' https://' + QuintOS.username + '.github.io/quintos-games';
+	if (!QuintOS.dir && QuintOS.level != '') {
+		QuintOS.dir = 'https://raw.githubusercontent.com/' + QuintOS.username + '/quintos-games/main';
 		if (QuintOS.language == 'js') {
 			if (QuintOS.username != 'quinton-ashley') {
 				QuintOS.dir += '/GAMES';
@@ -3186,10 +3186,12 @@ READY.
 		} else if (QuintOS.language == 'java') {
 			QuintOS.dir += '/games_java';
 		}
+	} else if (!QuintOS.dir) {
+		QuintOS.dir = 'https://raw.githubusercontent.com/' + QuintOS.username + '/' + QuintOS.game + '/main';
 	}
-	QuintOS.dir += '/' + title[0].toUpperCase() + title.slice(1);
+	QuintOS.dir += '/' + QuintOS.game;
 
-	let bootScreen = bootScreens[title] || [];
+	let bootScreen = bootScreens[QuintOS.game] || [];
 
 	await Promise.all([
 		(async () => {
@@ -3300,7 +3302,7 @@ READY.
 
 	console.log(`QuintOS v${QuintOS.level} size: ${width}x${height} rows: ${rows} cols: ${cols}`);
 
-	// await delay(100);
+	await delay(100);
 	QuintOS.runGame();
 	setup();
 }
