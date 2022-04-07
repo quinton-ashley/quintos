@@ -3236,10 +3236,9 @@ READY.
 		})(),
 		(async () => {
 			if (QuintOS.language != 'java') {
-				if ((QuintOS.level >= 11 && !QuintOS?.preload) || QuintOS?.preloadCode) {
-					QuintOS.preload = true;
+				if ((!QuintOS?.preload && (QuintOS.level >= 11 || QuintOS.level == '')) || QuintOS?.preloadCode) {
+					QuintOS.preloadData();
 				}
-				if (QuintOS.preload) QuintOS.preloadData();
 			}
 
 			if (/(a2|gridc)/.test(QuintOS.sys)) await QuintOS.frame();
