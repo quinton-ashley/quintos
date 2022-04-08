@@ -1315,9 +1315,8 @@ async function preload() {
 		if (typeof QuintOS.level != 'undefined') {
 			QuintOS.game = QuintOS.levels[QuintOS.level][0];
 		} else {
-			console.error('ERROR: There was an error in your load file or QuintOS.game is not defined.');
-			QuintOS.game = 'GuessTheNumber';
-			QuintOS.level = 0;
+			window.location.href = 'https://quintos.org/home.html';
+			return;
 		}
 	} else {
 		for (let i in QuintOS.levels) {
