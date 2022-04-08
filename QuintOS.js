@@ -3252,6 +3252,8 @@ READY.
 	window.text = QuintOS.text;
 	window.erase = QuintOS.erase;
 
+	window.size = () => {};
+
 	QuintOS._image = image;
 
 	window.image = (img, ...args) => {
