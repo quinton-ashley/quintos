@@ -3305,12 +3305,19 @@ READY.
 	$('canvas').removeAttr('style');
 
 	console.log(
-		`QuintOS${QuintOS.level < 0 ? ' v' + QuintOS.level : ''} size: ${width}x${height} rows: ${rows} cols: ${cols}`
+		`QuintOS${QuintOS.level >= 0 ? ' v' + QuintOS.level : ''} size: ${width}x${height} rows: ${rows} cols: ${cols}`
 	);
 
 	await delay(100);
 	QuintOS.runGame();
 	setup();
+
+	if (QuintOS.iframe) {
+		outputVolume(0);
+		setTimeout(() => {
+			noLoop();
+		}, 6000);
+	}
 }
 
 function setup() {}
