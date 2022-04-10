@@ -778,6 +778,10 @@ body.a2 {
 	display: flow-root;
 }
 
+main {
+	display: none;
+}
+
 .a2 #addition_wrap {
 	padding: 0 2px 2px;
 	background: #4d4d4d;
