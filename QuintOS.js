@@ -160,19 +160,21 @@ QuintOS.text = async (txt, row, col, w, h, speed) => {
 };
 
 /* Display an application window frame */
-QuintOS.frame = async (row, col, w, h, speed, c) => {
+QuintOS.frame = async (row, col, w, h, style, speed, c) => {
 	row ??= 0;
 	col ??= 0;
 	w ??= QuintOS.cols;
 	h ??= QuintOS.rows;
+	style ??= 'solid';
 	c ??= '─';
 	if (QuintOS.sys == 'a2') c = '*';
 	if (QuintOS.sys == 'gridc') c = '═';
-	await textRect(row, col, w, h, speed, c);
+	await textRect(row, col, w, h, style, speed, c);
 };
 
 /* Display a rectangle with character or character set */
-async function textRect(row, col, w, h, speed, c) {
+async function textRect(row, col, w, h, style, speed, c) {
+	style ??= 'solid';
 	if (QuintOS.sys == 'cpet') {
 		c = {
 			tl: '/',
@@ -212,27 +214,29 @@ async function textRect(row, col, w, h, speed, c) {
 	}
 
 	if (speed) await delay();
-	QuintOS._drawChar(row, col, c.tl);
-	QuintOS._drawChar(row, col + w - 1, c.tr);
-	QuintOS._drawChar(row + h - 1, col, c.bl);
-	QuintOS._drawChar(row + h - 1, col + w - 1, c.br);
+	if (style != 'outline') {
+		QuintOS._drawChar(row, col, c.tl);
+		QuintOS._drawChar(row, col + w - 1, c.tr);
+		QuintOS._drawChar(row + h - 1, col, c.bl);
+		QuintOS._drawChar(row + h - 1, col + w - 1, c.br);
+	}
 
 	let chars = 0;
-	for (let i = col + 1, j = row + 1; i < col + w / 2 || j < row + h / 2; i++, j++) {
+	for (let i = row + 1, j = col + 1; i < row + h / 2 || j < col + w / 2; i++, j++) {
 		if (speed && chars % speed == 0) await delay();
 		// Horizontal Lines
-		if (i < col + w / 2) {
-			QuintOS._drawChar(row, i, c.hori);
-			QuintOS._drawChar(row + h - 1, i, c.hori);
-			QuintOS._drawChar(row, col + w - (i - col + 1), c.hori);
-			QuintOS._drawChar(row + h - 1, col + w - (i - col + 1), c.hori);
+		if (j < col + w / 2 && (style != 'dashed' || (j - col + 1) % 2)) {
+			QuintOS._drawChar(row, j, c.hori);
+			QuintOS._drawChar(row + h - 1, j, c.hori);
+			QuintOS._drawChar(row, col + w - (j - col + 1), c.hori);
+			QuintOS._drawChar(row + h - 1, col + w - (j - col + 1), c.hori);
 		}
 		// Vertical Lines
-		if (j < row + h / 2) {
-			QuintOS._drawChar(j, col, c.vert);
-			QuintOS._drawChar(j, col + w - 1, c.vert);
-			QuintOS._drawChar(row + h - (j - row + 1), col, c.vert);
-			QuintOS._drawChar(row + h - (j - row + 1), col + w - 1, c.vert);
+		if (i < row + h / 2 && (style != 'dashed' || (i - row + 1) % 2)) {
+			QuintOS._drawChar(i, col, c.vert);
+			QuintOS._drawChar(i, col + w - 1, c.vert);
+			QuintOS._drawChar(row + h - (i - row + 1), col, c.vert);
+			QuintOS._drawChar(row + h - (i - row + 1), col + w - 1, c.vert);
 		}
 		chars++;
 	}
@@ -760,7 +764,7 @@ QuintOS.runGame = async () => {
 		button(title, 0, col, () => {
 			if (!QuintOS.gameCode) {
 				// open the javascript source in new tab
-				open(src);
+				open(QuintOS.gameFile);
 			} else {
 				// open the Javascript editor and console in codepen
 				open(window.location.href + '?editors=0011');
@@ -1114,6 +1118,10 @@ function loadAni(spriteSheetImg, size, pos, frameCount, frameDelay) {
 			group.animations = {};
 
 			group.loadAni = function (name, atlas) {
+				if (typeof name != 'string') {
+					atlas = name;
+					name = 'default' + this.animations.length;
+				}
 				let { size, pos, line, frames, delay } = atlas;
 				size ??= _this.tileSize;
 				pos ??= line || 0;
@@ -3151,6 +3159,10 @@ READY.
 		};
 
 		sprite.loadAni = function (name, atlas) {
+			if (typeof name != 'string') {
+				atlas = name;
+				name = 'default0';
+			}
 			let { size, pos, line, frames, delay } = atlas;
 			size ??= [this.w / this.scale, this.h / this.scale];
 			pos ??= line || 0;
@@ -3249,6 +3261,7 @@ READY.
 		})()
 	]);
 
+	window.drawText = text;
 	window.text = QuintOS.text;
 	window.erase = QuintOS.erase;
 

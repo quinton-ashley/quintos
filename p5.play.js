@@ -1475,14 +1475,15 @@ deltaTime = ((now - then) / 1000)/INTERVAL_60; // seconds since last frame
 			this.colliderType = 'custom';
 
 			var v = createVector(offsetX, offsetY);
+			let center = { x: this.position.x + this.width / 2 + offsetX, y: this.position.y + this.height / 2 + offsetY };
 			if (type === 'rectangle' && arguments.length === 1) {
 				this.collider = new AABB(pInst, this.position, createVector(this.width, this.height));
 			} else if (type === 'rectangle' && arguments.length >= 5) {
 				this.collider = new AABB(pInst, this.position, createVector(width, height), v);
 			} else if (type === 'circle' && arguments.length === 1) {
-				this.collider = new CircleCollider(pInst, this.position, Math.floor(Math.max(this.width, this.height) / 2));
+				this.collider = new CircleCollider(pInst, center, Math.floor(Math.max(this.width, this.height) / 2));
 			} else if (type === 'circle' && arguments.length >= 4) {
-				this.collider = new CircleCollider(pInst, this.position, width, v);
+				this.collider = new CircleCollider(pInst, center, width, v);
 			}
 
 			quadTree.insert(this);
