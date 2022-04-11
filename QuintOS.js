@@ -1348,46 +1348,9 @@ async function preload() {
 
 	const pages = {
 		a2: `
+<div class="back-shadow"></div>
 <div class="bg">
 	<div class="🖥️">
-		<div class="back-shadow"></div>
-		<div class="monitor-shadow"></div>
-		<div class="monitor">
-			<div class="monitor__soft-shadow"></div>
-			<div class="monitor__shadow"></div>
-			<div class="monitor__inner"></div>
-			<div class="monitor__inner-shadow"></div>
-			<div class="monitor__inner-shadow-light"></div>
-			<div class="monitor__inner-shadow-dark"></div>
-			<div class="monitor__screen"></div>
-			<div class="monitor__screen-2 top-shadow"></div>
-			<div class="monitor__screen-2 bottom-shadow"></div>
-			<div class="monitor__screen-2">
-				<div class="monitor__terminal">
-					<div id="screen0" class="screen"></div>
-				</div>
-			</div>
-			<div class="monitor__logo-embed"></div>
-			<div class="monitor__line"></div>
-			<div class="monitor__power-switch">
-				<div class="monitor__power-switch__button"></div>
-			</div>
-		</div>
-		<div class="keyboard">
-			<div class="middle"></div>
-			<div class="top">
-				<div class="emboss">
-					<div class="logo-label">
-						<div class="logo"></div>
-						<div class="label">QuintOS</div>
-					</div>
-					<div class="model-number">II<span>e</span></div>
-				</div>
-				<div class="embed">
-					<div class="keys-container"></div>
-				</div>
-			</div>
-		</div>
 		<div class="floppy-drive">
 			<div class="left">
 				<div class="emboss"></div>
@@ -1418,6 +1381,42 @@ async function preload() {
 				</div>
 			</div>
 			<div class="bottom"></div>
+		</div>
+		<div class="keyboard">
+			<div class="middle"></div>
+			<div class="top">
+				<div class="emboss">
+					<div class="logo-label">
+						<div class="logo"></div>
+						<div class="label">QuintOS</div>
+					</div>
+					<div class="model-number">II<span>e</span></div>
+				</div>
+				<div class="embed">
+					<div class="keys-container"></div>
+				</div>
+			</div>
+		</div>
+		<div class="monitor">
+			<div class="monitor__soft-shadow"></div>
+			<div class="monitor__shadow"></div>
+			<div class="monitor__inner"></div>
+			<div class="monitor__inner-shadow"></div>
+			<div class="monitor__inner-shadow-light"></div>
+			<div class="monitor__inner-shadow-dark"></div>
+			<div class="monitor__screen"></div>
+			<div class="monitor__screen-2 top-shadow"></div>
+			<div class="monitor__screen-2 bottom-shadow"></div>
+			<div class="monitor__screen-2">
+				<div class="monitor__terminal">
+					<div id="screen0" class="screen"></div>
+				</div>
+			</div>
+			<div class="monitor__logo-embed"></div>
+			<div class="monitor__line"></div>
+			<div class="monitor__power-switch">
+				<div class="monitor__power-switch__button"></div>
+			</div>
 		</div>
 	</div>
 </div>`,

@@ -18,7 +18,12 @@ body.a2 {
 	display: grid;
 	place-items: center;
 	color: #1fda6c;
-	/* transform: scale(1.6); */
+}
+
+@media screen and (max-width: 1000px) {
+	.a2 .🖥️ {
+		transform: translate(6vw, calc(100vh - 50vw)) scale(2.55);
+	}
 }
 
 .a2 .screen {
@@ -49,7 +54,7 @@ body.a2 {
 	font-weight: 600;
 	font-size: 30vw;
 	left: 105vw;
-	top: 10vw;
+	top: 10vh;
 	padding: 0;
 	margin: 0;
 	white-space: nowrap;
@@ -66,13 +71,11 @@ body.a2 {
 }
 
 .a2 .🖥️ {
-	position: absolute;
 	width: 100vw;
-	height: 100vw;
+	height: 100vh;
 	perspective: 80vw;
-	perspective-origin: 70% 40%;
+	perspective-origin: 70vw 40vw;
 	overflow-x: scroll;
-	top: -10vw;
 }
 
 /*
@@ -211,12 +214,12 @@ body.a2 {
 
 .a2 .keyboard {
 	position: absolute;
-	top: 67.5vw;
+	top: 40vw;
 	left: 9vw;
 	width: 78vw;
 	height: 45vw;
 	transform-style: preserve-3d;
-	transform: translateY(-50%) translateZ(0vw) rotateX(80deg);
+	transform: rotateX(70deg);
 	border-radius: 7.5vw;
 }
 .a2 .keyboard .top {
@@ -238,14 +241,12 @@ body.a2 {
 	width: 90%;
 	height: 80%;
 	box-shadow: inset 0 0.6vw 1.2vw rgba(60, 118, 83, 0.4);
-	z-index: 1;
 	grid-area: 2/1;
 	border-radius: 1.5vw;
 }
 .a2 .keyboard .top .emboss {
 	width: 98%;
 	height: 90%;
-	z-index: 1;
 	grid-area: 1/1;
 	border-radius: 1.5vw;
 	border: 1px solid #ddd9c9;
@@ -538,16 +539,15 @@ body.a2 {
 	background-color: black;
 }
 
-.a2 .monitor-shadow {
+/* .a2 .monitor-shadow {
 	position: absolute;
 	top: calc(11.5vw + 45vw);
 	left: 33vw;
 	width: 62vw;
 	height: 1.5vw;
 	box-shadow: var(--object-box-shadow-monitor);
-	z-index: 100;
 	border-radius: 1.5vw;
-}
+} */
 
 .a2 .back-shadow {
 	position: absolute;
@@ -557,13 +557,12 @@ body.a2 {
 	height: 30vw;
 	background-color: black;
 	box-shadow: 0 0 20vw 5vw #444;
-	z-index: 0;
 }
 
 .a2 .monitor {
 	position: absolute;
 	left: 18vw;
-	top: 12.5vw;
+	top: 2.5vw;
 	width: 66vw;
 	height: 47.25vw;
 	background-color: #e7e4d9;
@@ -572,7 +571,6 @@ body.a2 {
 	overflow: hidden;
 	transform-style: preserve-3d;
 	transform: translateZ(0vw);
-	z-index: 100;
 	box-shadow: inset 0 -0.7vw 0.7vw rgba(60, 118, 83, 0.5);
 }
 .a2 .monitor__terminal {
@@ -766,7 +764,7 @@ body.a2 {
 }
 
 /*------- Keyboard ------- */
-.a2 .lvl03 #keyboard {
+.a2 #keyboard {
 	filter: brightness(0.82) grayscale(1) sepia(1);
 }
 
@@ -776,10 +774,6 @@ body.a2 {
 	border-radius: 4px 4px 0 0;
 	position: relative;
 	display: flow-root;
-}
-
-main {
-	display: none;
 }
 
 .a2 #addition_wrap {
@@ -976,5 +970,4 @@ main {
 .a2 #cover {
 	height: 10px;
 	position: relative;
-	z-index: 1000;
 }

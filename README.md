@@ -1,6 +1,8 @@
-# QuintOS
+# [QuintOS](https://quintos.org)
 
-Learn how to make games with QuintOS by taking Quinton's [IntroToJS](https://github.com/quinton-ashley/IntroToJS/blob/main/README.md) course. Contact me <mailto:qashto@gmail.com> for JavaScript lessons!
+Learn how to make games using QuintOS by taking my [IntroToJS](https://github.com/quinton-ashley/IntroToJS/blob/main/README.md) or [IntroToJava](https://github.com/quinton-ashley/IntroToJava/blob/main/README.md) course. Contact me <mailto:qashto@gmail.com> for lessons.
+
+At <quintos.org> you can play games made by my students!
 
 Use the QuintOS [template project](https://github.com/quinton-ashley/quintos-template) to get started making your own retro games.
 
@@ -58,7 +60,7 @@ https://www.gamedevmarket.net/asset/pixel-sidescroller-background-city/
 
 ### Sounds
 
-SpeakAndSpell:
+#### SpeakAndSpell
 
 https://sha.nnoncarey.com/
 
@@ -74,3 +76,10 @@ CSS Old Computer https://codepen.io/rocknrollinc/pen/MwLMZG
 MS-DOS Defrag https://codepen.io/manz/pen/MdErww  
 MS-DOS Scandisk https://codepen.io/manz/pen/KLPEby  
 90s Web https://codepen.io/bgbraithwaite/pen/vzPrRY
+
+### Data
+
+#### Wordle
+
+https://www.unscramblerer.com/common-five-letter-words/
+https://www.bestwordlist.com/5letterwords.txt
