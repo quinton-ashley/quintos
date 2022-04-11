@@ -1323,7 +1323,9 @@ async function preload() {
 		if (typeof QuintOS.level != 'undefined') {
 			QuintOS.game = QuintOS.levels[QuintOS.level][0];
 		} else {
-			window.location.href = 'https://quintos.org/home.html';
+			if (location.href == 'https://quintos.org') {
+				location.href = 'https://quintos.org/home.html';
+			}
 			return;
 		}
 	} else {
