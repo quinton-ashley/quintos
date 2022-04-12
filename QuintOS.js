@@ -1343,6 +1343,10 @@ async function preload() {
 				break;
 			}
 		}
+		if (QuintOS.game.toLowerCase() == 'wordle') {
+			QuintOS.game = 'Wordle';
+			QuintOS.level = 8;
+		}
 		QuintOS.level ??= -1;
 	}
 
@@ -2596,7 +2600,7 @@ tile {
 	}
 
 	let bootScreens = {
-		GuessTheNumber: [
+		calcu: [
 			{
 				name: 'info',
 				col: 0,
@@ -2605,7 +2609,7 @@ tile {
 				txt: 'Hello! QuintOS v0.0'
 			}
 		],
-		PickAPath: [
+		cpet: [
 			{
 				name: 'boot',
 				col: 0,
@@ -2652,7 +2656,7 @@ READY
 				txt: '.\n'.repeat(9)
 			}
 		],
-		Pong: [
+		zx: [
 			// 			{
 			// 				name: 'h1',
 			// 				col: 0,
@@ -2692,7 +2696,7 @@ QuintOS version 02
 CopyLeft 1977`
 			}
 		],
-		Hangman: [
+		a2: [
 			{
 				name: 'bg',
 				col: 2,
@@ -2741,7 +2745,7 @@ CopyLeft 1977`
 				txt: 'QuintOS ][e'
 			}
 		],
-		QuickClicks: [
+		gridc: [
 			{
 				name: 'bg',
 				col: 5,
@@ -2873,7 +2877,7 @@ QuintOS version 09
 CopyLeft 1977`
 			}
 		],
-		Sketchbook: [
+		c64: [
 			{
 				name: 'boot',
 				txt: `
@@ -2898,7 +2902,7 @@ READY.
   ┗┛`
 			}
 		],
-		Snake: [
+		gameboi: [
 			{
 				name: 'logo',
 				col: 0,
@@ -2914,7 +2918,7 @@ READY.
 				txt: 'v7'
 			}
 		],
-		SuperJump: [
+		arcv: [
 			{
 				name: 'logo',
 				row: 13,
@@ -2945,9 +2949,6 @@ READY.
 			}
 		]
 	};
-
-	bootScreens.WheelOfFortune = bootScreens.Hangman;
-	bootScreens.TicTacAIO = bootScreens.QuickClicks;
 
 	async function displayBootscreen() {
 		// let waitForDraw = () =>
@@ -3208,7 +3209,10 @@ READY.
 	}
 	QuintOS.dir += '/' + QuintOS.game;
 
-	let bootScreen = bootScreens[QuintOS.game] || [];
+	let bootScreen = [];
+	if (!QuintOS.disableBoot) {
+		bootScreen = bootScreens[QuintOS.game] || bootScreens[QuintOS.sys] || [];
+	}
 
 	await Promise.all([
 		(async () => {
