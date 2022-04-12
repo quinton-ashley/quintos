@@ -30,8 +30,10 @@ window.QuintOS = {
 		let params = new URLSearchParams(url[1]);
 		for (let pair of params.entries()) {
 			let k = pair[0].toLowerCase();
+			let v = pair[1];
 			if (k == 'gametitle' || k == 'game') k = 'game';
-			QuintOS[k] = pair[1];
+			if (v === 'false') v = false;
+			QuintOS[k] = v;
 		}
 	}
 }
@@ -3209,7 +3211,7 @@ READY.
 			if (QuintOS.language == 'java') {
 				try {
 					let root = './node_modules/java2js/jdk';
-					if (QuintOS.game) root = 'https://quinton-ashley.github.io/java2js/jdk';
+					if (QuintOS.gameCode) root = 'https://quinton-ashley.github.io/java2js/jdk';
 					await jdk.init(root);
 				} catch (ror) {
 					console.error(ror);

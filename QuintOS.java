@@ -4,6 +4,8 @@ package games_java;
 public class QuintOS {
 	// stub all QuintOS methods for now
 
+	public static String dir = System.getProperty("user.dir");
+
 	public static class Button {
 
 		String txt;
