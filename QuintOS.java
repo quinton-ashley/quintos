@@ -82,6 +82,18 @@ public class QuintOS {
 
 	}
 
+	public static void alert(int txt) {
+
+	}
+
+	public static void alert(float txt) {
+
+	}
+
+	public static void alert(double txt) {
+
+	}
+
 	public static void alert(String txt) {
 
 	}

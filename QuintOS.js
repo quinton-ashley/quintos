@@ -25,6 +25,8 @@ window.QuintOS = {
 	let url = location.href.split('?');
 	if (url[0].includes('QuintOS_live')) {
 		$('head').append('<link rel="icon" href="node_modules/quintos/img/favicon.png" />');
+	} else {
+		QuintOS.web = true;
 	}
 	if (url.length > 1) {
 		let params = new URLSearchParams(url[1]);
@@ -37,6 +39,8 @@ window.QuintOS = {
 		}
 	}
 }
+
+QuintOS._lines = 0;
 
 /* Display the text character at a position */
 QuintOS._drawChar = (row, col, char) => {
@@ -114,8 +118,8 @@ QuintOS._textAsync = async (lines, row, col, speed) => {
 
 /* Display text in one frame */
 QuintOS._text = (txt, row, col, w, h, speed) => {
-	col ??= 0;
-	row ??= 0;
+	row ??= QuintOS._lines || 2;
+	col ??= 2;
 	if (typeof txt != 'string') txt += '';
 	w = w || QuintOS.cols - col;
 	if (QuintOS.sys == 'gridc') {
@@ -152,12 +156,14 @@ QuintOS._text = (txt, row, col, w, h, speed) => {
 
 /* Display text */
 QuintOS.text = async (txt, row, col, w, h, speed) => {
+	// let noRow = !row && row != 0;
 	txt = QuintOS._text(txt, row, col, w, h, speed);
 	if (txt.speed) {
 		await QuintOS._textAsync(txt.lines, txt.row, txt.col, txt.speed);
 	} else {
 		QuintOS._textSync(txt.lines, txt.row, txt.col);
 	}
+	QuintOS._lines = txt.row + txt.lines.length;
 	return txt.lines.length; // returns the height
 };
 
@@ -171,11 +177,11 @@ QuintOS.frame = async (row, col, w, h, style, speed, c) => {
 	c ??= '─';
 	if (QuintOS.sys == 'a2') c = '*';
 	if (QuintOS.sys == 'gridc') c = '═';
-	await textRect(row, col, w, h, style, speed, c);
+	await textRect(row, col, w, h, style, c, speed);
 };
 
 /* Display a rectangle with character or character set */
-async function textRect(row, col, w, h, style, speed, c) {
+async function textRect(row, col, w, h, style, c, speed) {
 	style ??= 'solid';
 	if (QuintOS.sys == 'cpet') {
 		c = {
@@ -245,13 +251,13 @@ async function textRect(row, col, w, h, style, speed, c) {
 }
 
 /* Display a line between two points using a character (diagonal lines not supported yet) */
-function textLine(row1, col1, row2, col2, c) {
+async function textLine(row1, col1, row2, col2, style, c, speed) {
 	if (row1 == row2) {
 		c ??= '-';
-		text(c.repeat(Math.abs(col1 - col2)), col1, row1);
+		await text(c.repeat(Math.abs(col1 - col2)), col1, row1, null, null, speed);
 	} else if (col1 == col2) {
 		c ??= '|';
-		text((c + '\n').repeat(Math.abs(row1 - row2)), col1, row1);
+		await text((c + '\n').repeat(Math.abs(row1 - row2)), col1, row1, null, null, speed);
 	}
 }
 
@@ -284,6 +290,7 @@ QuintOS.erase = () => {
 			i--;
 		}
 	}
+	QuintOS._lines = 0;
 	if (QuintOS.sys == 'calcu') {
 		QuintOS._textSync([' '.repeat(QuintOS.cols), ' '.repeat(4)], 0, 0);
 		return;
@@ -302,10 +309,11 @@ async function eraseRect(row, col, w, h, speed) {
 		await eraseRect(1, 0, 4, 1, speed);
 		return;
 	}
-	row = row || 0;
-	col = col || 0;
-	w = w || QuintOS.cols;
-	h = h || QuintOS.rows;
+	let noArgs = !row && row != 0;
+	row ??= 0;
+	col ??= 0;
+	w ??= QuintOS.cols;
+	h ??= QuintOS.rows;
 
 	let eraser = {
 		row,
@@ -323,6 +331,7 @@ async function eraseRect(row, col, w, h, speed) {
 			i--;
 		}
 	}
+	if (QuintOS.level > 4) QuintOS._lines = row;
 }
 
 function button(txt, row, col, action) {
@@ -331,6 +340,7 @@ function button(txt, row, col, action) {
 	let _this = this;
 	class Button {
 		constructor(txt, row, col, action) {
+			// TODO: whole number check
 			txt = QuintOS._text(txt, row, col);
 			this.row = txt.row;
 			this.col = txt.col;
@@ -513,10 +523,17 @@ function input(value, row, col, onSubmit, onChange) {
 
 async function alert(txt, row, col, w, h) {
 	let pu = QuintOS.popup;
-	row = row || pu.row;
-	col = col || pu.col;
-	w = w || pu.w;
-	h = h || pu.h;
+	let noRow = !row && row != 0;
+	if (noRow) {
+		if (QuintOS._lines) {
+			row = QuintOS._lines + 1;
+		} else {
+			row = pu.row;
+		}
+	}
+	col ??= pu.col;
+	w ??= pu.w;
+	h ??= pu.h;
 
 	if (QuintOS.language == 'java') {
 		txt = await System.out.print(txt);
@@ -569,6 +586,7 @@ async function alert(txt, row, col, w, h) {
 			if (QuintOS.sys != 'calcu') okayBtn.erase();
 			document.removeEventListener('keydown', onKeyDown);
 			await eraseRect(row, col, w, h + th);
+			if (!noRow) QuintOS._lines = row;
 		};
 
 		if (QuintOS.sys == 'calcu') return;
@@ -582,11 +600,19 @@ async function alert(txt, row, col, w, h) {
 }
 
 async function prompt(txt, row, col, w, h) {
+	txt ??= '';
 	let pu = QuintOS.popup;
-	row = row || pu.row;
-	col = col || pu.col;
-	w = w || pu.w;
-	h = h || pu.h;
+	let noRow = !row && row != 0;
+	if (noRow) {
+		if (QuintOS._lines) {
+			row = QuintOS._lines + 1;
+		} else {
+			row = pu.row;
+		}
+	}
+	col ??= pu.col;
+	w ??= pu.w;
+	h ??= pu.h;
 
 	if (QuintOS.language == 'java') {
 		txt = await System.out.print(txt);
@@ -642,7 +668,14 @@ async function prompt(txt, row, col, w, h) {
 			enterBtn.erase();
 			cancelBtn.erase();
 		}
-		await eraseRect(row, col, w, h + th);
+
+		if (QuintOS.language == 'java' && QuintOS.level <= 3) {
+			QuintOS._lines = 0;
+			erase();
+		} else {
+			await eraseRect(row, col, w, h + th);
+			if (!noRow) QuintOS._lines = row;
+		}
 	};
 	return new Promise((resolve) => {
 		inp.onSubmit = async () => {
@@ -708,11 +741,18 @@ public class ${QuintOS.game} {
 
 	if (QuintOS.dev) log(file);
 
-	file = file.replace(
-		/System\.out\.print(ln)*\(([^\)]*)\);\s*(.*=)(.*\.)*next(Int|Float|Double|Line|Short|Long)*\(\);/gm,
-		'$3 prompt($2);'
-	);
-	file = file.replace(/System\.out\.print(ln)*\(([^\(\)]*(\([^\(\)]*\))*)*\);/gm, 'alert($2);');
+	if (QuintOS.sys != 'calcu') {
+		file = file.replace(/(.*=)(.*\.)*next(Int|Float|Double|Line|Short|Long)*\(\);/gm, '$1 prompt();');
+	} else {
+		file = file.replace(
+			/System\.out\.print(ln)*\(([^\)]*)\);\s*(.*=)(.*\.)*next(Int|Float|Double|Line|Short|Long)*\(\);/gm,
+			'$3 prompt($2);'
+		);
+	}
+
+	let rp = 'text($2);';
+	if (QuintOS.sys == 'calcu') rp = 'alert($2);';
+	file = file.replace(/System\.out\.print(ln)*\(([^\(\)]*(\([^\(\)]*\))*)*\);/gm, rp);
 
 	file = await jdk.transpile(file);
 
@@ -829,6 +869,9 @@ QuintOS.error = async (e) => {
 };
 
 async function exit() {
+	if (QuintOS.language == 'java') {
+		await alert('The program exited!');
+	}
 	await eraseRect();
 
 	// run a simple eval based calculator program
@@ -866,9 +909,7 @@ function delay(millisec) {
 	} else {
 		// else it wraps setTimeout in a Promise
 		return new Promise((resolve) => {
-			setTimeout(() => {
-				resolve('');
-			}, millisec);
+			setTimeout(resolve, millisec);
 		});
 	}
 }
@@ -3219,7 +3260,7 @@ READY.
 			if (QuintOS.language == 'java') {
 				try {
 					let root = './node_modules/java2js/jdk';
-					if (QuintOS.gameCode) root = 'https://quinton-ashley.github.io/java2js/jdk';
+					if (QuintOS.web) root = 'https://quinton-ashley.github.io/java2js/jdk';
 					await jdk.init(root);
 				} catch (ror) {
 					console.error(ror);
@@ -3278,7 +3319,7 @@ READY.
 
 	window.size = () => {};
 
-	QuintOS._image = image;
+	QuintOS._image = image; // p5.js image function
 
 	window.image = (img, ...args) => {
 		for (let i = 0; i < args.length; i++) {
@@ -3292,14 +3333,15 @@ READY.
 	if (QuintOS.sys == 'a2') await delay(500);
 
 	await eraseRect();
+	QuintOS._lines = 0;
 
 	if (QuintOS.sys == 'gridc') {
 		// add the clock
 		setInterval(() => {
 			let time = new Date($.now());
-			text(Date.now(), 65, 29);
+			QuintOS._textSync([Date.now() + ''], 65, 29);
 			time = time.toString().split(' GMT')[0];
-			text(time, 29, 2);
+			QuintOS._textSync([time + ''], 29, 2);
 		}, 1000);
 	}
 
