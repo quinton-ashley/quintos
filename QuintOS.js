@@ -156,14 +156,14 @@ QuintOS._text = (txt, row, col, w, h, speed) => {
 
 /* Display text */
 QuintOS.text = async (txt, row, col, w, h, speed) => {
-	// let noRow = !row && row != 0;
+	let noRow = !row && row != 0;
 	txt = QuintOS._text(txt, row, col, w, h, speed);
 	if (txt.speed) {
 		await QuintOS._textAsync(txt.lines, txt.row, txt.col, txt.speed);
 	} else {
 		QuintOS._textSync(txt.lines, txt.row, txt.col);
 	}
-	QuintOS._lines = txt.row + txt.lines.length;
+	if (noRow) QuintOS._lines = txt.row + txt.lines.length;
 	return txt.lines.length; // returns the height
 };
 
@@ -804,7 +804,7 @@ QuintOS.runGame = async () => {
 	if (QuintOS.sys != 'calcu') {
 		let col = !/(c64|gameboi|arcv)/.test(QuintOS.sys) ? 2 : 0;
 		button(title, 0, col, () => {
-			if (!QuintOS.gameCode) {
+			if (QuintOS.gameFile) {
 				// open the javascript source in new tab
 				open(QuintOS.gameFile);
 			} else {
