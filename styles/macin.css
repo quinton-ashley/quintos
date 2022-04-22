@@ -314,7 +314,6 @@
 	display: flex;
 	box-orient: vertical;
 	box-direction: normal;
-	-moz-flex-direction: column;
 	flex-direction: column;
 	background-color: white;
 	border: 1px solid black;
@@ -326,6 +325,11 @@
 	width: 72vmin;
 	z-index: 500;
 }
+
+.macin .window .content {
+	flex-grow: 1;
+}
+
 .macin ul {
 	list-style: none;
 }
@@ -440,6 +444,7 @@
 }
 
 .macin iframe {
+	width: 100%;
 	height: 100%;
 	border: none;
 }
@@ -516,4 +521,20 @@
 	flex: 1;
 	background-color: #3d81da;
 	margin-right: 27px;
+}
+
+.macin #screen0 {
+	position: absolute;
+}
+
+.macin .search span {
+	margin-left: 6px;
+	margin-right: 5px;
+}
+
+.macin .search input {
+	margin: 2px;
+	padding-left: 5px;
+	width: 100%;
+	border-radius: 10px;
 }

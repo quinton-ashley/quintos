@@ -1818,7 +1818,7 @@ async function preload() {
 							</div>
 						</div>
 						<div class="desktop">
-							<div class="window">
+							<div id="window0" class="window">
 								<div class="bar title">
 									<h1>Netscape</h1>
 									<nav>
@@ -1827,6 +1827,10 @@ async function preload() {
 											<li class="maximize"></li>
 										</ul>
 									</nav>
+								</div>
+								<div class="bar search">
+									<span>🔍</span>
+									<input value="https://www.quintos.org/games_js/WorldWideWeb/index.html"></input>
 								</div>
 								<div class="bar info">
 									<ul>
@@ -1882,8 +1886,10 @@ async function preload() {
 										<li>Net Directory</li>
 									</ul>
 								</div>
-								<iframe src="https://web.archive.org/web/19991128125537/http://www.geocities.com/Heartland/Bluffs/4157/hampdance.html"></iframe>
-								<div id="screen0" class="screen"></div>
+								<div class="content">
+									<iframe></iframe>
+									<div id="screen0" class="screen"></div>
+								</div>
 							</div>
 						</div>
 					</div>
@@ -2520,10 +2526,54 @@ async function preload() {
 				})
 			);
 		}, 1000);
-		$('.window').draggable({
-			handle: '.title.bar'
-		});
-		$('.window').resizable();
+
+		// https://web.archive.org/web/19991128125537/http://www.geocities.com/Heartland/Bluffs/4157/hampdance.html
+
+		function dragElement(elmnt) {
+			var pos1 = 0,
+				pos2 = 0,
+				pos3 = 0,
+				pos4 = 0;
+			if (document.getElementById(elmnt.id + 'header')) {
+				// if present, the header is where you move the DIV from:
+				document.getElementById(elmnt.id + 'header').onmousedown = dragMouseDown;
+			} else {
+				// otherwise, move the DIV from anywhere inside the DIV:
+				elmnt.onmousedown = dragMouseDown;
+			}
+
+			function dragMouseDown(e) {
+				e = e || window.event;
+				e.preventDefault();
+				// get the mouse cursor position at startup:
+				pos3 = e.clientX;
+				pos4 = e.clientY;
+				document.onmouseup = closeDragElement;
+				// call a function whenever the cursor moves:
+				document.onmousemove = elementDrag;
+			}
+
+			function elementDrag(e) {
+				e = e || window.event;
+				e.preventDefault();
+				// calculate the new cursor position:
+				pos1 = pos3 - e.clientX;
+				pos2 = pos4 - e.clientY;
+				pos3 = e.clientX;
+				pos4 = e.clientY;
+				// set the element's new position:
+				elmnt.style.top = elmnt.offsetTop - pos2 + 'px';
+				elmnt.style.left = elmnt.offsetLeft - pos1 + 'px';
+			}
+
+			function closeDragElement() {
+				// stop moving when mouse button is released:
+				document.onmouseup = null;
+				document.onmousemove = null;
+			}
+		}
+		// Make the DIV element draggable:
+		dragElement(document.getElementById('window0'));
 	}
 
 	$('canvas').removeAttr('style');
@@ -2592,6 +2642,11 @@ async function preload() {
 		gameboi: {
 			row: 5,
 			col: 0,
+			w: 20
+		},
+		macin: {
+			row: 2,
+			col: 2,
 			w: 20
 		},
 		zx: {
@@ -3371,12 +3426,17 @@ READY.
 	strokeWeight(2);
 	$('canvas').removeAttr('style');
 
-	console.log(
-		`QuintOS${QuintOS.level >= 0 ? ' v' + QuintOS.level : ''} size: ${width}x${height} rows: ${rows} cols: ${cols}`
-	);
-
 	await delay(100);
-	QuintOS.runGame();
+	if (QuintOS.sys != 'macin') {
+		console.log(
+			`QuintOS${QuintOS.level >= 0 ? ' v' + QuintOS.level : ''} size: ${width}x${height} rows: ${rows} cols: ${cols}`
+		);
+		QuintOS.runGame();
+	} else {
+		console.log(`QuintOS${QuintOS.level >= 0 ? ' v' + QuintOS.level : ''}`);
+		$('#window0 iframe')[0].src = QuintOS.dir + '/index.html';
+	}
+
 	setup();
 
 	if (QuintOS.iframe) {
