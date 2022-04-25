@@ -795,11 +795,6 @@ QuintOS.runGame = async () => {
 	} else {
 		QuintOS.runCode(QuintOS.gameFile, QuintOS.gameCode);
 	}
-	let title = QuintOS.game;
-	if (QuintOS.level >= 0) {
-		title = QuintOS.level.toString().padStart(2, '0') + '_' + title;
-	}
-	$('head title').text(title);
 	if (/(a2|gridc)/.test(QuintOS.sys)) QuintOS.frame();
 	if (QuintOS.sys != 'calcu') {
 		let col = !/(c64|gameboi|arcv)/.test(QuintOS.sys) ? 2 : 0;
@@ -1830,23 +1825,23 @@ async function preload() {
 								</div>
 								<div class="bar search">
 									<span>🔍</span>
-									<input value="https://www.quintos.org/games_js/WorldWideWeb/index.html"></input>
+									<input id="searchBar"></input>
 								</div>
 								<div class="bar info">
 									<ul>
-										<li>
+										<li onclick="history.back()">
 											<div class="emoji">⬅</div>
 											<p>Back</p>
 										</li>
-										<li>
+										<li onclick="history.forward()">
 											<div class="emoji">➡</div>
 											<p>Forward</p>
 										</li>
-										<li>
+										<li onclick="history.go()">
 											<div class="emoji">🔄</div>
 											<p>Reload</p>
 										</li>
-										<li>
+										<li onclick="frames.iframe0.src = frames.iframe0.url = 'https://web.archive.org/web/19991128125537/http://www.geocities.com/Heartland/Bluffs/4157/hampdance.html'">
 											<div class="emoji">🏠</div>
 											<p>Home</p>
 										</li>
@@ -1854,15 +1849,16 @@ async function preload() {
 											<div class="emoji">✉</div>
 											<p>Mail</p>
 										</li>
-										<li>
+										<li onclick="frames.iframe0.src = frames.iframe0.url = 'https://quinton-ashley.github.io/quintos/img/logo.png'">
 											<div class="emoji">🖼</div>
 											<p>Images</p>
 										</li>
-										<li>
+										<li onclick="document.getElementById('macinFileInput').click()">
 											<div class="emoji">📂</div>
 											<p>Open</p>
+											<input style="display:none;" type="file" id="macinFileInput" />
 										</li>
-										<li>
+										<li onclick="print()">
 											<div class="emoji">🖨</div>
 											<p>Print</p>
 										</li>
@@ -1887,7 +1883,7 @@ async function preload() {
 									</ul>
 								</div>
 								<div class="content">
-									<iframe></iframe>
+									<iframe id="iframe0"></iframe>
 									<div id="screen0" class="screen"></div>
 								</div>
 							</div>
@@ -2527,7 +2523,16 @@ async function preload() {
 			);
 		}, 1000);
 
-		// https://web.archive.org/web/19991128125537/http://www.geocities.com/Heartland/Bluffs/4157/hampdance.html
+		function updateSearchBar() {
+			try {
+				document.getElementById('searchBar').value = frames.iframe0.url || frames.iframe0.contentWindow.location.href;
+			} catch (e) {}
+			frames.iframe0.url = null;
+		}
+
+		frames.iframe0.onload = updateSearchBar;
+
+		$('#window0')[0].onclick = updateSearchBar;
 
 		function dragElement(elmnt) {
 			var pos1 = 0,
@@ -3427,6 +3432,13 @@ READY.
 	$('canvas').removeAttr('style');
 
 	await delay(100);
+
+	let title = QuintOS.game;
+	if (QuintOS.level >= 0) {
+		title = QuintOS.level.toString().padStart(2, '0') + '_' + title;
+	}
+	$('head title').text(title);
+
 	if (QuintOS.sys != 'macin') {
 		console.log(
 			`QuintOS${QuintOS.level >= 0 ? ' v' + QuintOS.level : ''} size: ${width}x${height} rows: ${rows} cols: ${cols}`
@@ -3434,7 +3446,7 @@ READY.
 		QuintOS.runGame();
 	} else {
 		console.log(`QuintOS${QuintOS.level >= 0 ? ' v' + QuintOS.level : ''}`);
-		$('#window0 iframe')[0].src = QuintOS.dir + '/index.html';
+		frames.iframe0.src = QuintOS.dir + '/index.html';
 	}
 
 	setup();

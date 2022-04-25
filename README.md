@@ -2,7 +2,7 @@
 
 Learn how to make games using QuintOS by taking my [IntroToJS](https://github.com/quinton-ashley/IntroToJS/blob/main/README.md) or [IntroToJava](https://github.com/quinton-ashley/IntroToJava/blob/main/README.md) course. Contact me <mailto:qashto@gmail.com> for lessons.
 
-At <quintos.org> you can play games made by my students!
+At <https://quintos.org> you can play games made by my students!
 
 Use the QuintOS [template project](https://github.com/quinton-ashley/quintos-template) to get started making your own retro games.
 
@@ -21,7 +21,11 @@ basis33 https://www.1001fonts.com/basis33-font.html
 Cyrillic Pixel 7 https://www.1001fonts.com/cyrillic-pixel-7-font.html  
 Press Start 2P https://fonts.google.com/specimen/Press+Start+2P#standard-styles
 
-### Pixel Art
+### Art
+
+#### WorldWideWeb
+
+https://www.picgifs.com
 
 #### SuperJump
 

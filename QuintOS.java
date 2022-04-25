@@ -1,5 +1,6 @@
-
 package games_java;
+
+import java.util.Scanner;
 
 public class QuintOS {
 	// stub all QuintOS methods for now
