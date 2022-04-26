@@ -796,26 +796,28 @@ QuintOS.runGame = async () => {
 		QuintOS.runCode(QuintOS.gameFile, QuintOS.gameCode);
 	}
 	if (/(a2|gridc)/.test(QuintOS.sys)) QuintOS.frame();
-	if (QuintOS.sys != 'calcu') {
-		let col = !/(c64|gameboi|arcv)/.test(QuintOS.sys) ? 2 : 0;
-		button(title, 0, col, () => {
-			if (QuintOS.gameFile) {
-				// open the javascript source in new tab
-				open(QuintOS.gameFile);
-			} else {
-				// open the Javascript editor and console in codepen
-				open(window.location.href + '?editors=0011');
-			}
-		});
-		if (!QuintOS.user) return;
-		text(' by ', 0, col + title.length);
-		let row = !/(gameboi|arcv)/.test(QuintOS.sys) ? 0 : 1;
-		col = !/(gameboi|arcv)/.test(QuintOS.sys) ? 6 + title.length : 0;
-		if (QuintOS.sys == 'c64') col = 4 + title.length;
-		button(QuintOS.user, row, col, () => {
-			open('https://github.com/' + QuintOS.user);
-		});
-	}
+
+	if (QuintOS.sys == 'calcu') return;
+
+	let title = QuintOS.level.toString().padStart(2, '0') + '_' + QuintOS.game;
+	let col = !/(c64|gameboi|arcv)/.test(QuintOS.sys) ? 2 : 0;
+	button(title, 0, col, () => {
+		if (QuintOS.gameFile) {
+			// open the javascript source in new tab
+			open(QuintOS.gameFile);
+		} else {
+			// open the Javascript editor and console in codepen
+			open(window.location.href + '?editors=0011');
+		}
+	});
+	if (!QuintOS.user) return;
+	text(' by ', 0, col + title.length);
+	let row = !/(gameboi|arcv)/.test(QuintOS.sys) ? 0 : 1;
+	col = !/(gameboi|arcv)/.test(QuintOS.sys) ? 6 + title.length : 0;
+	if (QuintOS.sys == 'c64') col = 4 + title.length;
+	button(QuintOS.user, row, col, () => {
+		open('https://github.com/' + QuintOS.user);
+	});
 };
 
 QuintOS.loadCode = async (src) => {
