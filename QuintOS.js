@@ -3323,9 +3323,7 @@ READY.
 					let root = './node_modules/java2js/jdk';
 					if (QuintOS.web) root = 'https://quinton-ashley.github.io/java2js/jdk';
 					await jdk.init(root);
-					if (location.hostname == 'quintos.org') {
-						jdk.workerPath = 'java2js_transpile_worker.js';
-					}
+					if (QuintOS.java2js_worker) jdk.workerPath = QuintOS.java2js_worker;
 				} catch (ror) {
 					console.error(ror);
 					return;
