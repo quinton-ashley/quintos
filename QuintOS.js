@@ -23,6 +23,7 @@ window.QuintOS = {
 
 {
 	let url = location.href.split('?');
+	QuintOS.web = location.hostname != 'localhost' && location.hostname != '127.0.0.1';
 	if (!QuintOS.web) {
 		$('head').append('<link rel="icon" href="node_modules/quintos/img/favicon.png" />');
 	}
@@ -3322,6 +3323,9 @@ READY.
 					let root = './node_modules/java2js/jdk';
 					if (QuintOS.web) root = 'https://quinton-ashley.github.io/java2js/jdk';
 					await jdk.init(root);
+					if (location.hostname == 'quintos.org') {
+						jdk.workerPath = 'java2js_transpile_worker.js';
+					}
 				} catch (ror) {
 					console.error(ror);
 					return;
