@@ -23,10 +23,8 @@ window.QuintOS = {
 
 {
 	let url = location.href.split('?');
-	if (url[0].includes('QuintOS_live')) {
+	if (!QuintOS.web) {
 		$('head').append('<link rel="icon" href="node_modules/quintos/img/favicon.png" />');
-	} else {
-		QuintOS.web = true;
 	}
 	if (url.length > 1) {
 		let params = new URLSearchParams(url[1]);
@@ -2642,9 +2640,9 @@ async function preload() {
 			w: 40
 		},
 		gridc: {
-			row: 2,
-			col: 3,
-			w: 50
+			row: 1,
+			col: 1,
+			w: 78
 		},
 		gameboi: {
 			row: 5,
@@ -3439,7 +3437,7 @@ READY.
 	if (QuintOS.level >= 0) {
 		title = QuintOS.level.toString().padStart(2, '0') + '_' + title;
 	}
-	$('head title').text(title);
+	document.title = title;
 
 	if (QuintOS.sys != 'macin') {
 		console.log(
