@@ -3321,7 +3321,7 @@ READY.
 			if (QuintOS.language == 'java') {
 				try {
 					let root = './node_modules/java2js/jdk';
-					if (QuintOS.web) root = 'https://quinton-ashley.github.io/java2js/jdk';
+					if (QuintOS.web || QuintOS.java2js_worker) root = 'https://quinton-ashley.github.io/java2js/jdk';
 					await jdk.init(root);
 					if (QuintOS.java2js_worker) jdk.workerPath = QuintOS.java2js_worker;
 				} catch (ror) {
