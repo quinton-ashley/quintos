@@ -252,23 +252,26 @@ public class QuintOS {
 	}
 
 	public static String prompt(String txt) {
-		return "";
+		Scanner sc = new Scanner(System.in);
+		String res = sc.nextLine();
+		sc.close();
+		return res;
 	}
 
 	public static String prompt(String txt, int row) {
-		return "";
+		return prompt(txt);
 	}
 
 	public static String prompt(String txt, int row, int col) {
-		return "";
+		return prompt(txt);
 	}
 
 	public static String prompt(String txt, int row, int col, int w) {
-		return "";
+		return prompt(txt);
 	}
 
 	public static String prompt(String txt, int row, int col, int w, int h) {
-		return "";
+		return prompt(txt);
 	}
 
 	public static Button button() {

@@ -1035,7 +1035,7 @@ function spriteArt(txt, scale, palette) {
 	return img; // return the p5 graphics object
 }
 
-function loadAni(spriteSheetImg, size, pos, frameCount, frameDelay) {
+function createAni(spriteSheetImg, size, pos, frameCount, frameDelay) {
 	let w, h;
 	if (typeof size == 'number') {
 		w = size;
@@ -1081,8 +1081,8 @@ function loadAni(spriteSheetImg, size, pos, frameCount, frameDelay) {
 			this._x = x || 0;
 			this._y = y || 0;
 			this.depth = depth || 0;
-			this.groupNames = [];
-			this.createGroup('default');
+			this.groups = [];
+			this.createGroup();
 		}
 
 		get x() {
@@ -1091,8 +1091,7 @@ function loadAni(spriteSheetImg, size, pos, frameCount, frameDelay) {
 
 		set x(val) {
 			this._x = val;
-			for (let groupName of this.groupNames) {
-				let group = this[groupName];
+			for (let group of this.groups) {
 				for (let i = 0; i < group.length; i++) {
 					let sprite = group[i];
 					sprite.col = sprite.col;
@@ -1106,8 +1105,7 @@ function loadAni(spriteSheetImg, size, pos, frameCount, frameDelay) {
 
 		set y(val) {
 			this._y = val;
-			for (let groupName of this.groupNames) {
-				let group = this[groupName];
+			for (let group of this.groups) {
 				for (let i = 0; i < group.length; i++) {
 					let sprite = group[i];
 					sprite.row = sprite.row;
@@ -1123,40 +1121,49 @@ function loadAni(spriteSheetImg, size, pos, frameCount, frameDelay) {
 				row = ani;
 				ani = null;
 			}
-			let groupName = 'default';
+			let group = this.groups[0];
 			if (ani) {
-				for (groupName of this.groupNames) {
-					if (Object.keys(this[groupName].animations).includes(ani)) {
+				for (let i = 1; i < this.groups.length; i++) {
+					group = this.groups[i];
+					if (Object.keys(group.animations).includes(ani)) {
 						break;
 					}
 				}
 			}
-			return this[groupName].createSprite(ani, row, col, layer);
+			return group.createSprite(ani, row, col, layer);
 		}
 
+		addAni(name, atlas) {
+			this.default.addAni(name, atlas);
+		}
+
+		// deprecated
 		loadAni(name, atlas) {
-			this.default.loadAni(name, atlas);
+			this.addAni(name, atlas);
 		}
 
+		addImg(name, atlas) {
+			this.addAni(name, atlas);
+		}
+
+		// deprecated
 		loadImg(name, atlas) {
-			this.loadAni(name, atlas);
+			this.addAni(name, atlas);
 		}
 
 		removeSprites() {
-			for (let groupName of this.groupNames) {
-				this[groupName].removeSprites();
+			for (let group of this.groups) {
+				group.removeSprites();
 			}
 		}
 
-		createGroup(groupName) {
+		createGroup() {
 			let _this = this;
-			if (_this[groupName]) return;
 
 			let group = new Group();
-
 			group.animations = {};
 
-			group.loadAni = function (name, atlas) {
+			group.addAni = function (name, atlas) {
 				if (typeof name != 'string') {
 					atlas = name;
 					name = 'default' + this.animations.length;
@@ -1165,11 +1172,21 @@ function loadAni(spriteSheetImg, size, pos, frameCount, frameDelay) {
 				size ??= _this.tileSize;
 				pos ??= line || 0;
 				let sheet = this.spriteSheet || _this.spriteSheet;
-				this.animations[name] = loadAni(sheet, size, pos, frames, delay);
+				this.animations[name] = createAni(sheet, size, pos, frames, delay);
 			};
 
+			// deprecated
+			group.loadAni = function (name, atlas) {
+				this.addAni(name, atlas);
+			};
+
+			group.addImg = function (name, atlas) {
+				this.addAni(name, atlas);
+			};
+
+			//deprecated
 			group.loadImg = function (name, atlas) {
-				this.loadAni(name, atlas);
+				this.addAni(name, atlas);
 			};
 
 			group.snap = function (o, dist) {
@@ -1337,8 +1354,7 @@ function loadAni(spriteSheetImg, size, pos, frameCount, frameDelay) {
 				return sprite;
 			};
 
-			_this[groupName] = group;
-			_this.groupNames.push(groupName);
+			_this.groups.push(group);
 			return group;
 		}
 	}
@@ -3268,7 +3284,7 @@ READY.
 			return sprite.ani(img);
 		};
 
-		sprite.loadAni = function (name, atlas) {
+		sprite.addAni = function (name, atlas) {
 			if (typeof name != 'string') {
 				atlas = name;
 				name = 'default0';
@@ -3276,11 +3292,21 @@ READY.
 			let { size, pos, line, frames, delay } = atlas;
 			size ??= [this.w / this.scale, this.h / this.scale];
 			pos ??= line || 0;
-			this.addAnimation(name, loadAni(this.spriteSheet, size, pos, frames, delay));
+			this.addAnimation(name, createAni(this.spriteSheet, size, pos, frames, delay));
 		};
 
+		// deprecated
+		sprite.loadAni = function (name, atlas) {
+			this.addAni(name, atlas);
+		};
+
+		sprite.addImg = function (name, atlas) {
+			this.addAni(name, atlas);
+		};
+
+		// deprecated
 		sprite.loadImg = function (name, atlas) {
-			this.loadAni(name, atlas);
+			this.addAni(name, atlas);
 		};
 
 		return sprite;
