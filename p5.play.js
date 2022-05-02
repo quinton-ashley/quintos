@@ -273,7 +273,8 @@ http://molleindustria.org/
 	 * @param {Sprite} sprite Sprite to be displayed
 	 */
 	p5.prototype.loadAnimation = function () {
-		return construct(this.SpriteAnimation, arguments);
+		// return construct(this.SpriteAnimation, arguments);
+		return new SpriteAnimation(this, ...arguments);
 	};
 
 	/**
@@ -283,7 +284,8 @@ http://molleindustria.org/
 	 * @method loadSpriteSheet
 	 */
 	p5.prototype.loadSpriteSheet = function () {
-		return construct(this.SpriteSheet, arguments);
+		// return construct(this.SpriteSheet, arguments);
+		return new SpriteSheet(this, ...arguments);
 	};
 
 	/**
@@ -1847,7 +1849,7 @@ deltaTime = ((now - then) / 1000)/INTERVAL_60; // seconds since last frame
 				var animFrames = [];
 				for (var i = 1; i < arguments.length; i++) animFrames.push(arguments[i]);
 
-				anim = construct(this.p.SpriteAnimation, animFrames);
+				anim = new SpriteAnimation(this, ...animFrames);
 				this.animations[label] = anim;
 
 				if (this.currentAnimation === '') {
@@ -2776,30 +2778,28 @@ deltaTime = ((now - then) / 1000)/INTERVAL_60; // seconds since last frame
 	p5.prototype.Group = Group;
 
 	//circle collider - used internally
-	function CircleCollider(pInst, _center, _radius, _offset) {
-		var pInstBind = createPInstBinder(pInst);
+	class CircleCollider {
+		constructor(pInst, _center, _radius, _offset) {
+			this.p = pInst;
 
-		var createVector = pInstBind('createVector');
+			this.center = _center;
+			this.radius = _radius;
+			this.originalRadius = _radius;
 
-		var CENTER = p5.prototype.CENTER;
+			if (_offset === undefined) this.offset = this.p.createVector(0, 0);
+			else this.offset = _offset;
+			this.extents = this.p.createVector(_radius * 2, _radius * 2);
+		}
 
-		this.center = _center;
-		this.radius = _radius;
-		this.originalRadius = _radius;
-
-		if (_offset === undefined) this.offset = createVector(0, 0);
-		else this.offset = _offset;
-		this.extents = createVector(_radius * 2, _radius * 2);
-
-		this.draw = function () {
-			pInst.noFill();
-			pInst.stroke(0, 255, 0);
-			pInst.rectMode(CENTER);
-			pInst.ellipse(this.center.x + this.offset.x, this.center.y + this.offset.y, this.radius * 2, this.radius * 2);
-		};
+		draw() {
+			this.p.noFill();
+			this.p.stroke(0, 255, 0);
+			this.p.rectMode(p5.prototype.CENTER);
+			this.p.ellipse(this.center.x + this.offset.x, this.center.y + this.offset.y, this.radius * 2, this.radius * 2);
+		}
 
 		//should be called only for circle vs circle
-		this.overlap = function (other) {
+		overlap(other) {
 			//square dist
 			var r = this.radius + other.radius;
 			r *= r;
@@ -2809,124 +2809,122 @@ deltaTime = ((now - then) / 1000)/INTERVAL_60; // seconds since last frame
 			var otherCenterY = other.center.y + other.offset.y;
 			var sqDist = pow(thisCenterX - otherCenterX, 2) + pow(thisCenterY - otherCenterY, 2);
 			return r > sqDist;
-		};
+		}
 
 		//should be called only for circle vs circle
-		this.collide = function (other) {
+		collide(other) {
 			if (this.overlap(other)) {
 				var thisCenterX = this.center.x + this.offset.x;
 				var thisCenterY = this.center.y + this.offset.y;
 				var otherCenterX = other.center.x + other.offset.x;
 				var otherCenterY = other.center.y + other.offset.y;
-				var a = pInst.atan2(thisCenterY - otherCenterY, thisCenterX - otherCenterX);
+				var a = this.p.atan2(thisCenterY - otherCenterY, thisCenterX - otherCenterX);
 				var radii = this.radius + other.radius;
 				var intersection = abs(radii - dist(thisCenterX, thisCenterY, otherCenterX, otherCenterY));
 
-				var displacement = createVector(pInst.cos(a) * intersection, pInst.sin(a) * intersection);
+				var displacement = this.p.createVector(this.p.cos(a) * intersection, this.p.sin(a) * intersection);
 
 				return displacement;
 			} else {
-				return createVector(0, 0);
+				return this.p.createVector(0, 0);
 			}
-		};
+		}
 
-		this.size = function () {
-			return createVector(this.radius * 2, this.radius * 2);
-		};
+		size() {
+			return this.p.createVector(this.radius * 2, this.radius * 2);
+		}
 
-		this.left = function () {
+		left() {
 			return this.center.x + this.offset.x - this.radius;
-		};
+		}
 
-		this.right = function () {
+		right() {
 			return this.center.x + this.offset.x + this.radius;
-		};
+		}
 
-		this.top = function () {
+		top() {
 			return this.center.y + this.offset.y - this.radius;
-		};
+		}
 
-		this.bottom = function () {
+		bottom() {
 			return this.center.y + this.offset.y + this.radius;
-		};
+		}
 	}
+
 	defineLazyP5Property('CircleCollider', boundConstructorFactory(CircleCollider));
 
 	//axis aligned bounding box - extents are the half sizes - used internally
-	function AABB(pInst, _center, _extents, _offset) {
-		var pInstBind = createPInstBinder(pInst);
+	class AABB {
+		constructor(pInst, _center, _extents, _offset) {
+			this.p = pInst;
 
-		var createVector = pInstBind('createVector');
+			this.center = _center;
+			this.extents = _extents;
+			this.originalExtents = _extents.copy();
 
-		var CENTER = p5.prototype.CENTER;
-		var PI = p5.prototype.PI;
+			if (_offset === undefined) this.offset = this.p.createVector(0, 0);
+			else this.offset = _offset;
+		}
 
-		this.center = _center;
-		this.extents = _extents;
-		this.originalExtents = _extents.copy();
-
-		if (_offset === undefined) this.offset = createVector(0, 0);
-		else this.offset = _offset;
-
-		this.min = function () {
-			return createVector(
+		min() {
+			return this.p.createVector(
 				this.center.x + this.offset.x - this.extents.x,
 				this.center.y + this.offset.y - this.extents.y
 			);
-		};
+		}
 
-		this.max = function () {
-			return createVector(
+		max() {
+			return this.p.createVector(
 				this.center.x + this.offset.x + this.extents.x,
 				this.center.y + this.offset.y + this.extents.y
 			);
-		};
+		}
 
-		this.right = function () {
+		right() {
 			return this.center.x + this.offset.x + this.extents.x / 2;
-		};
+		}
 
-		this.left = function () {
+		left() {
 			return this.center.x + this.offset.x - this.extents.x / 2;
-		};
+		}
 
-		this.top = function () {
+		top() {
 			return this.center.y + this.offset.y - this.extents.y / 2;
-		};
+		}
 
-		this.bottom = function () {
+		bottom() {
 			return this.center.y + this.offset.y + this.extents.y / 2;
-		};
+		}
 
-		this.size = function () {
-			return createVector(this.extents.x * 2, this.extents.y * 2);
-		};
+		size() {
+			return this.p.createVector(this.extents.x * 2, this.extents.y * 2);
+		}
 
-		this.rotate = function (r) {
+		rotate(r) {
 			//rotate the bbox
 			var t;
-			if (pInst._angleMode === pInst.RADIANS) {
+			if (this.p._angleMode === this.p.RADIANS) {
 				t = radians(r);
 			} else {
 				t = r;
 			}
 
-			var w2 = this.extents.x * abs(pInst.cos(t)) + this.extents.y * abs(pInst.sin(t));
-			var h2 = this.extents.x * abs(pInst.sin(t)) + this.extents.y * abs(pInst.cos(t));
+			var w2 = this.extents.x * abs(this.p.cos(t)) + this.extents.y * abs(this.p.sin(t));
+			var h2 = this.extents.x * abs(this.p.sin(t)) + this.extents.y * abs(this.p.cos(t));
 
 			this.extents.x = w2;
 			this.extents.y = h2;
-		};
+		}
 
-		this.draw = function () {
+		draw() {
 			//fill(col);
-			pInst.noFill();
-			pInst.stroke(0, 255, 0);
-			pInst.rectMode(CENTER);
-			pInst.rect(this.center.x + this.offset.x, this.center.y + this.offset.y, this.size().x / 2, this.size().y / 2);
-		};
+			this.p.noFill();
+			this.p.stroke(0, 255, 0);
+			this.p.rectMode(p5.prototype.CENTER);
+			this.p.rect(this.center.x + this.offset.x, this.center.y + this.offset.y, this.size().x / 2, this.size().y / 2);
+		}
 
-		this.overlap = function (other) {
+		overlap(other) {
 			//box vs box
 			if (other instanceof AABB) {
 				var md = other.minkowskiDifference(this);
@@ -2938,7 +2936,7 @@ deltaTime = ((now - then) / 1000)/INTERVAL_60; // seconds since last frame
 			//box vs circle
 			else if (other instanceof CircleCollider) {
 				//find closest point to the circle on the box
-				var pt = createVector(other.center.x, other.center.y);
+				var pt = this.p.createVector(other.center.x, other.center.y);
 
 				//I don't know what's going o try to trace a line from centers to see
 				if (other.center.x < this.left()) pt.x = this.left();
@@ -2951,22 +2949,22 @@ deltaTime = ((now - then) / 1000)/INTERVAL_60; // seconds since last frame
 
 				return distance < other.radius;
 			}
-		};
+		}
 
-		this.collide = function (other) {
+		collide(other) {
 			if (other instanceof AABB) {
 				var md = other.minkowskiDifference(this);
 
 				if (md.min().x <= 0 && md.max().x >= 0 && md.min().y <= 0 && md.max().y >= 0) {
-					var boundsPoint = md.closestPointOnBoundsToPoint(createVector(0, 0));
+					var boundsPoint = md.closestPointOnBoundsToPoint(this.p.createVector(0, 0));
 
 					return boundsPoint;
-				} else return createVector(0, 0);
+				} else return this.p.createVector(0, 0);
 			}
 			//box vs circle
 			else if (other instanceof CircleCollider) {
 				//find closest point to the circle on the box
-				var pt = createVector(other.center.x, other.center.y);
+				var pt = this.p.createVector(other.center.x, other.center.y);
 
 				//I don't know what's going o try to trace a line from centers to see
 				if (other.center.x < this.left()) pt.x = this.left();
@@ -2992,61 +2990,65 @@ deltaTime = ((now - then) / 1000)/INTERVAL_60; // seconds since last frame
 							else pt.y = this.bottom();
 						}
 
-						a = pInst.atan2(other.center.y - pt.y, other.center.x - pt.x);
+						a = this.p.atan2(other.center.y - pt.y, other.center.x - pt.x);
 
 						//fix exceptions
 						if (a === 0) {
-							if (pt.x === this.right()) a = PI;
-							if (pt.y === this.top()) a = PI / 2;
-							if (pt.y === this.bottom()) a = -PI / 2;
+							if (pt.x === this.right()) a = p5.prototype.PI;
+							if (pt.y === this.top()) a = p5.prototype.PI / 2;
+							if (pt.y === this.bottom()) a = -p5.prototype.PI / 2;
 						}
 					} else {
 						//angle bw point and center
-						a = pInst.atan2(pt.y - other.center.y, pt.x - other.center.x);
+						a = this.p.atan2(pt.y - other.center.y, pt.x - other.center.x);
 						//project the normal (line between pt and center) onto the circle
 					}
 
-					var d = createVector(pt.x - other.center.x, pt.y - other.center.y);
-					var displacement = createVector(pInst.cos(a) * other.radius - d.x, pInst.sin(a) * other.radius - d.y);
+					var d = this.p.createVector(pt.x - other.center.x, pt.y - other.center.y);
+					var displacement = this.p.createVector(
+						this.p.cos(a) * other.radius - d.x,
+						this.p.sin(a) * other.radius - d.y
+					);
 
 					//if(pt.x === other.center.x && pt.y === other.center.y)
 					//displacement = displacement.mult(-1);
 
 					return displacement;
 					//return createVector(0,0);
-				} else return createVector(0, 0);
+				} else return this.p.createVector(0, 0);
 			}
-		};
+		}
 
-		this.minkowskiDifference = function (other) {
+		minkowskiDifference(other) {
 			var topLeft = this.min().sub(other.max());
 			var fullSize = this.size().add(other.size());
-			return new AABB(pInst, topLeft.add(fullSize.div(2)), fullSize.div(2));
-		};
+			return new AABB(this.p, topLeft.add(fullSize.div(2)), fullSize.div(2));
+		}
 
-		this.closestPointOnBoundsToPoint = function (point) {
+		closestPointOnBoundsToPoint(point) {
 			// test x first
 			var minDist = abs(point.x - this.min().x);
-			var boundsPoint = createVector(this.min().x, point.y);
+			var boundsPoint = this.p.createVector(this.min().x, point.y);
 
 			if (abs(this.max().x - point.x) < minDist) {
 				minDist = abs(this.max().x - point.x);
-				boundsPoint = createVector(this.max().x, point.y);
+				boundsPoint = this.p.createVector(this.max().x, point.y);
 			}
 
 			if (abs(this.max().y - point.y) < minDist) {
 				minDist = abs(this.max().y - point.y);
-				boundsPoint = createVector(point.x, this.max().y);
+				boundsPoint = this.p.createVector(point.x, this.max().y);
 			}
 
 			if (abs(this.min().y - point.y) < minDist) {
 				minDist = abs(this.min.y - point.y);
-				boundsPoint = createVector(point.x, this.min().y);
+				boundsPoint = this.p.createVector(point.x, this.min().y);
 			}
 
 			return boundsPoint;
-		};
+		}
 	} //end AABB
+
 	defineLazyP5Property('AABB', boundConstructorFactory(AABB));
 
 	/**
@@ -3093,170 +3095,174 @@ deltaTime = ((now - then) / 1000)/INTERVAL_60; // seconds since last frame
 	 * @param {String} fileName2 Last file in a sequence OR second image file
 	 * @param {String} [...fileNameN] Any number of image files after the first two
 	 */
-	function SpriteAnimation(pInst) {
-		var frameArguments = Array.prototype.slice.call(arguments, 1);
-		var i;
+	class SpriteAnimation {
+		constructor(pInst) {
+			this.p = pInst;
+			let frameArguments = Array.prototype.slice.call(arguments, 1);
 
-		var CENTER = p5.prototype.CENTER;
+			/**
+			 * Array of frames (p5.Image)
+			 *
+			 * @property images
+			 * @type {Array}
+			 */
+			this.images = [];
 
-		/**
-		 * Array of frames (p5.Image)
-		 *
-		 * @property images
-		 * @type {Array}
-		 */
-		this.images = [];
+			this.frame = 0;
+			this.cycles = 0;
+			this.targetFrame = -1;
 
-		var frame = 0;
-		var cycles = 0;
-		var targetFrame = -1;
+			this.offX = 0;
+			this.offY = 0;
 
-		this.offX = 0;
-		this.offY = 0;
+			/**
+			 * Delay between frames in number of draw cycles.
+			 * If set to 4 the framerate of the animation would be the
+			 * sketch framerate divided by 4 (60fps = 15fps)
+			 *
+			 * @property frameDelay
+			 * @type {Number}
+			 * @default 4
+			 */
+			this.frameDelay = 4;
 
-		/**
-		 * Delay between frames in number of draw cycles.
-		 * If set to 4 the framerate of the animation would be the
-		 * sketch framerate divided by 4 (60fps = 15fps)
-		 *
-		 * @property frameDelay
-		 * @type {Number}
-		 * @default 4
-		 */
-		this.frameDelay = 4;
+			/**
+			 * True if the animation is currently playing.
+			 *
+			 * @property playing
+			 * @type {Boolean}
+			 * @default true
+			 */
+			this.playing = true;
 
-		/**
-		 * True if the animation is currently playing.
-		 *
-		 * @property playing
-		 * @type {Boolean}
-		 * @default true
-		 */
-		this.playing = true;
+			/**
+			 * Animation visibility.
+			 *
+			 * @property visible
+			 * @type {Boolean}
+			 * @default true
+			 */
+			this.visible = true;
 
-		/**
-		 * Animation visibility.
-		 *
-		 * @property visible
-		 * @type {Boolean}
-		 * @default true
-		 */
-		this.visible = true;
+			/**
+			 * If set to false the animation will stop after reaching the last frame
+			 *
+			 * @property looping
+			 * @type {Boolean}
+			 * @default true
+			 */
+			this.looping = true;
 
-		/**
-		 * If set to false the animation will stop after reaching the last frame
-		 *
-		 * @property looping
-		 * @type {Boolean}
-		 * @default true
-		 */
-		this.looping = true;
+			/**
+			 * True if frame changed during the last draw cycle
+			 *
+			 * @property frameChanged
+			 * @type {Boolean}
+			 */
+			this.frameChanged = false;
 
-		/**
-		 * True if frame changed during the last draw cycle
-		 *
-		 * @property frameChanged
-		 * @type {Boolean}
-		 */
-		this.frameChanged = false;
+			//is the collider defined manually or defined
+			//by the current frame size
+			this.imageCollider = false;
 
-		//is the collider defined manually or defined
-		//by the current frame size
-		this.imageCollider = false;
+			//sequence mode
+			if (
+				frameArguments.length === 2 &&
+				typeof frameArguments[0] === 'string' &&
+				typeof frameArguments[1] === 'string'
+			) {
+				var from = frameArguments[0];
+				var to = frameArguments[1];
 
-		//sequence mode
-		if (frameArguments.length === 2 && typeof frameArguments[0] === 'string' && typeof frameArguments[1] === 'string') {
-			var from = frameArguments[0];
-			var to = frameArguments[1];
+				//print("sequence mode "+from+" -> "+to);
 
-			//print("sequence mode "+from+" -> "+to);
-
-			//make sure the extensions are fine
-			var ext1 = from.substring(from.length - 4, from.length);
-			if (ext1 !== '.png') {
-				pInst.print('SpriteAnimation error: you need to use .png files (filename ' + from + ')');
-				from = -1;
-			}
-
-			var ext2 = to.substring(to.length - 4, to.length);
-			if (ext2 !== '.png') {
-				pInst.print('SpriteAnimation error: you need to use .png files (filename ' + to + ')');
-				to = -1;
-			}
-
-			//extensions are fine
-			if (from !== -1 && to !== -1) {
-				var digits1 = 0;
-				var digits2 = 0;
-
-				//skip extension work backwards to find the numbers
-				for (i = from.length - 5; i >= 0; i--) {
-					if (from.charAt(i) >= '0' && from.charAt(i) <= '9') digits1++;
-					else break;
+				//make sure the extensions are fine
+				var ext1 = from.substring(from.length - 4, from.length);
+				if (ext1 !== '.png') {
+					this.p.print('SpriteAnimation error: you need to use .png files (filename ' + from + ')');
+					from = -1;
 				}
 
-				for (i = to.length - 5; i >= 0; i--) {
-					if (to.charAt(i) >= '0' && to.charAt(i) <= '9') digits2++;
-					else break;
+				var ext2 = to.substring(to.length - 4, to.length);
+				if (ext2 !== '.png') {
+					this.p.print('SpriteAnimation error: you need to use .png files (filename ' + to + ')');
+					to = -1;
 				}
 
-				var prefix1 = from.substring(0, from.length - (4 + digits1));
-				var prefix2 = to.substring(0, to.length - (4 + digits2));
+				//extensions are fine
+				if (from !== -1 && to !== -1) {
+					var digits1 = 0;
+					var digits2 = 0;
 
-				// Our numbers likely have leading zeroes, which means that some
-				// browsers (e.g., PhantomJS) will interpret them as base 8 (octal)
-				// instead of decimal. To fix this, we'll explicity tell parseInt to
-				// use a base of 10 (decimal). For more details on this issue, see
-				// http://stackoverflow.com/a/8763427/2422398.
-				var number1 = parseInt(from.substring(from.length - (4 + digits1), from.length - 4), 10);
-				var number2 = parseInt(to.substring(to.length - (4 + digits2), to.length - 4), 10);
+					//skip extension work backwards to find the numbers
+					for (let i = from.length - 5; i >= 0; i--) {
+						if (from.charAt(i) >= '0' && from.charAt(i) <= '9') digits1++;
+						else break;
+					}
 
-				//swap if inverted
-				if (number2 < number1) {
-					var t = number2;
-					number2 = number1;
-					number1 = t;
-				}
+					for (let i = to.length - 5; i >= 0; i--) {
+						if (to.charAt(i) >= '0' && to.charAt(i) <= '9') digits2++;
+						else break;
+					}
 
-				//two different frames
-				if (prefix1 !== prefix2) {
-					//print("2 separate images");
-					this.images.push(pInst.loadImage(from));
-					this.images.push(pInst.loadImage(to));
-				}
-				//same digits: case img0001, img0002
-				else {
-					var fileName;
-					if (digits1 === digits2) {
-						//load all images
-						for (i = number1; i <= number2; i++) {
-							// Use nf() to number format 'i' into four digits
-							fileName = prefix1 + pInst.nf(i, digits1) + '.png';
-							this.images.push(pInst.loadImage(fileName));
-						}
-					} //case: case img1, img2
+					var prefix1 = from.substring(0, from.length - (4 + digits1));
+					var prefix2 = to.substring(0, to.length - (4 + digits2));
+
+					// Our numbers likely have leading zeroes, which means that some
+					// browsers (e.g., PhantomJS) will interpret them as base 8 (octal)
+					// instead of decimal. To fix this, we'll explicity tell parseInt to
+					// use a base of 10 (decimal). For more details on this issue, see
+					// http://stackoverflow.com/a/8763427/2422398.
+					var number1 = parseInt(from.substring(from.length - (4 + digits1), from.length - 4), 10);
+					var number2 = parseInt(to.substring(to.length - (4 + digits2), to.length - 4), 10);
+
+					//swap if inverted
+					if (number2 < number1) {
+						var t = number2;
+						number2 = number1;
+						number1 = t;
+					}
+
+					//two different frames
+					if (prefix1 !== prefix2) {
+						//print("2 separate images");
+						this.images.push(this.p.loadImage(from));
+						this.images.push(this.p.loadImage(to));
+					}
+					//same digits: case img0001, img0002
 					else {
-						//print("from "+prefix1+" "+number1 +" to "+number2);
-						for (i = number1; i <= number2; i++) {
-							// Use nf() to number format 'i' into four digits
-							fileName = prefix1 + i + '.png';
-							this.images.push(pInst.loadImage(fileName));
+						var fileName;
+						if (digits1 === digits2) {
+							//load all images
+							for (leti = number1; i <= number2; i++) {
+								// Use nf() to number format 'i' into four digits
+								fileName = prefix1 + this.p.nf(i, digits1) + '.png';
+								this.images.push(this.p.loadImage(fileName));
+							}
+						} //case: case img1, img2
+						else {
+							//print("from "+prefix1+" "+number1 +" to "+number2);
+							for (let i = number1; i <= number2; i++) {
+								// Use nf() to number format 'i' into four digits
+								fileName = prefix1 + i + '.png';
+								this.images.push(this.p.loadImage(fileName));
+							}
 						}
 					}
+				} //end no ext error
+			} //end sequence mode
+			// Sprite sheet mode
+			else if (frameArguments.length === 1 && frameArguments[0] instanceof SpriteSheet) {
+				this.spriteSheet = frameArguments[0];
+				this.images = this.spriteSheet.frames;
+			} else if (frameArguments.length !== 0) {
+				//arbitrary list of images
+				//print("Animation arbitrary mode");
+				for (let i = 0; i < frameArguments.length; i++) {
+					//print("loading "+fileNames[i]);
+					if (frameArguments[i] instanceof p5.Image) this.images.push(frameArguments[i]);
+					else this.images.push(this.p.loadImage(frameArguments[i]));
 				}
-			} //end no ext error
-		} //end sequence mode
-		// Sprite sheet mode
-		else if (frameArguments.length === 1 && frameArguments[0] instanceof SpriteSheet) {
-			this.spriteSheet = frameArguments[0];
-			this.images = this.spriteSheet.frames;
-		} else if (frameArguments.length !== 0) {
-			//arbitrary list of images
-			//print("Animation arbitrary mode");
-			for (i = 0; i < frameArguments.length; i++) {
-				//print("loading "+fileNames[i]);
-				if (frameArguments[i] instanceof p5.Image) this.images.push(frameArguments[i]);
-				else this.images.push(pInst.loadImage(frameArguments[i]));
 			}
 		}
 
@@ -3267,8 +3273,8 @@ deltaTime = ((now - then) / 1000)/INTERVAL_60; // seconds since last frame
 		 * @method clone
 		 * @return {SpriteAnimation} A clone of the current animation
 		 */
-		this.clone = function () {
-			var myClone = new SpriteAnimation(pInst); //empty
+		clone() {
+			var myClone = new SpriteAnimation(this.p); //empty
 			myClone.images = [];
 
 			if (this.spriteSheet) {
@@ -3283,7 +3289,7 @@ deltaTime = ((now - then) / 1000)/INTERVAL_60; // seconds since last frame
 			myClone.looping = this.looping;
 
 			return myClone;
-		};
+		}
 
 		/**
 		 * Draws the animation at coordinate x and y.
@@ -3294,7 +3300,7 @@ deltaTime = ((now - then) / 1000)/INTERVAL_60; // seconds since last frame
 		 * @param {Number} y y coordinate
 		 * @param {Number} [r=0] rotation
 		 */
-		this.draw = function (x, y, r) {
+		draw(x, y, r) {
 			this.xpos = x;
 			this.ypos = y;
 			this.rotation = r || 0;
@@ -3305,21 +3311,21 @@ deltaTime = ((now - then) / 1000)/INTERVAL_60; // seconds since last frame
 				if (!this.isSpriteAnimation) this.update();
 
 				//this.currentImageMode = g.imageMode;
-				pInst.push();
-				pInst.imageMode(CENTER);
+				this.p.push();
+				this.p.imageMode(p5.prototype.CENTER);
 
-				pInst.translate(this.xpos, this.ypos);
-				if (pInst._angleMode === pInst.RADIANS) {
-					pInst.rotate(radians(this.rotation));
+				this.p.translate(this.xpos, this.ypos);
+				if (this.p._angleMode === this.p.RADIANS) {
+					this.p.rotate(radians(this.rotation));
 				} else {
-					pInst.rotate(this.rotation);
+					this.p.rotate(this.rotation);
 				}
 
-				if (this.images[frame] !== undefined) {
+				if (this.images[this.frame] !== undefined) {
 					if (this.spriteSheet) {
-						var frame_info = this.images[frame].frame;
+						var frame_info = this.images[this.frame].frame;
 
-						pInst.image(
+						this.p.image(
 							this.spriteSheet.image,
 							this.offX,
 							this.offY,
@@ -3331,84 +3337,87 @@ deltaTime = ((now - then) / 1000)/INTERVAL_60; // seconds since last frame
 							frame_info.height
 						);
 					} else {
-						pInst.image(this.images[frame], this.offX, this.offY);
+						this.p.image(this.images[this.frame], this.offX, this.offY);
 					}
 				} else {
-					pInst.print('Warning undefined frame ' + frame);
+					this.p.print('Warning undefined frame ' + this.frame);
 					//this.isActive = false;
 				}
 
-				pInst.pop();
+				this.p.pop();
 			}
-		};
+		}
 
 		//called by draw
-		this.update = function () {
-			cycles++;
-			var previousFrame = frame;
+		update() {
+			this.cycles++;
+			var previousFrame = this.frame;
 			this.frameChanged = false;
 
 			//go to frame
 			if (this.images.length === 1) {
 				this.playing = false;
-				frame = 0;
+				this.frame = 0;
 			}
 
-			if (this.playing && cycles % this.frameDelay === 0) {
+			if (this.playing && this.cycles % this.frameDelay === 0) {
 				//going to target frame up
-				if (targetFrame > frame && targetFrame !== -1) {
-					frame++;
+				if (this.targetFrame > this.frame && this.targetFrame !== -1) {
+					this.frame++;
 				}
 				//going to taget frame down
-				else if (targetFrame < frame && targetFrame !== -1) {
-					frame--;
-				} else if (targetFrame === frame && targetFrame !== -1) {
+				else if (this.targetFrame < this.frame && this.targetFrame !== -1) {
+					this.frame--;
+				} else if (this.targetFrame === this.frame && this.targetFrame !== -1) {
 					this.playing = false;
 				} else if (this.looping) {
 					//advance frame
 					//if next frame is too high
-					if (frame >= this.images.length - 1) frame = 0;
-					else frame++;
+					if (this.frame >= this.images.length - 1) this.frame = 0;
+					else this.frame++;
 				} else {
 					//if next frame is too high
-					if (frame < this.images.length - 1) frame++;
+					if (this.frame < this.images.length - 1) this.frame++;
 				}
 			}
-			if (this.onComplete && ((targetFrame == -1 && frame == this.images.length - 1) || frame == targetFrame)) {
-				if (this.looping) targetFrame = -1;
+			if (
+				this.onComplete &&
+				((this.targetFrame == -1 && this.frame == this.images.length - 1) || this.frame == this.targetFrame)
+			) {
+				if (this.looping) this.targetFrame = -1;
 				this.onComplete(); //fire when on last frame
 			}
 
-			if (previousFrame !== frame) this.frameChanged = true;
-		}; //end update
+			if (previousFrame !== this.frame) this.frameChanged = true;
+		} //end update
 
 		/**
 		 * Plays the animation.
 		 *
 		 * @method play
 		 */
-		this.play = function () {
+		play() {
 			this.playing = true;
-			targetFrame = -1;
-		};
+			this.targetFrame = -1;
+		}
 
 		/**
 		 * Stops the animation.
 		 *
 		 * @method stop
 		 */
-		this.stop = function () {
+		stop() {
 			this.playing = false;
-		};
+		}
 
 		/**
 		 * Rewinds the animation to the first frame.
 		 *
 		 * @method rewind
 		 */
-		this.rewind = function () {
-			frame = 0;
-		};
+		rewind() {
+			this.frame = 0;
+		}
 
 		/**
 		 * fire when animation ends
@@ -3416,9 +3425,9 @@ deltaTime = ((now - then) / 1000)/INTERVAL_60; // seconds since last frame
 		 * @method onComplete
 		 * @return {SpriteAnimation}
 		 */
-		this.onComplete = function () {
+		onComplete() {
 			return undefined;
-		};
+		}
 
 		/**
 		 * Changes the current frame.
@@ -3426,39 +3435,39 @@ deltaTime = ((now - then) / 1000)/INTERVAL_60; // seconds since last frame
 		 * @method changeFrame
 		 * @param {Number} frame Frame number (starts from 0).
 		 */
-		this.changeFrame = function (f) {
-			if (f < this.images.length) frame = f;
-			else frame = this.images.length - 1;
+		changeFrame(f) {
+			if (f < this.images.length) this.frame = f;
+			else this.frame = this.images.length - 1;
 
-			targetFrame = -1;
+			this.targetFrame = -1;
 			//this.playing = false;
-		};
+		}
 
 		/**
 		 * Goes to the next frame and stops.
 		 *
 		 * @method nextFrame
 		 */
-		this.nextFrame = function () {
-			if (frame < this.images.length - 1) frame = frame + 1;
-			else if (this.looping) frame = 0;
+		nextFrame() {
+			if (this.frame < this.images.length - 1) this.frame = this.frame + 1;
+			else if (this.looping) this.frame = 0;
 
-			targetFrame = -1;
+			this.targetFrame = -1;
 			this.playing = false;
-		};
+		}
 
 		/**
 		 * Goes to the previous frame and stops.
 		 *
 		 * @method previousFrame
 		 */
-		this.previousFrame = function () {
-			if (frame > 0) frame = frame - 1;
-			else if (this.looping) frame = this.images.length - 1;
+		previousFrame() {
+			if (this.frame > 0) this.frame = this.frame - 1;
+			else if (this.looping) this.frame = this.images.length - 1;
 
-			targetFrame = -1;
+			this.targetFrame = -1;
 			this.playing = false;
-		};
+		}
 
 		/**
 		 * Plays the animation forward or backward toward a target frame.
@@ -3466,19 +3475,19 @@ deltaTime = ((now - then) / 1000)/INTERVAL_60; // seconds since last frame
 		 * @method goToFrame
 		 * @param {Number} toFrame Frame number destination (starts from 0)
 		 */
-		this.goToFrame = function (toFrame) {
+		goToFrame(toFrame) {
 			if (toFrame < 0 || toFrame >= this.images.length) {
 				return;
 			}
 
 			// targetFrame gets used by the update() method to decide what frame to
 			// select next.  When it's not being used it gets set to -1.
-			targetFrame = toFrame;
+			this.targetFrame = toFrame;
 
-			if (targetFrame !== frame) {
+			if (this.targetFrame !== this.frame) {
 				this.playing = true;
 			}
-		};
+		}
 
 		/**
 		 * Returns the current frame number.
@@ -3486,9 +3495,9 @@ deltaTime = ((now - then) / 1000)/INTERVAL_60; // seconds since last frame
 		 * @method getFrame
 		 * @return {Number} Current frame (starts from 0)
 		 */
-		this.getFrame = function () {
-			return frame;
-		};
+		getFrame() {
+			return this.frame;
+		}
 
 		/**
 		 * Returns the last frame number.
@@ -3496,9 +3505,9 @@ deltaTime = ((now - then) / 1000)/INTERVAL_60; // seconds since last frame
 		 * @method getLastFrame
 		 * @return {Number} Last frame number (starts from 0)
 		 */
-		this.getLastFrame = function () {
+		getLastFrame() {
 			return this.images.length - 1;
-		};
+		}
 
 		/**
 		 * Returns the current frame image as p5.Image.
@@ -3506,9 +3515,9 @@ deltaTime = ((now - then) / 1000)/INTERVAL_60; // seconds since last frame
 		 * @method getFrameImage
 		 * @return {p5.Image} Current frame image
 		 */
-		this.getFrameImage = function () {
-			return this.images[frame];
-		};
+		getFrameImage() {
+			return this.images[this.frame];
+		}
 
 		/**
 		 * Returns the frame image at the specified frame number.
@@ -3517,9 +3526,9 @@ deltaTime = ((now - then) / 1000)/INTERVAL_60; // seconds since last frame
 		 * @param {Number} frame Frame number
 		 * @return {p5.Image} Frame image
 		 */
-		this.getImageAt = function (f) {
+		getImageAt(f) {
 			return this.images[f];
-		};
+		}
 
 		/**
 		 * Returns the current frame width in pixels.
@@ -3528,16 +3537,16 @@ deltaTime = ((now - then) / 1000)/INTERVAL_60; // seconds since last frame
 		 * @method getWidth
 		 * @return {Number} Frame width
 		 */
-		this.getWidth = function () {
-			if (this.images[frame] instanceof p5.Image) {
-				return this.images[frame].width;
-			} else if (this.images[frame]) {
+		getWidth() {
+			if (this.images[this.frame] instanceof p5.Image) {
+				return this.images[this.frame].width;
+			} else if (this.images[this.frame]) {
 				// Special case: Animation-from-spritesheet treats its images array differently.
-				return this.images[frame].frame.width;
+				return this.images[this.frame].frame.width;
 			} else {
 				return 1;
 			}
-		};
+		}
 
 		/**
 		 * Returns the current frame height in pixels.
@@ -3546,16 +3555,16 @@ deltaTime = ((now - then) / 1000)/INTERVAL_60; // seconds since last frame
 		 * @method getHeight
 		 * @return {Number} Frame height
 		 */
-		this.getHeight = function () {
-			if (this.images[frame] instanceof p5.Image) {
-				return this.images[frame].height;
-			} else if (this.images[frame]) {
+		getHeight() {
+			if (this.images[this.frame] instanceof p5.Image) {
+				return this.images[this.frame].height;
+			} else if (this.images[this.frame]) {
 				// Special case: Animation-from-spritesheet treats its images array differently.
-				return this.images[frame].frame.height;
+				return this.images[this.frame].frame.height;
 			} else {
 				return 1;
 			}
-		};
+		}
 	}
 
 	defineLazyP5Property('SpriteAnimation', boundConstructorFactory(SpriteAnimation));
@@ -3586,21 +3595,51 @@ deltaTime = ((now - then) / 1000)/INTERVAL_60; // seconds since last frame
 	 * @constructor
 	 * @param image String image path or p5.Image object
 	 */
-	function SpriteSheet(pInst) {
-		var spriteSheetArgs = Array.prototype.slice.call(arguments, 1);
+	class SpriteSheet {
+		constructor(pInst) {
+			this.p = pInst;
+			var spriteSheetArgs = Array.prototype.slice.call(arguments, 1);
 
-		this.image = null;
-		this.frames = [];
-		this.frame_width = 0;
-		this.frame_height = 0;
-		this.num_frames = 0;
+			this.image = null;
+			this.frames = [];
+			this.frame_width = 0;
+			this.frame_height = 0;
+			this.num_frames = 0;
+
+			if (spriteSheetArgs.length === 2 && Array.isArray(spriteSheetArgs[1])) {
+				this.frames = spriteSheetArgs[1];
+				this.num_frames = this.frames.length;
+			} else if (
+				spriteSheetArgs.length === 4 &&
+				typeof spriteSheetArgs[1] === 'number' &&
+				typeof spriteSheetArgs[2] === 'number' &&
+				typeof spriteSheetArgs[3] === 'number'
+			) {
+				this.frame_width = spriteSheetArgs[1];
+				this.frame_height = spriteSheetArgs[2];
+				this.num_frames = spriteSheetArgs[3];
+			}
+
+			if (spriteSheetArgs[0] instanceof p5.Image) {
+				this.image = spriteSheetArgs[0];
+				if (spriteSheetArgs.length === 4) {
+					this._generateSheetFrames();
+				}
+			} else {
+				if (spriteSheetArgs.length === 2) {
+					this.image = this.p.loadImage(spriteSheetArgs[0]);
+				} else if (spriteSheetArgs.length === 4) {
+					this.image = this.p.loadImage(spriteSheetArgs[0], this._generateSheetFrames.bind(this));
+				}
+			}
+		}
 
 		/**
 		 * Generate the frames data for this sprite sheet baesd on user params
 		 * @private
 		 * @method _generateSheetFrames
 		 */
-		this._generateSheetFrames = function () {
+		_generateSheetFrames() {
 			var sX = 0,
 				sY = 0;
 			for (var i = 0; i < this.num_frames; i++) {
@@ -3622,33 +3661,6 @@ deltaTime = ((now - then) / 1000)/INTERVAL_60; // seconds since last frame
 					}
 				}
 			}
-		};
-
-		if (spriteSheetArgs.length === 2 && Array.isArray(spriteSheetArgs[1])) {
-			this.frames = spriteSheetArgs[1];
-			this.num_frames = this.frames.length;
-		} else if (
-			spriteSheetArgs.length === 4 &&
-			typeof spriteSheetArgs[1] === 'number' &&
-			typeof spriteSheetArgs[2] === 'number' &&
-			typeof spriteSheetArgs[3] === 'number'
-		) {
-			this.frame_width = spriteSheetArgs[1];
-			this.frame_height = spriteSheetArgs[2];
-			this.num_frames = spriteSheetArgs[3];
-		}
-
-		if (spriteSheetArgs[0] instanceof p5.Image) {
-			this.image = spriteSheetArgs[0];
-			if (spriteSheetArgs.length === 4) {
-				this._generateSheetFrames();
-			}
-		} else {
-			if (spriteSheetArgs.length === 2) {
-				this.image = pInst.loadImage(spriteSheetArgs[0]);
-			} else if (spriteSheetArgs.length === 4) {
-				this.image = pInst.loadImage(spriteSheetArgs[0], this._generateSheetFrames.bind(this));
-			}
 		}
 
 		/**
@@ -3660,7 +3672,7 @@ deltaTime = ((now - then) / 1000)/INTERVAL_60; // seconds since last frame
 		 * @param [height]  optional height to draw the frame
 		 * @method drawFrame
 		 */
-		this.drawFrame = function (frame_name, x, y, width, height) {
+		drawFrame(frame_name, x, y, width, height) {
 			var frameToDraw;
 			if (typeof frame_name === 'number') {
 				frameToDraw = this.frames[frame_name].frame;
@@ -3675,7 +3687,7 @@ deltaTime = ((now - then) / 1000)/INTERVAL_60; // seconds since last frame
 			var dWidth = width || frameToDraw.width;
 			var dHeight = height || frameToDraw.height;
 
-			pInst.image(
+			this.p.image(
 				this.image,
 				x,
 				y,
@@ -3686,7 +3698,7 @@ deltaTime = ((now - then) / 1000)/INTERVAL_60; // seconds since last frame
 				frameToDraw.width,
 				frameToDraw.height
 			);
-		};
+		}
 
 		/**
 		 * Objects are passed by reference so to have different sprites
@@ -3695,8 +3707,8 @@ deltaTime = ((now - then) / 1000)/INTERVAL_60; // seconds since last frame
 		 * @method clone
 		 * @return {SpriteSheet} A clone of the current SpriteSheet
 		 */
-		this.clone = function () {
-			var myClone = new SpriteSheet(pInst); //empty
+		clone() {
+			var myClone = new SpriteSheet(this.p); //empty
 
 			// Deep clone the frames by value not reference
 			for (var i = 0; i < this.frames.length; i++) {
@@ -3720,7 +3732,7 @@ deltaTime = ((now - then) / 1000)/INTERVAL_60; // seconds since last frame
 			myClone.num_frames = this.num_frames;
 
 			return myClone;
-		};
+		}
 	}
 
 	defineLazyP5Property('SpriteSheet', boundConstructorFactory(SpriteSheet));
@@ -3741,302 +3753,304 @@ deltaTime = ((now - then) / 1000)/INTERVAL_60; // seconds since last frame
 	 * Copyright © 2012 Timo Hausmann
 	 */
 
-	function Quadtree(bounds, max_objects, max_levels, level) {
-		this.active = true;
-		this.max_objects = max_objects || 10;
-		this.max_levels = max_levels || 4;
+	class Quadtree {
+		constructor(bounds, max_objects, max_levels, level) {
+			this.active = true;
+			this.max_objects = max_objects || 10;
+			this.max_levels = max_levels || 4;
 
-		this.level = level || 0;
-		this.bounds = bounds;
+			this.level = level || 0;
+			this.bounds = bounds;
 
-		this.objects = [];
-		this.object_refs = [];
-		this.nodes = [];
-	}
-
-	Quadtree.prototype.updateBounds = function () {
-		//find maximum area
-		var objects = this.getAll();
-		var x = 10000;
-		var y = 10000;
-		var w = -10000;
-		var h = -10000;
-
-		for (var i = 0; i < objects.length; i++) {
-			if (objects[i].position.x < x) x = objects[i].position.x;
-			if (objects[i].position.y < y) y = objects[i].position.y;
-			if (objects[i].position.x > w) w = objects[i].position.x;
-			if (objects[i].position.y > h) h = objects[i].position.y;
+			this.objects = [];
+			this.object_refs = [];
+			this.nodes = [];
 		}
 
-		this.bounds = {
-			x: x,
-			y: y,
-			width: w,
-			height: h
-		};
-		//print(this.bounds);
-	};
+		updateBounds() {
+			//find maximum area
+			var objects = this.getAll();
+			var x = 10000;
+			var y = 10000;
+			var w = -10000;
+			var h = -10000;
 
-	/*
-	 * Split the node into 4 subnodes
-	 */
-	Quadtree.prototype.split = function () {
-		var nextLevel = this.level + 1,
-			subWidth = Math.round(this.bounds.width / 2),
-			subHeight = Math.round(this.bounds.height / 2),
-			x = Math.round(this.bounds.x),
-			y = Math.round(this.bounds.y);
-
-		//top right node
-		this.nodes[0] = new Quadtree(
-			{
-				x: x + subWidth,
-				y: y,
-				width: subWidth,
-				height: subHeight
-			},
-			this.max_objects,
-			this.max_levels,
-			nextLevel
-		);
-
-		//top left node
-		this.nodes[1] = new Quadtree(
-			{
-				x: x,
-				y: y,
-				width: subWidth,
-				height: subHeight
-			},
-			this.max_objects,
-			this.max_levels,
-			nextLevel
-		);
-
-		//bottom left node
-		this.nodes[2] = new Quadtree(
-			{
-				x: x,
-				y: y + subHeight,
-				width: subWidth,
-				height: subHeight
-			},
-			this.max_objects,
-			this.max_levels,
-			nextLevel
-		);
-
-		//bottom right node
-		this.nodes[3] = new Quadtree(
-			{
-				x: x + subWidth,
-				y: y + subHeight,
-				width: subWidth,
-				height: subHeight
-			},
-			this.max_objects,
-			this.max_levels,
-			nextLevel
-		);
-	};
-
-	/*
-	 * Determine the quadtrant for an area in this node
-	 */
-	Quadtree.prototype.getIndex = function (pRect) {
-		if (!pRect.collider) return -1;
-		else {
-			var index = -1,
-				verticalMidpoint = this.bounds.x + this.bounds.width / 2,
-				horizontalMidpoint = this.bounds.y + this.bounds.height / 2,
-				//pRect can completely fit within the top quadrants
-				topQuadrant =
-					pRect.collider.top() < horizontalMidpoint &&
-					pRect.collider.top() + pRect.collider.size().y < horizontalMidpoint,
-				//pRect can completely fit within the bottom quadrants
-				bottomQuadrant = pRect.collider.top() > horizontalMidpoint;
-
-			//pRect can completely fit within the left quadrants
-			if (
-				pRect.collider.left() < verticalMidpoint &&
-				pRect.collider.left() + pRect.collider.size().x < verticalMidpoint
-			) {
-				if (topQuadrant) {
-					index = 1;
-				} else if (bottomQuadrant) {
-					index = 2;
-				}
-
-				//pRect can completely fit within the right quadrants
-			} else if (pRect.collider.left() > verticalMidpoint) {
-				if (topQuadrant) {
-					index = 0;
-				} else if (bottomQuadrant) {
-					index = 3;
-				}
+			for (var i = 0; i < objects.length; i++) {
+				if (objects[i].position.x < x) x = objects[i].position.x;
+				if (objects[i].position.y < y) y = objects[i].position.y;
+				if (objects[i].position.x > w) w = objects[i].position.x;
+				if (objects[i].position.y > h) h = objects[i].position.y;
 			}
 
-			return index;
+			this.bounds = {
+				x: x,
+				y: y,
+				width: w,
+				height: h
+			};
+			//print(this.bounds);
 		}
-	};
 
-	/*
-	 * Insert an object into the node. If the node
-	 * exceeds the capacity, it will split and add all
-	 * objects to their corresponding subnodes.
-	 */
-	Quadtree.prototype.insert = function (obj) {
-		//avoid double insertion
-		if (this.objects.indexOf(obj) === -1) {
-			var i = 0,
-				index;
+		/*
+		 * Split the node into 4 subnodes
+		 */
+		split() {
+			var nextLevel = this.level + 1,
+				subWidth = Math.round(this.bounds.width / 2),
+				subHeight = Math.round(this.bounds.height / 2),
+				x = Math.round(this.bounds.x),
+				y = Math.round(this.bounds.y);
 
-			//if we have subnodes ...
-			if (typeof this.nodes[0] !== 'undefined') {
-				index = this.getIndex(obj);
+			//top right node
+			this.nodes[0] = new Quadtree(
+				{
+					x: x + subWidth,
+					y: y,
+					width: subWidth,
+					height: subHeight
+				},
+				this.max_objects,
+				this.max_levels,
+				nextLevel
+			);
 
-				if (index !== -1) {
-					this.nodes[index].insert(obj);
-					return;
+			//top left node
+			this.nodes[1] = new Quadtree(
+				{
+					x: x,
+					y: y,
+					width: subWidth,
+					height: subHeight
+				},
+				this.max_objects,
+				this.max_levels,
+				nextLevel
+			);
+
+			//bottom left node
+			this.nodes[2] = new Quadtree(
+				{
+					x: x,
+					y: y + subHeight,
+					width: subWidth,
+					height: subHeight
+				},
+				this.max_objects,
+				this.max_levels,
+				nextLevel
+			);
+
+			//bottom right node
+			this.nodes[3] = new Quadtree(
+				{
+					x: x + subWidth,
+					y: y + subHeight,
+					width: subWidth,
+					height: subHeight
+				},
+				this.max_objects,
+				this.max_levels,
+				nextLevel
+			);
+		}
+
+		/*
+		 * Determine the quadtrant for an area in this node
+		 */
+		getIndex(pRect) {
+			if (!pRect.collider) return -1;
+			else {
+				var index = -1,
+					verticalMidpoint = this.bounds.x + this.bounds.width / 2,
+					horizontalMidpoint = this.bounds.y + this.bounds.height / 2,
+					//pRect can completely fit within the top quadrants
+					topQuadrant =
+						pRect.collider.top() < horizontalMidpoint &&
+						pRect.collider.top() + pRect.collider.size().y < horizontalMidpoint,
+					//pRect can completely fit within the bottom quadrants
+					bottomQuadrant = pRect.collider.top() > horizontalMidpoint;
+
+				//pRect can completely fit within the left quadrants
+				if (
+					pRect.collider.left() < verticalMidpoint &&
+					pRect.collider.left() + pRect.collider.size().x < verticalMidpoint
+				) {
+					if (topQuadrant) {
+						index = 1;
+					} else if (bottomQuadrant) {
+						index = 2;
+					}
+
+					//pRect can completely fit within the right quadrants
+				} else if (pRect.collider.left() > verticalMidpoint) {
+					if (topQuadrant) {
+						index = 0;
+					} else if (bottomQuadrant) {
+						index = 3;
+					}
 				}
+
+				return index;
 			}
+		}
 
-			this.objects.push(obj);
+		/*
+		 * Insert an object into the node. If the node
+		 * exceeds the capacity, it will split and add all
+		 * objects to their corresponding subnodes.
+		 */
+		insert(obj) {
+			//avoid double insertion
+			if (this.objects.indexOf(obj) === -1) {
+				var i = 0,
+					index;
 
-			if (this.objects.length > this.max_objects && this.level < this.max_levels) {
-				//split if we don't already have subnodes
-				if (typeof this.nodes[0] === 'undefined') {
-					this.split();
-				}
-
-				//add all objects to there corresponding subnodes
-				while (i < this.objects.length) {
-					index = this.getIndex(this.objects[i]);
+				//if we have subnodes ...
+				if (typeof this.nodes[0] !== 'undefined') {
+					index = this.getIndex(obj);
 
 					if (index !== -1) {
-						this.nodes[index].insert(this.objects.splice(i, 1)[0]);
-					} else {
-						i = i + 1;
+						this.nodes[index].insert(obj);
+						return;
+					}
+				}
+
+				this.objects.push(obj);
+
+				if (this.objects.length > this.max_objects && this.level < this.max_levels) {
+					//split if we don't already have subnodes
+					if (typeof this.nodes[0] === 'undefined') {
+						this.split();
+					}
+
+					//add all objects to there corresponding subnodes
+					while (i < this.objects.length) {
+						index = this.getIndex(this.objects[i]);
+
+						if (index !== -1) {
+							this.nodes[index].insert(this.objects.splice(i, 1)[0]);
+						} else {
+							i = i + 1;
+						}
 					}
 				}
 			}
 		}
-	};
 
-	/*
-	 * Return all objects that could collide with a given area
-	 */
-	Quadtree.prototype.retrieve = function (pRect) {
-		var index = this.getIndex(pRect),
-			returnObjects = this.objects;
+		/*
+		 * Return all objects that could collide with a given area
+		 */
+		retrieve(pRect) {
+			var index = this.getIndex(pRect),
+				returnObjects = this.objects;
 
-		//if we have subnodes ...
-		if (typeof this.nodes[0] !== 'undefined') {
-			//if pRect fits into a subnode ..
-			if (index !== -1) {
-				returnObjects = returnObjects.concat(this.nodes[index].retrieve(pRect));
+			//if we have subnodes ...
+			if (typeof this.nodes[0] !== 'undefined') {
+				//if pRect fits into a subnode ..
+				if (index !== -1) {
+					returnObjects = returnObjects.concat(this.nodes[index].retrieve(pRect));
 
-				//if pRect does not fit into a subnode, check it against all subnodes
-			} else {
-				for (var i = 0; i < this.nodes.length; i = i + 1) {
-					returnObjects = returnObjects.concat(this.nodes[i].retrieve(pRect));
+					//if pRect does not fit into a subnode, check it against all subnodes
+				} else {
+					for (var i = 0; i < this.nodes.length; i = i + 1) {
+						returnObjects = returnObjects.concat(this.nodes[i].retrieve(pRect));
+					}
 				}
 			}
+
+			return returnObjects;
 		}
 
-		return returnObjects;
-	};
+		retrieveFromGroup(pRect, group) {
+			var results = [];
+			var candidates = this.retrieve(pRect);
 
-	Quadtree.prototype.retrieveFromGroup = function (pRect, group) {
-		var results = [];
-		var candidates = this.retrieve(pRect);
+			for (var i = 0; i < candidates.length; i++) if (group.contains(candidates[i])) results.push(candidates[i]);
 
-		for (var i = 0; i < candidates.length; i++) if (group.contains(candidates[i])) results.push(candidates[i]);
-
-		return results;
-	};
-
-	/*
-	 * Get all objects stored in the quadtree
-	 */
-	Quadtree.prototype.getAll = function () {
-		var objects = this.objects;
-
-		for (var i = 0; i < this.nodes.length; i = i + 1) {
-			objects = objects.concat(this.nodes[i].getAll());
+			return results;
 		}
 
-		return objects;
-	};
+		/*
+		 * Get all objects stored in the quadtree
+		 */
+		getAll() {
+			var objects = this.objects;
 
-	/*
-	 * Get the node in which a certain object is stored
-	 */
-	Quadtree.prototype.getObjectNode = function (obj) {
-		var index;
+			for (var i = 0; i < this.nodes.length; i = i + 1) {
+				objects = objects.concat(this.nodes[i].getAll());
+			}
 
-		//if there are no subnodes, object must be here
-		if (!this.nodes.length) {
-			return this;
-		} else {
-			index = this.getIndex(obj);
+			return objects;
+		}
 
-			//if the object does not fit into a subnode, it must be here
-			if (index === -1) {
+		/*
+		 * Get the node in which a certain object is stored
+		 */
+		getObjectNode(obj) {
+			var index;
+
+			//if there are no subnodes, object must be here
+			if (!this.nodes.length) {
 				return this;
-
-				//if it fits into a subnode, continue deeper search there
 			} else {
-				var node = this.nodes[index].getObjectNode(obj);
-				if (node) return node;
+				index = this.getIndex(obj);
+
+				//if the object does not fit into a subnode, it must be here
+				if (index === -1) {
+					return this;
+
+					//if it fits into a subnode, continue deeper search there
+				} else {
+					var node = this.nodes[index].getObjectNode(obj);
+					if (node) return node;
+				}
+			}
+
+			return false;
+		}
+
+		/*
+		 * Removes a specific object from the quadtree
+		 * Does not delete empty subnodes. See cleanup-function
+		 */
+		removeObject(obj) {
+			var node = this.getObjectNode(obj),
+				index = node.objects.indexOf(obj);
+
+			if (index === -1) return false;
+
+			node.objects.splice(index, 1);
+		}
+
+		/*
+		 * Clear the quadtree and delete all objects
+		 */
+		clear() {
+			this.objects = [];
+
+			if (!this.nodes.length) return;
+
+			for (var i = 0; i < this.nodes.length; i = i + 1) {
+				this.nodes[i].clear();
+			}
+
+			this.nodes = [];
+		}
+
+		/*
+		 * Clean up the quadtree
+		 * Like clear, but objects won't be deleted but re-inserted
+		 */
+		cleanup() {
+			var objects = this.getAll();
+
+			this.clear();
+
+			for (var i = 0; i < objects.length; i++) {
+				this.insert(objects[i]);
 			}
 		}
-
-		return false;
-	};
-
-	/*
-	 * Removes a specific object from the quadtree
-	 * Does not delete empty subnodes. See cleanup-function
-	 */
-	Quadtree.prototype.removeObject = function (obj) {
-		var node = this.getObjectNode(obj),
-			index = node.objects.indexOf(obj);
-
-		if (index === -1) return false;
-
-		node.objects.splice(index, 1);
-	};
-
-	/*
-	 * Clear the quadtree and delete all objects
-	 */
-	Quadtree.prototype.clear = function () {
-		this.objects = [];
-
-		if (!this.nodes.length) return;
-
-		for (var i = 0; i < this.nodes.length; i = i + 1) {
-			this.nodes[i].clear();
-		}
-
-		this.nodes = [];
-	};
-
-	/*
-	 * Clean up the quadtree
-	 * Like clear, but objects won't be deleted but re-inserted
-	 */
-	Quadtree.prototype.cleanup = function () {
-		var objects = this.getAll();
-
-		this.clear();
-
-		for (var i = 0; i < objects.length; i++) {
-			this.insert(objects[i]);
-		}
-	};
+	}
 
 	function updateTree() {
 		if (this.quadTree.active) {

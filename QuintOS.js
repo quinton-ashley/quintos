@@ -1072,7 +1072,7 @@ function createAni(spriteSheetImg, size, pos, frameCount, frameDelay) {
 			frame: { x: x, y: y, width: w, height: h }
 		});
 	}
-	let ani = loadAnimation(new SpriteSheet(spriteSheetImg, frames));
+	let ani = loadAnimation(loadSpriteSheet(spriteSheetImg, frames));
 	if (typeof frameDelay != 'undefined') ani.frameDelay = frameDelay;
 	return ani;
 }
