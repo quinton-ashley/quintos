@@ -798,7 +798,10 @@ QuintOS.runGame = async () => {
 
 	if (QuintOS.sys == 'calcu') return;
 
-	let title = QuintOS.level.toString().padStart(2, '0') + '_' + QuintOS.game;
+	let title = QuintOS.game;
+	if (QuintOS.level >= 0) {
+		title = QuintOS.level.toString().padStart(2, '0') + '_' + title;
+	}
 	let col = !/(c64|gameboi|arcv)/.test(QuintOS.sys) ? 2 : 0;
 	button(title, 0, col, () => {
 		if (QuintOS.gameFile) {
@@ -1123,7 +1126,7 @@ function createAni(spriteSheetImg, size, pos, frameCount, frameDelay) {
 			}
 			let group = this.groups[0];
 			if (ani) {
-				for (let i = 1; i < this.groups.length; i++) {
+				for (let i = 0; i < this.groups.length; i++) {
 					group = this.groups[i];
 					if (Object.keys(group.animations).includes(ani)) {
 						break;
@@ -1134,7 +1137,7 @@ function createAni(spriteSheetImg, size, pos, frameCount, frameDelay) {
 		}
 
 		addAni(name, atlas) {
-			this.default.addAni(name, atlas);
+			this.groups[0].addAni(name, atlas);
 		}
 
 		// deprecated

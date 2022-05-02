@@ -46,6 +46,8 @@ https://www.gamedevmarket.net/asset/platform-dirt-rock-tileset-pack-1bit-16x16-8
 https://www.gamedevmarket.net/asset/1bit-house/
 https://www.gamedevmarket.net/asset/platform-dirt-rock-tileset-pack-1bit-16x16-8x8-bonus-characters-items/
 
+Additional animations for the bitBoi character were commissioned from Pepe Jamal <contato.pepejamal@gmail.com> Huge thanks!
+
 questKid:
 
 https://www.gamedevmarket.net/asset/rpg-dungeon-crawl-tileset/
@@ -72,14 +74,31 @@ https://sha.nnoncarey.com/
 
 https://www.gamedevmarket.net/asset/retro-8-bit-sounds-9524/
 
-### Codepens
+### CodePens
 
-Calculator https://codepen.io/wiljav/pen/zYrBYKb  
-Terminal https://codepen.io/rocknrollinc/pen/MwLMZG  
-CSS Old Computer https://codepen.io/rocknrollinc/pen/MwLMZG  
-MS-DOS Defrag https://codepen.io/manz/pen/MdErww  
-MS-DOS Scandisk https://codepen.io/manz/pen/KLPEby  
-90s Web https://codepen.io/bgbraithwaite/pen/vzPrRY
+Casio FX-702P by William Jawad
+https://codepen.io/wiljav/pen/zYrBYKb
+
+Terminal by Alexander Guski
+https://codepen.io/rocknrollinc/pen/MwLMZG
+
+Old Retro TV with CSS by Manz
+https://codepen.io/manz/pen/MWoRMja
+
+ZX Spectrum by Manz
+https://codepen.io/manz/pen/eYRMgQV
+
+MS-DOS Defrag by Manz
+https://codepen.io/manz/pen/MdErww
+
+MS-DOS Scandisk by Manz
+https://codepen.io/manz/pen/KLPEby
+
+Responsive Web Design Projects - Build a Survey Form by Benjamin Braithwaite
+https://codepen.io/bgbraithwaite/pen/vzPrRY
+
+Nintendo GameBoy with vanilla CSS/Javascript by Manz
+https://codepen.io/manz/pen/yLzxgXj
 
 ### Data
 
