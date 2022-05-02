@@ -273,7 +273,7 @@ http://molleindustria.org/
 	 * @param {Sprite} sprite Sprite to be displayed
 	 */
 	p5.prototype.loadAnimation = function () {
-		return construct(this.Animation, arguments);
+		return construct(this.SpriteAnimation, arguments);
 	};
 
 	/**
@@ -290,7 +290,7 @@ http://molleindustria.org/
 	 * Displays an animation.
 	 *
 	 * @method animation
-	 * @param {Animation} anim Animation to be displayed
+	 * @param {SpriteAnimation} anim Animation to be displayed
 	 * @param {Number} x X coordinate
 	 * @param {Number} y Y coordinate
 	 *
@@ -707,507 +707,485 @@ deltaTime = ((now - then) / 1000)/INTERVAL_60; // seconds since last frame
 	// @param {Number} width Width of the placeholder rectangle and of the
 	//                       collider until an image or new collider are set
 	// @param {Number} height Height of the placeholder rectangle and of the
-	//                        collider until an image or new collider are set
-	function Sprite(pInst, _x, _y, _w, _h) {
-		var pInstBind = createPInstBinder(pInst);
+	//                        collider until an image or new collider are set createVector
+	class Sprite {
+		constructor(pInst, _x, _y, _w, _h) {
+			this.p = pInst;
 
-		var createVector = pInstBind('createVector');
-		var color = pInstBind('color');
-		var random = pInstBind('random');
-		var print = pInstBind('print');
-		var push = pInstBind('push');
-		var pop = pInstBind('pop');
-		var colorMode = pInstBind('colorMode');
-		var noStroke = pInstBind('noStroke');
-		var rectMode = pInstBind('rectMode');
-		var ellipseMode = pInstBind('ellipseMode');
-		var imageMode = pInstBind('imageMode');
-		var translate = pInstBind('translate');
-		var scale = pInstBind('scale');
-		var rotate = pInstBind('rotate');
-		var stroke = pInstBind('stroke');
-		var strokeWeight = pInstBind('strokeWeight');
-		var line = pInstBind('line');
-		var noFill = pInstBind('noFill');
-		var fill = pInstBind('fill');
-		var textAlign = pInstBind('textAlign');
-		var textSize = pInstBind('textSize');
-		var text = pInstBind('text');
-		var rect = pInstBind('rect');
-		var cos = pInstBind('cos');
-		var sin = pInstBind('sin');
-		var atan2 = pInstBind('atan2');
+			// These are p5 constants that we'd like easy access to.
+			var RGB = p5.prototype.RGB;
+			var CENTER = p5.prototype.CENTER;
+			var LEFT = p5.prototype.LEFT;
+			var BOTTOM = p5.prototype.BOTTOM;
 
-		var quadTree = pInst.quadTree;
-		var camera = pInst.camera;
+			/**
+			 * The sprite's position of the sprite as a vector (x,y).
+			 * @property position
+			 * @type {p5.Vector}
+			 */
+			this.position = this.p.createVector(_x, _y);
 
-		// These are p5 constants that we'd like easy access to.
-		var RGB = p5.prototype.RGB;
-		var CENTER = p5.prototype.CENTER;
-		var LEFT = p5.prototype.LEFT;
-		var BOTTOM = p5.prototype.BOTTOM;
+			/**
+			 * The sprite's position at the beginning of the last update as a vector (x,y).
+			 * @property previousPosition
+			 * @type {p5.Vector}
+			 */
+			this.previousPosition = this.p.createVector(_x, _y);
 
-		/**
-		 * The sprite's position of the sprite as a vector (x,y).
-		 * @property position
-		 * @type {p5.Vector}
-		 */
-		this.position = createVector(_x, _y);
+			/**
+			 *	The sprite's position at the end of the last update as a vector (x,y).
+			 *	Note: this will differ from position whenever the position is changed
+			 *	directly by assignment.
+			 */
+			this.newPosition = this.p.createVector(_x, _y);
 
-		/**
-		 * The sprite's position at the beginning of the last update as a vector (x,y).
-		 * @property previousPosition
-		 * @type {p5.Vector}
-		 */
-		this.previousPosition = createVector(_x, _y);
+			//Position displacement on the x coordinate since the last update
+			this.deltaX = 0;
+			this.deltaY = 0;
 
-		/*
-  The sprite's position at the end of the last update as a vector (x,y).
-  Note: this will differ from position whenever the position is changed
-  directly by assignment.
-  */
-		this.newPosition = createVector(_x, _y);
+			/**
+			 * The sprite's velocity as a vector (x,y)
+			 * Velocity is speed broken down to its vertical and horizontal components.
+			 *
+			 * @property velocity
+			 * @type {p5.Vector}
+			 */
+			this.velocity = this.p.createVector(0, 0);
 
-		//Position displacement on the x coordinate since the last update
-		this.deltaX = 0;
-		this.deltaY = 0;
+			/**
+			 * Set a limit to the sprite's scalar speed regardless of the direction.
+			 * The value can only be positive. If set to -1, there's no limit.
+			 *
+			 * @property maxSpeed
+			 * @type {Number}
+			 * @default -1
+			 */
+			this.maxSpeed = -1;
 
-		/**
-		 * The sprite's velocity as a vector (x,y)
-		 * Velocity is speed broken down to its vertical and horizontal components.
-		 *
-		 * @property velocity
-		 * @type {p5.Vector}
-		 */
-		this.velocity = createVector(0, 0);
+			/**
+			 * Friction factor, reduces the sprite's velocity.
+			 * The friction should be close to 0 (eg. 0.01)
+			 * 0: no friction
+			 * 1: full friction
+			 *
+			 * @property friction
+			 * @type {Number}
+			 * @default 0
+			 */
+			this.friction = 0;
 
-		/**
-		 * Set a limit to the sprite's scalar speed regardless of the direction.
-		 * The value can only be positive. If set to -1, there's no limit.
-		 *
-		 * @property maxSpeed
-		 * @type {Number}
-		 * @default -1
-		 */
-		this.maxSpeed = -1;
+			/**
+			 * The sprite's current collider.
+			 * It can either be an Axis Aligned Bounding Box (a non-rotated rectangle)
+			 * or a circular collider.
+			 * If the sprite is checked for collision, bounce, overlapping or mouse events the
+			 * collider is automatically created from the width and height
+			 * of the sprite or from the image dimension in case of animate sprites
+			 *
+			 * You can set a custom collider with Sprite.setCollider
+			 *
+			 * @property collider
+			 * @type {Object}
+			 */
+			this.collider = undefined;
 
-		/**
-		 * Friction factor, reduces the sprite's velocity.
-		 * The friction should be close to 0 (eg. 0.01)
-		 * 0: no friction
-		 * 1: full friction
-		 *
-		 * @property friction
-		 * @type {Number}
-		 * @default 0
-		 */
-		this.friction = 0;
+			//internal use
+			//"default" - no image or custom collider is specified, use the shape width / height
+			//"custom" - specified with setCollider
+			//"image" - no collider is set with setCollider and an image is added
+			this.colliderType = 'none';
 
-		/**
-		 * The sprite's current collider.
-		 * It can either be an Axis Aligned Bounding Box (a non-rotated rectangle)
-		 * or a circular collider.
-		 * If the sprite is checked for collision, bounce, overlapping or mouse events the
-		 * collider is automatically created from the width and height
-		 * of the sprite or from the image dimension in case of animate sprites
-		 *
-		 * You can set a custom collider with Sprite.setCollider
-		 *
-		 * @property collider
-		 * @type {Object}
-		 */
-		this.collider = undefined;
+			/**
+			 * Object containing information about the most recent collision/overlapping
+			 * To be typically used in combination with Sprite.overlap or Sprite.collide
+			 * functions.
+			 * The properties are touching.left, touching.right, touching.top,
+			 * touching.bottom and are either true or false depending on the side of the
+			 * collider.
+			 *
+			 * @property touching
+			 * @type {Object}
+			 */
+			this.touching = {};
+			this.touching.left = false;
+			this.touching.right = false;
+			this.touching.top = false;
+			this.touching.bottom = false;
 
-		//internal use
-		//"default" - no image or custom collider is specified, use the shape width / height
-		//"custom" - specified with setCollider
-		//"image" - no collider is set with setCollider and an image is added
-		this.colliderType = 'none';
+			/**
+			 * The mass determines the velocity transfer when sprites bounce
+			 * against each other. See Sprite.bounce
+			 * The higher the mass the least the sprite will be affected by collisions.
+			 *
+			 * @property mass
+			 * @type {Number}
+			 * @default 1
+			 */
+			this.mass = 1;
 
-		/**
-		 * Object containing information about the most recent collision/overlapping
-		 * To be typically used in combination with Sprite.overlap or Sprite.collide
-		 * functions.
-		 * The properties are touching.left, touching.right, touching.top,
-		 * touching.bottom and are either true or false depending on the side of the
-		 * collider.
-		 *
-		 * @property touching
-		 * @type {Object}
-		 */
-		this.touching = {};
-		this.touching.left = false;
-		this.touching.right = false;
-		this.touching.top = false;
-		this.touching.bottom = false;
+			/**
+			 * If set to true the sprite won't bounce or be displaced by collisions
+			 * Simulates an infinite mass or an anchored object.
+			 *
+			 * @property immovable
+			 * @type {Boolean}
+			 * @default false
+			 */
+			this.immovable = false;
 
-		/**
-		 * The mass determines the velocity transfer when sprites bounce
-		 * against each other. See Sprite.bounce
-		 * The higher the mass the least the sprite will be affected by collisions.
-		 *
-		 * @property mass
-		 * @type {Number}
-		 * @default 1
-		 */
-		this.mass = 1;
+			//Coefficient of restitution - velocity lost in the bouncing
+			//0 perfectly inelastic , 1 elastic, > 1 hyper elastic
 
-		/**
-		 * If set to true the sprite won't bounce or be displaced by collisions
-		 * Simulates an infinite mass or an anchored object.
-		 *
-		 * @property immovable
-		 * @type {Boolean}
-		 * @default false
-		 */
-		this.immovable = false;
+			/**
+			 * Coefficient of restitution. The velocity lost after bouncing.
+			 * 1: perfectly elastic, no energy is lost
+			 * 0: perfectly inelastic, no bouncing
+			 * less than 1: inelastic, this is the most common in nature
+			 * greater than 1: hyper elastic, energy is increased like in a pinball bumper
+			 *
+			 * @property restitution
+			 * @type {Number}
+			 * @default 1
+			 */
+			this.restitution = 1;
 
-		//Coefficient of restitution - velocity lost in the bouncing
-		//0 perfectly inelastic , 1 elastic, > 1 hyper elastic
-
-		/**
-		 * Coefficient of restitution. The velocity lost after bouncing.
-		 * 1: perfectly elastic, no energy is lost
-		 * 0: perfectly inelastic, no bouncing
-		 * less than 1: inelastic, this is the most common in nature
-		 * greater than 1: hyper elastic, energy is increased like in a pinball bumper
-		 *
-		 * @property restitution
-		 * @type {Number}
-		 * @default 1
-		 */
-		this.restitution = 1;
-
-		/**
-		 * Rotation in degrees of the visual element (image or animation)
-		 * Note: this is not the movement's direction, see getDirection.
-		 *
-		 * @property rotation
-		 * @type {Number}
-		 * @default 0
-		 */
-		Object.defineProperty(this, 'rotation', {
-			enumerable: true,
-			get: function () {
-				return this._rotation;
-			},
-			set: function (value) {
-				this._rotation = value;
-				if (this.rotateToDirection) {
-					this.setSpeed(this.getSpeed(), value);
+			/**
+			 * Rotation in degrees of the visual element (image or animation)
+			 * Note: this is not the movement's direction, see getDirection.
+			 *
+			 * @property rotation
+			 * @type {Number}
+			 * @default 0
+			 */
+			Object.defineProperty(this, 'rotation', {
+				enumerable: true,
+				get: function () {
+					return this._rotation;
+				},
+				set: function (value) {
+					this._rotation = value;
+					if (this.rotateToDirection) {
+						this.setSpeed(this.getSpeed(), value);
+					}
 				}
-			}
-		});
+			});
 
-		/**
-		 * Internal rotation variable (expressed in degrees).
-		 * Note: external callers access this through the rotation property above.
-		 *
-		 * @private
-		 * @property _rotation
-		 * @type {Number}
-		 * @default 0
-		 */
-		this._rotation = 0;
+			/**
+			 * Internal rotation variable (expressed in degrees).
+			 * Note: external callers access this through the rotation property above.
+			 *
+			 * @private
+			 * @property _rotation
+			 * @type {Number}
+			 * @default 0
+			 */
+			this._rotation = 0;
 
-		/**
-		 * Rotation change in degrees per frame of thevisual element (image or animation)
-		 * Note: this is not the movement's direction, see getDirection.
-		 *
-		 * @property rotationSpeed
-		 * @type {Number}
-		 * @default 0
-		 */
-		this.rotationSpeed = 0;
+			/**
+			 * Rotation change in degrees per frame of thevisual element (image or animation)
+			 * Note: this is not the movement's direction, see getDirection.
+			 *
+			 * @property rotationSpeed
+			 * @type {Number}
+			 * @default 0
+			 */
+			this.rotationSpeed = 0;
 
-		/**
-		 * Automatically lock the rotation property of the visual element
-		 * (image or animation) to the sprite's movement direction and vice versa.
-		 *
-		 * @property rotateToDirection
-		 * @type {Boolean}
-		 * @default false
-		 */
-		this.rotateToDirection = false;
+			/**
+			 * Automatically lock the rotation property of the visual element
+			 * (image or animation) to the sprite's movement direction and vice versa.
+			 *
+			 * @property rotateToDirection
+			 * @type {Boolean}
+			 * @default false
+			 */
+			this.rotateToDirection = false;
 
-		/**
-		 * Determines the rendering order within a group: a sprite with
-		 * lower depth will appear below the ones with higher depth.
-		 *
-		 * Note: drawing a group before another with drawSprites will make
-		 * its members appear below the second one, like in normal p5 canvas
-		 * drawing.
-		 *
-		 * @property depth
-		 * @type {Number}
-		 * @default One more than the greatest existing sprite depth, when calling
-		 *          createSprite().  When calling new Sprite() directly, depth will
-		 *          initialize to 0 (not recommended).
-		 */
-		this.depth = 0;
+			/**
+			 * Determines the rendering order within a group: a sprite with
+			 * lower depth will appear below the ones with higher depth.
+			 *
+			 * Note: drawing a group before another with drawSprites will make
+			 * its members appear below the second one, like in normal p5 canvas
+			 * drawing.
+			 *
+			 * @property depth
+			 * @type {Number}
+			 * @default One more than the greatest existing sprite depth, when calling
+			 *          createSprite().  When calling new Sprite() directly, depth will
+			 *          initialize to 0 (not recommended).
+			 */
+			this.depth = 0;
 
-		/**
-		 * Determines the sprite's scale.
-		 * Example: 2 will be twice the native size of the visuals,
-		 * 0.5 will be half. Scaling up may make images blurry.
-		 *
-		 * @property scale
-		 * @type {Number}
-		 * @default 1
-		 */
-		this.scale = 1;
+			/**
+			 * Determines the sprite's scale.
+			 * Example: 2 will be twice the native size of the visuals,
+			 * 0.5 will be half. Scaling up may make images blurry.
+			 *
+			 * @property scale
+			 * @type {Number}
+			 * @default 1
+			 */
+			this.scale = 1;
 
-		var dirX = 1;
-		var dirY = 1;
+			this.dirX = 1;
+			this.dirY = 1;
 
-		/**
-		 * The sprite's visibility.
-		 *
-		 * @property visible
-		 * @type {Boolean}
-		 * @default true
-		 */
-		this.visible = true;
+			/**
+			 * The sprite's visibility.
+			 *
+			 * @property visible
+			 * @type {Boolean}
+			 * @default true
+			 */
+			this.visible = true;
 
-		/**
-		 * If set to true sprite will track its mouse state.
-		 * the properties mouseIsPressed and mouseIsOver will be updated.
-		 * Note: automatically set to true if the functions
-		 * onMouseReleased or onMousePressed are set.
-		 *
-		 * @property mouseActive
-		 * @type {Boolean}
-		 * @default false
-		 */
-		this.mouseActive = false;
+			/**
+			 * If set to true sprite will track its mouse state.
+			 * the properties mouseIsPressed and mouseIsOver will be updated.
+			 * Note: automatically set to true if the functions
+			 * onMouseReleased or onMousePressed are set.
+			 *
+			 * @property mouseActive
+			 * @type {Boolean}
+			 * @default false
+			 */
+			this.mouseActive = false;
 
-		/**
-		 * True if mouse is on the sprite's collider.
-		 * Read only.
-		 *
-		 * @property mouseIsOver
-		 * @type {Boolean}
-		 */
-		this.mouseIsOver = false;
+			/**
+			 * True if mouse is on the sprite's collider.
+			 * Read only.
+			 *
+			 * @property mouseIsOver
+			 * @type {Boolean}
+			 */
+			this.mouseIsOver = false;
 
-		/**
-		 * True if mouse is pressed on the sprite's collider.
-		 * Read only.
-		 *
-		 * @property mouseIsPressed
-		 * @type {Boolean}
-		 */
-		this.mouseIsPressed = false;
+			/**
+			 * True if mouse is pressed on the sprite's collider.
+			 * Read only.
+			 *
+			 * @property mouseIsPressed
+			 * @type {Boolean}
+			 */
+			this.mouseIsPressed = false;
 
-		/*
-		 * Width of the sprite's current image.
-		 * If no images or animations are set it's the width of the
-		 * placeholder rectangle.
-		 * Used internally to make calculations and draw the sprite.
-		 *
-		 * @private
-		 * @property _internalWidth
-		 * @type {Number}
-		 * @default 100
-		 */
-		this._internalWidth = _w;
+			/*
+			 * Width of the sprite's current image.
+			 * If no images or animations are set it's the width of the
+			 * placeholder rectangle.
+			 * Used internally to make calculations and draw the sprite.
+			 *
+			 * @private
+			 * @property _internalWidth
+			 * @type {Number}
+			 * @default 100
+			 */
+			this._internalWidth = _w;
 
-		/*
-		 * Height of the sprite's current image.
-		 * If no images or animations are set it's the height of the
-		 * placeholder rectangle.
-		 * Used internally to make calculations and draw the sprite.
-		 *
-		 * @private
-		 * @property _internalHeight
-		 * @type {Number}
-		 * @default 100
-		 */
-		this._internalHeight = _h;
+			/*
+			 * Height of the sprite's current image.
+			 * If no images or animations are set it's the height of the
+			 * placeholder rectangle.
+			 * Used internally to make calculations and draw the sprite.
+			 *
+			 * @private
+			 * @property _internalHeight
+			 * @type {Number}
+			 * @default 100
+			 */
+			this._internalHeight = _h;
 
-		/*
-   * _internalWidth and _internalHeight are used for all p5.play
-   * calculations, but width and height can be extended. For example,
-   * you may want users to always get and set a scaled width:
-      Object.defineProperty(this, 'width', {
-        enumerable: true,
-        configurable: true,
-        get: function() {
-          return this._internalWidth * this.scale;
-        },
-        set: function(value) {
-          this._internalWidth = value / this.scale;
-        }
-      });
-   */
+			/*
+		* _internalWidth and _internalHeight are used for all p5.play
+		* calculations, but width and height can be extended. For example,
+		* you may want users to always get and set a scaled width:
+				Object.defineProperty(this, 'width', {
+					enumerable: true,
+					configurable: true,
+					get: function() {
+						return this._internalWidth * this.scale;
+					},
+					set: function(value) {
+						this._internalWidth = value / this.scale;
+					}
+				});
+		*/
 
-		/**
-		 * Width of the sprite's current image.
-		 * If no images or animations are set it's the width of the
-		 * placeholder rectangle.
-		 *
-		 * @property width
-		 * @type {Number}
-		 * @default 100
-		 */
-		Object.defineProperty(this, 'width', {
-			enumerable: true,
-			configurable: true,
-			get: function () {
-				return this._internalWidth;
-			},
-			set: function (value) {
-				this._internalWidth = value;
-			}
-		});
+			/**
+			 * Width of the sprite's current image.
+			 * If no images or animations are set it's the width of the
+			 * placeholder rectangle.
+			 *
+			 * @property width
+			 * @type {Number}
+			 * @default 100
+			 */
+			Object.defineProperty(this, 'width', {
+				enumerable: true,
+				configurable: true,
+				get: function () {
+					return this._internalWidth;
+				},
+				set: function (value) {
+					this._internalWidth = value;
+				}
+			});
 
-		if (_w === undefined) this.width = 100;
-		else this.width = _w;
+			if (_w === undefined) this.width = 100;
+			else this.width = _w;
 
-		/**
-		 * Height of the sprite's current image.
-		 * If no images or animations are set it's the height of the
-		 * placeholder rectangle.
-		 *
-		 * @property height
-		 * @type {Number}
-		 * @default 100
-		 */
-		Object.defineProperty(this, 'height', {
-			enumerable: true,
-			configurable: true,
-			get: function () {
-				return this._internalHeight;
-			},
-			set: function (value) {
-				this._internalHeight = value;
-			}
-		});
+			/**
+			 * Height of the sprite's current image.
+			 * If no images or animations are set it's the height of the
+			 * placeholder rectangle.
+			 *
+			 * @property height
+			 * @type {Number}
+			 * @default 100
+			 */
+			Object.defineProperty(this, 'height', {
+				enumerable: true,
+				configurable: true,
+				get: function () {
+					return this._internalHeight;
+				},
+				set: function (value) {
+					this._internalHeight = value;
+				}
+			});
 
-		if (_h === undefined) this.height = 100;
-		else this.height = _h;
+			if (_h === undefined) this.height = 100;
+			else this.height = _h;
 
-		/**
-		 * Unscaled width of the sprite
-		 * If no images or animations are set it's the width of the
-		 * placeholder rectangle.
-		 *
-		 * @property originalWidth
-		 * @type {Number}
-		 * @default 100
-		 */
-		this.originalWidth = this._internalWidth;
+			/**
+			 * Unscaled width of the sprite
+			 * If no images or animations are set it's the width of the
+			 * placeholder rectangle.
+			 *
+			 * @property originalWidth
+			 * @type {Number}
+			 * @default 100
+			 */
+			this.originalWidth = this._internalWidth;
 
-		/**
-		 * Unscaled height of the sprite
-		 * If no images or animations are set it's the height of the
-		 * placeholder rectangle.
-		 *
-		 * @property originalHeight
-		 * @type {Number}
-		 * @default 100
-		 */
-		this.originalHeight = this._internalHeight;
+			/**
+			 * Unscaled height of the sprite
+			 * If no images or animations are set it's the height of the
+			 * placeholder rectangle.
+			 *
+			 * @property originalHeight
+			 * @type {Number}
+			 * @default 100
+			 */
+			this.originalHeight = this._internalHeight;
 
-		/**
-		 * True if the sprite has been removed.
-		 *
-		 * @property removed
-		 * @type {Boolean}
-		 */
-		this.removed = false;
+			/**
+			 * True if the sprite has been removed.
+			 *
+			 * @property removed
+			 * @type {Boolean}
+			 */
+			this.removed = false;
 
-		/**
-		 * Cycles before self removal.
-		 * Set it to initiate a countdown, every draw cycle the property is
-		 * reduced by 1 unit. At 0 it will call a sprite.remove()
-		 * Disabled if set to -1.
-		 *
-		 * @property life
-		 * @type {Number}
-		 * @default -1
-		 */
-		this.life = -1;
+			/**
+			 * Cycles before self removal.
+			 * Set it to initiate a countdown, every draw cycle the property is
+			 * reduced by 1 unit. At 0 it will call a sprite.remove()
+			 * Disabled if set to -1.
+			 *
+			 * @property life
+			 * @type {Number}
+			 * @default -1
+			 */
+			this.life = -1;
 
-		/**
-		 * If set to true, draws an outline of the collider, the depth, and center.
-		 *
-		 * @property debug
-		 * @type {Boolean}
-		 * @default false
-		 */
-		this.debug = false;
+			/**
+			 * If set to true, draws an outline of the collider, the depth, and center.
+			 *
+			 * @property debug
+			 * @type {Boolean}
+			 * @default false
+			 */
+			this.debug = false;
 
-		/**
-		 * If no image or animations are set this is color of the
-		 * placeholder rectangle
-		 *
-		 * @property shapeColor
-		 * @type {color}
-		 */
-		this.shapeColor = color(random(255), random(255), random(255));
+			/**
+			 * If no image or animations are set this is color of the
+			 * placeholder rectangle
+			 *
+			 * @property shapeColor
+			 * @type {color}
+			 */
+			this.shapeColor = this.p.color(this.p.random(255), this.p.random(255), this.p.random(255));
 
-		/**
-		 * Groups the sprite belongs to, including allSprites
-		 *
-		 * @property groups
-		 * @type {Array}
-		 */
-		this.groups = [];
+			/**
+			 * Groups the sprite belongs to, including allSprites
+			 *
+			 * @property groups
+			 * @type {Array}
+			 */
+			this.groups = [];
 
-		var animations = {};
+			this.animations = {};
 
-		//The current animation's label.
-		var currentAnimation = '';
+			//The current animation's label.
+			this.currentAnimation = '';
 
-		/**
-		 * Reference to the current animation.
-		 *
-		 * @property animation
-		 * @type {Animation}
-		 */
-		this.animation = undefined;
+			/**
+			 * Reference to the current animation.
+			 *
+			 * @property animation
+			 * @type {SpriteAnimation}
+			 */
+			this.animation = undefined;
 
-		/**
-		 * Internal variable to keep track of whether this sprite is drawn while
-		 * the camera is active.
-		 * Used in Sprite.update() to know whether to use camera mouse coordinates.
-		 * @see https://github.com/molleindustria/p5.play/issues/107
-		 *
-		 * @private
-		 * @property _drawnWithCamera
-		 * @type {Boolean}
-		 * @default false
-		 */
-		this._drawnWithCamera = false;
+			/**
+			 * Internal variable to keep track of whether this sprite is drawn while
+			 * the camera is active.
+			 * Used in Sprite.update() to know whether to use camera mouse coordinates.
+			 * @see https://github.com/molleindustria/p5.play/issues/107
+			 *
+			 * @private
+			 * @property _drawnWithCamera
+			 * @type {Boolean}
+			 * @default false
+			 */
+			this._drawnWithCamera = false;
+
+			this.groups = [];
+		}
 
 		/*
 		 * @private
 		 * Keep animation properties in sync with how the animation changes.
 		 */
-		this._syncAnimationSizes = function () {
+		_syncAnimationSizes() {
 			//has an animation but the collider is still default
 			//the animation wasn't loaded. if the animation is not a 1x1 image
 			//it means it just finished loading
 			if (
 				this.colliderType === 'default' &&
-				animations[currentAnimation].getWidth() !== 1 &&
-				animations[currentAnimation].getHeight() !== 1
+				this.animations[this.currentAnimation].getWidth() !== 1 &&
+				this.animations[this.currentAnimation].getHeight() !== 1
 			) {
 				this.collider = this.getBoundingBox();
 				this.colliderType = 'image';
-				this._internalWidth = animations[currentAnimation].getWidth() * abs(this._getScaleX());
-				this._internalHeight = animations[currentAnimation].getHeight() * abs(this._getScaleY());
+				this._internalWidth = this.animations[this.currentAnimation].getWidth() * abs(this._getScaleX());
+				this._internalHeight = this.animations[this.currentAnimation].getHeight() * abs(this._getScaleY());
 				//quadTree.insert(this);
 			}
 
 			//update size and collider
-			if (animations[currentAnimation].frameChanged || this.width === undefined || this.height === undefined) {
+			if (
+				this.animations[this.currentAnimation].frameChanged ||
+				this.width === undefined ||
+				this.height === undefined
+			) {
 				//this.collider = this.getBoundingBox();
-				this._internalWidth = animations[currentAnimation].getWidth() * abs(this._getScaleX());
-				this._internalHeight = animations[currentAnimation].getHeight() * abs(this._getScaleY());
+				this._internalWidth = this.animations[this.currentAnimation].getWidth() * abs(this._getScaleX());
+				this._internalHeight = this.animations[this.currentAnimation].getHeight() * abs(this._getScaleY());
 			}
-		};
+		}
 
 		/**
 		 * Updates the sprite.
@@ -1215,13 +1193,13 @@ deltaTime = ((now - then) / 1000)/INTERVAL_60; // seconds since last frame
 		 *
 		 * @method update
 		 */
-		this.update = function () {
+		update() {
 			if (!this.removed) {
 				//if there has been a change somewhere after the last update
 				//the old position is the last position registered in the update
 				if (this.newPosition !== this.position)
-					this.previousPosition = createVector(this.newPosition.x, this.newPosition.y);
-				else this.previousPosition = createVector(this.position.x, this.position.y);
+					this.previousPosition = this.p.createVector(this.newPosition.x, this.newPosition.y);
+				else this.previousPosition = this.p.createVector(this.position.x, this.position.y);
 
 				this.velocity.x *= 1 - this.friction;
 				this.velocity.y *= 1 - this.friction;
@@ -1235,22 +1213,22 @@ deltaTime = ((now - then) / 1000)/INTERVAL_60; // seconds since last frame
 				this.position.x += this.velocity.x;
 				this.position.y += this.velocity.y;
 
-				this.newPosition = createVector(this.position.x, this.position.y);
+				this.newPosition = this.p.createVector(this.position.x, this.position.y);
 
 				this.deltaX = this.position.x - this.previousPosition.x;
 				this.deltaY = this.position.y - this.previousPosition.y;
 
 				//if there is an animation
-				if (animations[currentAnimation]) {
+				if (this.animations[this.currentAnimation]) {
 					//update it
-					animations[currentAnimation].update();
+					this.animations[this.currentAnimation].update();
 
 					this._syncAnimationSizes();
 
 					//patch for unpreloaded single image sprites
 					if (this.width == 1 && this.height == 1) {
-						this.width = animations[currentAnimation].getWidth();
-						this.height = animations[currentAnimation].getHeight();
+						this.width = this.animations[this.currentAnimation].getWidth();
+						this.height = this.animations[this.currentAnimation].getHeight();
 					}
 				}
 
@@ -1260,7 +1238,7 @@ deltaTime = ((now - then) / 1000)/INTERVAL_60; // seconds since last frame
 					if (this.collider instanceof AABB) {
 						//scale / rotate collider
 						var t;
-						if (pInst._angleMode === pInst.RADIANS) {
+						if (this.p._angleMode === this.p.RADIANS) {
 							t = radians(this.rotation);
 						} else {
 							t = this.rotation;
@@ -1268,23 +1246,25 @@ deltaTime = ((now - then) / 1000)/INTERVAL_60; // seconds since last frame
 
 						if (this.colliderType === 'custom') {
 							this.collider.extents.x =
-								this.collider.originalExtents.x * abs(this._getScaleX()) * abs(cos(t)) +
-								this.collider.originalExtents.y * abs(this._getScaleY()) * abs(sin(t));
+								this.collider.originalExtents.x * abs(this._getScaleX()) * abs(this.p.cos(t)) +
+								this.collider.originalExtents.y * abs(this._getScaleY()) * abs(this.p.sin(t));
 
 							this.collider.extents.y =
-								this.collider.originalExtents.x * abs(this._getScaleX()) * abs(sin(t)) +
-								this.collider.originalExtents.y * abs(this._getScaleY()) * abs(cos(t));
+								this.collider.originalExtents.x * abs(this._getScaleX()) * abs(this.p.sin(t)) +
+								this.collider.originalExtents.y * abs(this._getScaleY()) * abs(this.p.cos(t));
 						} else if (this.colliderType === 'default') {
 							this.collider.extents.x =
-								this._internalWidth * abs(this._getScaleX()) * abs(cos(t)) +
-								this._internalHeight * abs(this._getScaleY()) * abs(sin(t));
+								this._internalWidth * abs(this._getScaleX()) * abs(this.p.cos(t)) +
+								this._internalHeight * abs(this._getScaleY()) * abs(this.p.sin(t));
 							this.collider.extents.y =
-								this._internalWidth * abs(this._getScaleX()) * abs(sin(t)) +
-								this._internalHeight * abs(this._getScaleY()) * abs(cos(t));
+								this._internalWidth * abs(this._getScaleX()) * abs(this.p.sin(t)) +
+								this._internalHeight * abs(this._getScaleY()) * abs(this.p.cos(t));
 						} else if (this.colliderType === 'image') {
-							this.collider.extents.x = this._internalWidth * abs(cos(t)) + this._internalHeight * abs(sin(t));
+							this.collider.extents.x =
+								this._internalWidth * abs(this.p.cos(t)) + this._internalHeight * abs(this.p.sin(t));
 
-							this.collider.extents.y = this._internalWidth * abs(sin(t)) + this._internalHeight * abs(cos(t));
+							this.collider.extents.y =
+								this._internalWidth * abs(this.p.sin(t)) + this._internalHeight * abs(this.p.cos(t));
 						}
 					}
 
@@ -1323,7 +1303,7 @@ deltaTime = ((now - then) / 1000)/INTERVAL_60; // seconds since last frame
 				if (this.life > 0) this.life--;
 				if (this.life === 0) this.remove();
 			}
-		}; //end update
+		} //end update
 
 		/**
 		 * Creates a default collider matching the size of the
@@ -1331,36 +1311,36 @@ deltaTime = ((now - then) / 1000)/INTERVAL_60; // seconds since last frame
 		 *
 		 * @method setDefaultCollider
 		 */
-		this.setDefaultCollider = function () {
+		setDefaultCollider() {
 			//if has animation get the animation bounding box
 			//working only for preloaded images
 			if (
-				animations[currentAnimation] &&
-				animations[currentAnimation].getWidth() !== 1 &&
-				animations[currentAnimation].getHeight() !== 1
+				this.animations[this.currentAnimation] &&
+				this.animations[this.currentAnimation].getWidth() !== 1 &&
+				this.animations[this.currentAnimation].getHeight() !== 1
 			) {
 				this.collider = this.getBoundingBox();
-				this._internalWidth = animations[currentAnimation].getWidth() * abs(this._getScaleX());
-				this._internalHeight = animations[currentAnimation].getHeight() * abs(this._getScaleY());
+				this._internalWidth = this.animations[this.currentAnimation].getWidth() * abs(this._getScaleX());
+				this._internalHeight = this.animations[this.currentAnimation].getHeight() * abs(this._getScaleY());
 				//quadTree.insert(this);
 				this.colliderType = 'image';
 				//print("IMAGE COLLIDER ADDED");
 			} else if (
-				animations[currentAnimation] &&
-				animations[currentAnimation].getWidth() === 1 &&
-				animations[currentAnimation].getHeight() === 1
+				this.animations[this.currentAnimation] &&
+				this.animations[this.currentAnimation].getWidth() === 1 &&
+				this.animations[this.currentAnimation].getHeight() === 1
 			) {
 				//animation is still loading
 				//print("wait");
 			} //get the with and height defined at the creation
 			else {
-				this.collider = new AABB(pInst, this.position, createVector(this._internalWidth, this._internalHeight));
+				this.collider = new AABB(this.p, this.position, this.p.createVector(this._internalWidth, this._internalHeight));
 				//quadTree.insert(this);
 				this.colliderType = 'default';
 			}
 
-			pInst.quadTree.insert(this);
-		};
+			this.p.quadTree.insert(this);
+		}
 
 		/**
 		 * Updates the sprite mouse states and triggers the mouse events:
@@ -1368,7 +1348,7 @@ deltaTime = ((now - then) / 1000)/INTERVAL_60; // seconds since last frame
 		 *
 		 * @method mouseUpdate
 		 */
-		this.mouseUpdate = function () {
+		mouseUpdate() {
 			var mouseWasOver = this.mouseIsOver;
 			var mouseWasPressed = this.mouseIsPressed;
 
@@ -1377,8 +1357,8 @@ deltaTime = ((now - then) / 1000)/INTERVAL_60; // seconds since last frame
 
 			var mousePosition;
 
-			if (this._drawnWithCamera) mousePosition = createVector(camera.mouseX, camera.mouseY);
-			else mousePosition = createVector(pInst.mouseX, pInst.mouseY);
+			if (this._drawnWithCamera) mousePosition = this.p.createVector(this.p.camera.mouseX, this.p.camera.mouseY);
+			else mousePosition = this.p.createVector(this.p.mouseX, this.p.mouseY);
 
 			//rollover
 			if (this.collider) {
@@ -1400,26 +1380,26 @@ deltaTime = ((now - then) / 1000)/INTERVAL_60; // seconds since last frame
 				}
 
 				//global p5 var
-				if (this.mouseIsOver && pInst.mouseIsPressed) this.mouseIsPressed = true;
+				if (this.mouseIsOver && this.p.mouseIsPressed) this.mouseIsPressed = true;
 
 				//event change - call functions
 				if (!mouseWasOver && this.mouseIsOver && this.onMouseOver !== undefined)
 					if (typeof this.onMouseOver === 'function') this.onMouseOver.call(this, this);
-					else print('Warning: onMouseOver should be a function');
+					else this.p.print('Warning: onMouseOver should be a function');
 
 				if (mouseWasOver && !this.mouseIsOver && this.onMouseOut !== undefined)
 					if (typeof this.onMouseOut === 'function') this.onMouseOut.call(this, this);
-					else print('Warning: onMouseOut should be a function');
+					else this.p.print('Warning: onMouseOut should be a function');
 
 				if (!mouseWasPressed && this.mouseIsPressed && this.onMousePressed !== undefined)
 					if (typeof this.onMousePressed === 'function') this.onMousePressed.call(this, this);
-					else print('Warning: onMousePressed should be a function');
+					else this.p.print('Warning: onMousePressed should be a function');
 
-				if (mouseWasPressed && !pInst.mouseIsPressed && !this.mouseIsPressed && this.onMouseReleased !== undefined)
+				if (mouseWasPressed && !this.p.mouseIsPressed && !this.mouseIsPressed && this.onMouseReleased !== undefined)
 					if (typeof this.onMouseReleased === 'function') this.onMouseReleased.call(this, this);
-					else print('Warning: onMouseReleased should be a function');
+					else this.p.print('Warning: onMouseReleased should be a function');
 			}
-		};
+		}
 
 		/**
 		 * Sets a collider for the sprite.
@@ -1453,13 +1433,13 @@ deltaTime = ((now - then) / 1000)/INTERVAL_60; // seconds since last frame
 		 * @param {Number} height Collider height
 		 * @throws {TypeError} if given invalid parameters.
 		 */
-		this.setCollider = function (type, offsetX, offsetY, width, height) {
+		setCollider(type, offsetX, offsetY, width, height) {
 			if (!(type === 'rectangle' || type === 'circle')) {
 				throw new TypeError('setCollider expects the first argument to be either "circle" or "rectangle"');
 			} else if (type === 'circle' && arguments.length > 1 && arguments.length < 4) {
 				throw new TypeError('Usage: setCollider("circle") or setCollider("circle", offsetX, offsetY, radius)');
 			} else if (type === 'circle' && arguments.length > 4) {
-				pInst._warn(
+				this.p._warn(
 					'Extra parameters to setCollider were ignored. Usage: setCollider("circle") or setCollider("circle", offsetX, offsetY, radius)'
 				);
 			} else if (type === 'rectangle' && arguments.length > 1 && arguments.length < 5) {
@@ -1467,45 +1447,44 @@ deltaTime = ((now - then) / 1000)/INTERVAL_60; // seconds since last frame
 					'Usage: setCollider("rectangle") or setCollider("rectangle", offsetX, offsetY, width, height)'
 				);
 			} else if (type === 'rectangle' && arguments.length > 5) {
-				pInst._warn(
+				this.p._warn(
 					'Extra parameters to setCollider were ignored. Usage: setCollider("rectangle") or setCollider("rectangle", offsetX, offsetY, width, height)'
 				);
 			}
 
 			this.colliderType = 'custom';
 
-			var v = createVector(offsetX, offsetY);
-			let center = { x: this.position.x + this.width / 2 + offsetX, y: this.position.y + this.height / 2 + offsetY };
+			var v = this.p.createVector(offsetX, offsetY);
 			if (type === 'rectangle' && arguments.length === 1) {
-				this.collider = new AABB(pInst, this.position, createVector(this.width, this.height));
+				this.collider = new AABB(this.p, this.position, this.p.createVector(this.width, this.height));
 			} else if (type === 'rectangle' && arguments.length >= 5) {
-				this.collider = new AABB(pInst, this.position, createVector(width, height), v);
+				this.collider = new AABB(this.p, this.position, this.p.createVector(width, height), v);
 			} else if (type === 'circle' && arguments.length === 1) {
-				this.collider = new CircleCollider(pInst, center, Math.floor(Math.max(this.width, this.height) / 2));
+				this.collider = new CircleCollider(this.p, this.position, Math.floor(Math.max(this.width, this.height) / 2));
 			} else if (type === 'circle' && arguments.length >= 4) {
-				this.collider = new CircleCollider(pInst, center, width, v);
+				this.collider = new CircleCollider(this.p, this.position, width, v);
 			}
 
-			quadTree.insert(this);
-		};
+			this.p.quadTree.insert(this);
+		}
 
 		/**
 		 * Returns a the bounding box of the current image
 		 * @method getBoundingBox
 		 */
-		this.getBoundingBox = function () {
-			var w = animations[currentAnimation].getWidth() * abs(this._getScaleX());
-			var h = animations[currentAnimation].getHeight() * abs(this._getScaleY());
+		getBoundingBox() {
+			var w = this.animations[this.currentAnimation].getWidth() * abs(this._getScaleX());
+			var h = this.animations[this.currentAnimation].getHeight() * abs(this._getScaleY());
 
 			//if the bounding box is 1x1 the image is not loaded
 			//potential issue with actual 1x1 images
 			if (w === 1 && h === 1) {
 				//not loaded yet
-				return new AABB(pInst, this.position, createVector(w, h));
+				return new AABB(this.p, this.position, this.p.createVector(w, h));
 			} else {
-				return new AABB(pInst, this.position, createVector(w, h));
+				return new AABB(this.p, this.position, this.p.createVector(w, h));
 			}
-		};
+		}
 
 		/**
 		 * Sets the sprite's horizontal mirroring.
@@ -1517,10 +1496,10 @@ deltaTime = ((now - then) / 1000)/INTERVAL_60; // seconds since last frame
 		 * @param {Number} dir Either 1 or -1
 		 * @return {Number} Current mirroring if no parameter is specified
 		 */
-		this.mirrorX = function (dir) {
-			if (dir === 1 || dir === -1) dirX = dir;
-			else return dirX;
-		};
+		mirrorX(dir) {
+			if (dir === 1 || dir === -1) this.dirX = dir;
+			else return this.dirX;
+		}
 
 		/**
 		 * Sets the sprite's vertical mirroring.
@@ -1532,28 +1511,28 @@ deltaTime = ((now - then) / 1000)/INTERVAL_60; // seconds since last frame
 		 * @param {Number} dir Either 1 or -1
 		 * @return {Number} Current mirroring if no parameter is specified
 		 */
-		this.mirrorY = function (dir) {
-			if (dir === 1 || dir === -1) dirY = dir;
-			else return dirY;
-		};
+		mirrorY(dir) {
+			if (dir === 1 || dir === -1) this.dirY = dir;
+			else return this.dirY;
+		}
 
 		/*
 		 * Returns the value the sprite should be scaled in the X direction.
 		 * Used to calculate rendering and collisions.
 		 * @private
 		 */
-		this._getScaleX = function () {
+		_getScaleX() {
 			return this.scale;
-		};
+		}
 
 		/*
 		 * Returns the value the sprite should be scaled in the Y direction.
 		 * Used to calculate rendering and collisions.
 		 * @private
 		 */
-		this._getScaleY = function () {
+		_getScaleY() {
 			return this.scale;
-		};
+		}
 
 		/**
 		 * Manages the positioning, scale and rotation of the sprite
@@ -1562,62 +1541,56 @@ deltaTime = ((now - then) / 1000)/INTERVAL_60; // seconds since last frame
 		 * @final
 		 * @method display
 		 */
-		this.display = function () {
+		display() {
 			if (this.visible && !this.removed) {
-				push();
-				colorMode(RGB);
+				this.p.push();
+				this.p.colorMode(RGB);
 
-				noStroke();
-				// rectMode(CENTER);
-				// ellipseMode(CENTER);
-				// imageMode(CENTER);
+				this.p.noStroke();
+				this.p.rectMode(CENTER);
+				this.p.ellipseMode(CENTER);
+				this.p.imageMode(CENTER);
 
-				translate(
-					Math.round(this.position.x + (dirX != -1 ? 0 : this.w)),
-					Math.round(this.position.y + (dirY != -1 ? 0 : this.h))
-				);
-				scale(this._getScaleX() * dirX, this._getScaleY() * dirY);
-				if (pInst._angleMode === pInst.RADIANS) {
-					rotate(radians(this.rotation));
+				this.p.translate(this.position.x, this.position.y);
+				this.p.scale(this._getScaleX() * this.dirX, this._getScaleY() * this.dirY);
+				if (this.p._angleMode === this.p.RADIANS) {
+					this.p.rotate(radians(this.rotation));
 				} else {
-					rotate(this.rotation);
-				}
-				if (this.rotation == 90) {
-					translate(0, -this.w);
+					this.p.rotate(this.rotation);
 				}
 				this.draw();
 				//draw debug info
-				pop();
+				this.p.pop();
 
-				this._drawnWithCamera = camera.active;
+				this._drawnWithCamera = this.p.camera.active;
 
 				if (this.debug) {
-					push();
+					this.p.push();
 					//draw the anchor point
-					stroke(0, 255, 0);
-					strokeWeight(1);
-					line(this.position.x - 10, this.position.y, this.position.x + 10, this.position.y);
-					line(this.position.x, this.position.y - 10, this.position.x, this.position.y + 10);
-					noFill();
+					this.p.stroke(0, 255, 0);
+					this.p.strokeWeight(1);
+					this.p.line(this.position.x - 10, this.position.y, this.position.x + 10, this.position.y);
+					this.p.line(this.position.x, this.position.y - 10, this.position.x, this.position.y + 10);
+					this.p.noFill();
 
 					//depth number
-					noStroke();
-					fill(0, 255, 0);
-					textAlign(LEFT, BOTTOM);
-					textSize(16);
-					text(this.depth + '', this.position.x + 4, this.position.y - 2);
+					this.p.noStroke();
+					this.p.fill(0, 255, 0);
+					this.p.textAlign(LEFT, BOTTOM);
+					this.p.textSize(16);
+					this.p.text(this.depth + '', this.position.x + 4, this.position.y - 2);
 
-					noFill();
-					stroke(0, 255, 0);
+					this.p.noFill();
+					this.p.stroke(0, 255, 0);
 
 					//bounding box
 					if (this.collider !== undefined) {
 						this.collider.draw();
 					}
-					pop();
+					this.p.pop();
 				}
 			}
-		};
+		}
 
 		/**
 		 * Manages the visuals of the sprite.
@@ -1629,15 +1602,15 @@ deltaTime = ((now - then) / 1000)/INTERVAL_60; // seconds since last frame
 		 *
 		 * @method draw
 		 */
-		this.draw = function () {
-			if (currentAnimation !== '') {
-				if (this.animation) this.animation.draw(0, 0, 0);
+		draw() {
+			if (this.animation) {
+				this.animation.draw(0, 0, 0);
 			} else {
-				noStroke();
-				fill(this.shapeColor);
-				rect(0, 0, this._internalWidth, this._internalHeight);
+				this.p.noStroke();
+				this.p.fill(this.shapeColor);
+				this.p.rect(0, 0, this._internalWidth, this._internalHeight);
 			}
-		};
+		}
 
 		/**
 		 * Removes the Sprite from the sketch.
@@ -1645,16 +1618,16 @@ deltaTime = ((now - then) / 1000)/INTERVAL_60; // seconds since last frame
 		 *
 		 * @method remove
 		 */
-		this.remove = function () {
+		remove() {
 			this.removed = true;
 
-			quadTree.removeObject(this);
+			this.p.quadTree.removeObject(this);
 
 			//when removed from the "scene" also remove all the references in all the groups
 			while (this.groups.length > 0) {
 				this.groups[0].remove(this);
 			}
-		};
+		}
 
 		/**
 		 * Sets the velocity vector.
@@ -1663,10 +1636,10 @@ deltaTime = ((now - then) / 1000)/INTERVAL_60; // seconds since last frame
 		 * @param {Number} x X component
 		 * @param {Number} y Y component
 		 */
-		this.setVelocity = function (x, y) {
+		setVelocity(x, y) {
 			this.velocity.x = x;
 			this.velocity.y = y;
-		};
+		}
 
 		/**
 		 * Calculates the scalar speed.
@@ -1674,9 +1647,9 @@ deltaTime = ((now - then) / 1000)/INTERVAL_60; // seconds since last frame
 		 * @method getSpeed
 		 * @return {Number} Scalar speed
 		 */
-		this.getSpeed = function () {
+		getSpeed() {
 			return this.velocity.mag();
-		};
+		}
 
 		/**
 		 * Calculates the movement's direction in degrees.
@@ -1684,8 +1657,8 @@ deltaTime = ((now - then) / 1000)/INTERVAL_60; // seconds since last frame
 		 * @method getDirection
 		 * @return {Number} Angle in degrees
 		 */
-		this.getDirection = function () {
-			var direction = atan2(this.velocity.y, this.velocity.x);
+		getDirection() {
+			var direction = this.p.atan2(this.velocity.y, this.velocity.x);
 
 			if (isNaN(direction)) direction = 0;
 
@@ -1693,12 +1666,12 @@ deltaTime = ((now - then) / 1000)/INTERVAL_60; // seconds since last frame
 			// the current p5 angleMode is DEGREES, and radians if the p5 angleMode is
 			// RADIANS.  This method should always return degrees (for now).
 			// See https://github.com/molleindustria/p5.play/issues/94
-			if (pInst._angleMode === pInst.RADIANS) {
+			if (this.p._angleMode === this.p.RADIANS) {
 				direction = degrees(direction);
 			}
 
 			return direction;
-		};
+		}
 
 		/**
 		 * Adds the sprite to an existing group
@@ -1706,10 +1679,12 @@ deltaTime = ((now - then) / 1000)/INTERVAL_60; // seconds since last frame
 		 * @method addToGroup
 		 * @param {Object} group
 		 */
-		this.addToGroup = function (group) {
-			if (group instanceof Array) group.add(this);
-			else print('addToGroup error: ' + group + ' is not a group');
-		};
+		addToGroup(group) {
+			if (group instanceof Array) {
+				// if the sprite has not been already to the group
+				if (group.add(this)) this.groups.push(group);
+			} else this.p.print('addToGroup error: ' + group + ' is not a group');
+		}
 
 		/**
 		 * Limits the scalar speed.
@@ -1717,7 +1692,7 @@ deltaTime = ((now - then) / 1000)/INTERVAL_60; // seconds since last frame
 		 * @method limitSpeed
 		 * @param {Number} max Max speed: positive number
 		 */
-		this.limitSpeed = function (max) {
+		limitSpeed(max) {
 			//update linear speed
 			var speed = this.getSpeed();
 
@@ -1727,7 +1702,7 @@ deltaTime = ((now - then) / 1000)/INTERVAL_60; // seconds since last frame
 				this.velocity.x *= k;
 				this.velocity.y *= k;
 			}
-		};
+		}
 
 		/**
 		 * Set the speed and direction of the sprite.
@@ -1740,28 +1715,28 @@ deltaTime = ((now - then) / 1000)/INTERVAL_60; // seconds since last frame
 		 * @param {Number}  speed Scalar speed
 		 * @param {Number}  [angle] Direction in degrees
 		 */
-		this.setSpeed = function (speed, angle) {
+		setSpeed(speed, angle) {
 			var a;
 			if (typeof angle === 'undefined') {
 				if (this.velocity.x !== 0 || this.velocity.y !== 0) {
-					a = pInst.atan2(this.velocity.y, this.velocity.x);
+					a = this.p.atan2(this.velocity.y, this.velocity.x);
 				} else {
-					if (pInst._angleMode === pInst.RADIANS) {
+					if (this.p._angleMode === this.p.RADIANS) {
 						a = radians(this._rotation);
 					} else {
 						a = this._rotation;
 					}
 				}
 			} else {
-				if (pInst._angleMode === pInst.RADIANS) {
+				if (this.p._angleMode === this.p.RADIANS) {
 					a = radians(angle);
 				} else {
 					a = angle;
 				}
 			}
-			this.velocity.x = cos(a) * speed;
-			this.velocity.y = sin(a) * speed;
-		};
+			this.velocity.x = this.p.cos(a) * speed;
+			this.velocity.y = this.p.sin(a) * speed;
+		}
 
 		/**
 		 * Pushes the sprite in a direction defined by an angle.
@@ -1771,16 +1746,16 @@ deltaTime = ((now - then) / 1000)/INTERVAL_60; // seconds since last frame
 		 * @param {Number}  speed Scalar speed to add
 		 * @param {Number}  angle Direction in degrees
 		 */
-		this.addSpeed = function (speed, angle) {
+		addSpeed(speed, angle) {
 			var a;
-			if (pInst._angleMode === pInst.RADIANS) {
+			if (this.p._angleMode === this.p.RADIANS) {
 				a = radians(angle);
 			} else {
 				a = angle;
 			}
-			this.velocity.x += cos(a) * speed;
-			this.velocity.y += sin(a) * speed;
-		};
+			this.velocity.x += this.p.cos(a) * speed;
+			this.velocity.y += this.p.sin(a) * speed;
+		}
 
 		/**
 		 * Pushes the sprite toward a point.
@@ -1791,11 +1766,11 @@ deltaTime = ((now - then) / 1000)/INTERVAL_60; // seconds since last frame
 		 * @param {Number}  pointX Direction x coordinate
 		 * @param {Number}  pointY Direction y coordinate
 		 */
-		this.attractionPoint = function (magnitude, pointX, pointY) {
-			var angle = atan2(pointY - this.position.y, pointX - this.position.x);
-			this.velocity.x += cos(angle) * magnitude;
-			this.velocity.y += sin(angle) * magnitude;
-		};
+		attractionPoint(magnitude, pointX, pointY) {
+			var angle = this.p.atan2(pointY - this.position.y, pointX - this.position.x);
+			this.velocity.x += this.p.cos(angle) * magnitude;
+			this.velocity.y += this.p.sin(angle) * magnitude;
+		}
 
 		/**
 		 * Adds an image to the sprite.
@@ -1815,12 +1790,12 @@ deltaTime = ((now - then) / 1000)/INTERVAL_60; // seconds since last frame
 		 * @param {String|p5.Image} label Label or image
 		 * @param {p5.Image} [img] Image
 		 */
-		this.addImage = function () {
+		addImage() {
 			if (typeof arguments[0] === 'string' && arguments[1] instanceof p5.Image)
 				this.addAnimation(arguments[0], arguments[1]);
 			else if (arguments[0] instanceof p5.Image) this.addAnimation('normal', arguments[0]);
 			else throw 'addImage error: allowed usages are <image> or <label>, <image>';
-		};
+		}
 
 		/**
 		 * Adds an animation to the sprite.
@@ -1833,32 +1808,32 @@ deltaTime = ((now - then) / 1000)/INTERVAL_60; // seconds since last frame
 		 * Usage:
 		 * - sprite.addAnimation(label, animation);
 		 *
-		 * Alternative usages. See Animation for more information on file sequences:
+		 * Alternative usages. See SpriteAnimation for more information on file sequences:
 		 * - sprite.addAnimation(label, firstFrame, lastFrame);
 		 * - sprite.addAnimation(label, frame1, frame2, frame3...);
 		 *
 		 * @method addAnimation
-		 * @param {String} label Animation identifier
-		 * @param {Animation} animation The preloaded animation
+		 * @param {String} label SpriteAnimation identifier
+		 * @param {SpriteAnimation} animation The preloaded animation
 		 */
-		this.addAnimation = function (label) {
+		addAnimation(label) {
 			var anim;
 
 			if (typeof label !== 'string') {
-				print('Sprite.addAnimation error: the first argument must be a label (String)');
+				this.p.print('Sprite.addAnimation error: the first argument must be a label (String)');
 				return -1;
 			} else if (arguments.length < 2) {
-				print('addAnimation error: you must specify a label and n frame images');
+				this.p.print('addAnimation error: you must specify a label and n frame images');
 				return -1;
-			} else if (arguments[1] instanceof Animation) {
+			} else if (arguments[1] instanceof SpriteAnimation) {
 				var sourceAnimation = arguments[1];
 
 				var newAnimation = sourceAnimation.clone();
 
-				animations[label] = newAnimation;
+				this.animations[label] = newAnimation;
 
-				if (currentAnimation === '') {
-					currentAnimation = label;
+				if (this.currentAnimation === '') {
+					this.currentAnimation = label;
 					this.animation = newAnimation;
 				}
 
@@ -1872,11 +1847,11 @@ deltaTime = ((now - then) / 1000)/INTERVAL_60; // seconds since last frame
 				var animFrames = [];
 				for (var i = 1; i < arguments.length; i++) animFrames.push(arguments[i]);
 
-				anim = construct(pInst.Animation, animFrames);
-				animations[label] = anim;
+				anim = construct(this.p.SpriteAnimation, animFrames);
+				this.animations[label] = anim;
 
-				if (currentAnimation === '') {
-					currentAnimation = label;
+				if (this.currentAnimation === '') {
+					this.currentAnimation = label;
 					this.animation = anim;
 				}
 				anim.isSpriteAnimation = true;
@@ -1886,48 +1861,51 @@ deltaTime = ((now - then) / 1000)/INTERVAL_60; // seconds since last frame
 
 				return anim;
 			}
-		};
+		}
 
 		/**
 		 * Changes the displayed image/animation.
 		 * Equivalent to changeAnimation
 		 *
 		 * @method changeImage
-		 * @param {String} label Image/Animation identifier
+		 * @param {String} label Image/SpriteAnimation identifier
 		 */
-		this.changeImage = function (label) {
+		changeImage(label) {
 			this.changeAnimation(label);
-		};
+		}
 
 		/**
 		 * Returns the label of the current animation
 		 *
 		 * @method getAnimationLabel
-		 * @return {String} label Image/Animation identifier
+		 * @return {String} label Image/SpriteAnimation identifier
 		 */
-		this.getAnimationLabel = function () {
-			return currentAnimation;
-		};
+		getAnimationLabel() {
+			return this.currentAnimation;
+		}
 
 		/**
 		 * Changes the displayed animation.
-		 * See Animation for more control over the sequence.
+		 * See SpriteAnimation for more control over the sequence.
 		 *
 		 * @method changeAnimation
-		 * @param {String} label Animation identifier
+		 * @param {String} label SpriteAnimation identifier
 		 */
-		this.changeAnimation = function (label) {
-			let anims = Object.assign({}, animations);
-			for (let g of this.groups) {
-				if (g.animations) anims = Object.assign(anims, g.animations);
+		changeAnimation(label) {
+			let anim = this.animations[label];
+			if (!anim) {
+				for (let g of this.groups) {
+					if (g.animations) anim = g.animations[label];
+					if (anim) break;
+				}
 			}
-			if (!anims[label]) print('changeAnimation error: no animation labeled ' + label);
-			else {
-				currentAnimation = label;
-				this.animation = anims[label];
-				if (this.autoResetAnimations) this.animation.changeFrame(0); // reset to frame 0 of that animation
+			if (anim) {
+				this.currentAnimation = label;
+				this.animation = anim;
+			} else {
+				this.p.print('changeAnimation error: no animation labeled ' + label);
 			}
-		};
+		}
 
 		/**
 		 * Checks if the given point corresponds to a transparent pixel
@@ -1939,8 +1917,8 @@ deltaTime = ((now - then) / 1000)/INTERVAL_60; // seconds since last frame
 		 * @param {Number} pointY y coordinate of the point to check
 		 * @return {Boolean} result True if non-transparent
 		 */
-		this.overlapPixel = function (pointX, pointY) {
-			var point = createVector(pointX, pointY);
+		overlapPixel(pointX, pointY) {
+			var point = this.p.createVector(pointX, pointY);
 
 			var img = this.animation.getFrameImage();
 
@@ -1955,11 +1933,11 @@ deltaTime = ((now - then) / 1000)/INTERVAL_60; // seconds since last frame
 				var values = img.get(point.x, point.y);
 				return values[3] === 255;
 			} else {
-				print("Error: overlapPixel doesn't work with scaled or rotated sprites yet");
+				this.p.print("Error: overlapPixel doesn't work with scaled or rotated sprites yet");
 				//offscreen printing to be implemented bleurch
 				return false;
 			}
-		};
+		}
 
 		/**
 		 * Checks if the given point is inside the sprite's collider.
@@ -1969,8 +1947,8 @@ deltaTime = ((now - then) / 1000)/INTERVAL_60; // seconds since last frame
 		 * @param {Number} pointY y coordinate of the point to check
 		 * @return {Boolean} result True if inside
 		 */
-		this.overlapPoint = function (pointX, pointY) {
-			var point = createVector(pointX, pointY);
+		overlapPoint(pointX, pointY) {
+			var point = this.p.createVector(pointX, pointY);
 
 			if (!this.collider) this.setDefaultCollider();
 
@@ -1988,7 +1966,7 @@ deltaTime = ((now - then) / 1000)/INTERVAL_60; // seconds since last frame
 					return sqDist < sqRadius;
 				} else return false;
 			} else return false;
-		};
+		}
 
 		/**
 		 * Checks if the the sprite is overlapping another sprite or a group.
@@ -2014,10 +1992,10 @@ deltaTime = ((now - then) / 1000)/INTERVAL_60; // seconds since last frame
 		 * @param {Function} [callback] The function to be called if overlap is positive
 		 * @return {Boolean} True if overlapping
 		 */
-		this.overlap = function (target, callback) {
+		overlap(target, callback) {
 			//if(this.collider instanceof AABB && target.collider instanceof AABB)
 			return this.AABBops('overlap', target, callback);
-		};
+		}
 
 		/**
 		 * Checks if the the sprite is overlapping another sprite or a group.
@@ -2046,10 +2024,10 @@ deltaTime = ((now - then) / 1000)/INTERVAL_60; // seconds since last frame
 		 * @param {Function} [callback] The function to be called if overlap is positive
 		 * @return {Boolean} True if overlapping
 		 */
-		this.collide = function (target, callback) {
+		collide(target, callback) {
 			//if(this.collider instanceof AABB && target.collider instanceof AABB)
 			return this.AABBops('collide', target, callback);
-		};
+		}
 
 		/**
 		 * Checks if the the sprite is overlapping another sprite or a group.
@@ -2078,9 +2056,9 @@ deltaTime = ((now - then) / 1000)/INTERVAL_60; // seconds since last frame
 		 * @param {Function} [callback] The function to be called if overlap is positive
 		 * @return {Boolean} True if overlapping
 		 */
-		this.displace = function (target, callback) {
+		displace(target, callback) {
 			return this.AABBops('displace', target, callback);
-		};
+		}
 
 		/**
 		 * Checks if the the sprite is overlapping another sprite or a group.
@@ -2109,12 +2087,12 @@ deltaTime = ((now - then) / 1000)/INTERVAL_60; // seconds since last frame
 		 * @param {Function} [callback] The function to be called if overlap is positive
 		 * @return {Boolean} True if overlapping
 		 */
-		this.bounce = function (target, callback) {
+		bounce(target, callback) {
 			return this.AABBops('bounce', target, callback);
-		};
+		}
 
 		// Internal collision detection function. Do not use directly.
-		this.AABBops = function (type, target, callback) {
+		AABBops(type, target, callback) {
 			this.touching.left = false;
 			this.touching.right = false;
 			this.touching.top = false;
@@ -2127,7 +2105,8 @@ deltaTime = ((now - then) / 1000)/INTERVAL_60; // seconds since last frame
 
 			if (target instanceof Sprite) others.push(target);
 			else if (target instanceof Array) {
-				if (quadTree !== undefined && quadTree.active) others = quadTree.retrieveFromGroup(this, target);
+				if (this.p.quadTree !== undefined && this.p.quadTree.active)
+					others = this.p.quadTree.retrieveFromGroup(this, target);
 
 				if (others.length === 0) others = target;
 			} else throw 'Error: overlap can only be checked between sprites or groups';
@@ -2143,7 +2122,7 @@ deltaTime = ((now - then) / 1000)/INTERVAL_60; // seconds since last frame
 					if (other.collider === undefined) other.setDefaultCollider();
 
 					/*
-        if(this.colliderType=="default" && animations[currentAnimation]!=null)
+        if(this.colliderType=="default" && this.animations[this.currentAnimation]!=null)
         {
           print("busted");
           return false;
@@ -2162,7 +2141,7 @@ deltaTime = ((now - then) / 1000)/INTERVAL_60; // seconds since last frame
 								if (callback !== undefined && typeof callback === 'function') callback.call(this, this, other);
 							}
 						} else if (type === 'collide' || type === 'displace' || type === 'bounce') {
-							displacement = createVector(0, 0);
+							displacement = this.p.createVector(0, 0);
 
 							//if the sum of the speed is more than the collider i may
 							//have a tunnelling problem
@@ -2180,19 +2159,19 @@ deltaTime = ((now - then) / 1000)/INTERVAL_60; // seconds since last frame
 								//this is regardless of the collider type
 
 								//the center is the average of the coll centers
-								var c = createVector(
+								var c = this.p.createVector(
 									(this.position.x + this.previousPosition.x) / 2,
 									(this.position.y + this.previousPosition.y) / 2
 								);
 
 								//the extents are the distance between the coll centers
 								//plus the extents of both
-								var e = createVector(
+								var e = this.p.createVector(
 									abs(this.position.x - this.previousPosition.x) + this.collider.extents.x,
 									abs(this.position.y - this.previousPosition.y) + this.collider.extents.y
 								);
 
-								var bbox = new AABB(pInst, c, e, this.collider.offset);
+								var bbox = new AABB(this.p, c, e, this.collider.offset);
 
 								//bbox.draw();
 
@@ -2225,8 +2204,8 @@ deltaTime = ((now - then) / 1000)/INTERVAL_60; // seconds since last frame
 									other.position.sub(displacement);
 								} else if ((type === 'collide' || type === 'bounce') && !this.immovable) {
 									this.position.add(displacement);
-									this.previousPosition = createVector(this.position.x, this.position.y);
-									this.newPosition = createVector(this.position.x, this.position.y);
+									this.previousPosition = this.p.createVector(this.position.x, this.position.y);
+									this.newPosition = this.p.createVector(this.position.x, this.position.y);
 								}
 
 								if (displacement.x > 0) this.touching.left = true;
@@ -2308,7 +2287,7 @@ deltaTime = ((now - then) / 1000)/INTERVAL_60; // seconds since last frame
 				}
 
 			return result;
-		};
+		}
 	} //end Sprite class
 
 	defineLazyP5Property('Sprite', boundConstructorFactory(Sprite));
@@ -2329,56 +2308,58 @@ deltaTime = ((now - then) / 1000)/INTERVAL_60; // seconds since last frame
 	 * @param {Number} y Initial y coordinate
 	 * @param {Number} zoom magnification
 	 **/
-	function Camera(pInst, x, y, zoom) {
-		/**
-		 * Camera position. Defines the global offset of the sketch.
-		 *
-		 * @property position
-		 * @type {p5.Vector}
-		 */
-		this.position = pInst.createVector(x, y);
+	class Camera {
+		constructor(pInst, x, y, zoom) {
+			/**
+			 * Camera position. Defines the global offset of the sketch.
+			 *
+			 * @property position
+			 * @type {p5.Vector}
+			 */
+			this.position = pInst.createVector(x, y);
 
-		/**
-		 * Camera zoom. Defines the global scale of the sketch.
-		 * A scale of 1 will be the normal size. Setting it to 2 will make everything
-		 * twice the size. .5 will make everything half size.
-		 *
-		 * @property zoom
-		 * @type {Number}
-		 */
-		this.zoom = zoom;
+			/**
+			 * Camera zoom. Defines the global scale of the sketch.
+			 * A scale of 1 will be the normal size. Setting it to 2 will make everything
+			 * twice the size. .5 will make everything half size.
+			 *
+			 * @property zoom
+			 * @type {Number}
+			 */
+			this.zoom = zoom;
 
-		/**
-		 * MouseX translated to the camera view.
-		 * Offsetting and scaling the canvas will not change the sprites' position
-		 * nor the mouseX and mouseY variables. Use this property to read the mouse
-		 * position if the camera moved or zoomed.
-		 *
-		 * @property mouseX
-		 * @type {Number}
-		 */
-		this.mouseX = pInst.mouseX;
+			/**
+			 * MouseX translated to the camera view.
+			 * Offsetting and scaling the canvas will not change the sprites' position
+			 * nor the mouseX and mouseY variables. Use this property to read the mouse
+			 * position if the camera moved or zoomed.
+			 *
+			 * @property mouseX
+			 * @type {Number}
+			 */
+			this.mouseX = pInst.mouseX;
 
-		/**
-		 * MouseY translated to the camera view.
-		 * Offsetting and scaling the canvas will not change the sprites' position
-		 * nor the mouseX and mouseY variables. Use this property to read the mouse
-		 * position if the camera moved or zoomed.
-		 *
-		 * @property mouseY
-		 * @type {Number}
-		 */
-		this.mouseY = pInst.mouseY;
+			/**
+			 * MouseY translated to the camera view.
+			 * Offsetting and scaling the canvas will not change the sprites' position
+			 * nor the mouseX and mouseY variables. Use this property to read the mouse
+			 * position if the camera moved or zoomed.
+			 *
+			 * @property mouseY
+			 * @type {Number}
+			 */
+			this.mouseY = pInst.mouseY;
 
-		/**
-		 * True if the camera is active.
-		 * Read only property. Use the methods Camera.on() and Camera.off()
-		 * to enable or disable the camera.
-		 *
-		 * @property active
-		 * @type {Boolean}
-		 */
-		this.active = false;
+			/**
+			 * True if the camera is active.
+			 * Read only property. Use the methods Camera.on() and Camera.off()
+			 * to enable or disable the camera.
+			 *
+			 * @property active
+			 * @type {Boolean}
+			 */
+			this.active = false;
+		}
 
 		/**
 		 * Activates the camera.
@@ -2387,12 +2368,12 @@ deltaTime = ((now - then) / 1000)/INTERVAL_60; // seconds since last frame
 		 *
 		 * @method on
 		 */
-		this.on = function () {
+		on() {
 			if (!this.active) {
 				cameraPush.call(pInst);
 				this.active = true;
 			}
-		};
+		}
 
 		/**
 		 * Deactivates the camera.
@@ -2401,12 +2382,12 @@ deltaTime = ((now - then) / 1000)/INTERVAL_60; // seconds since last frame
 		 *
 		 * @method off
 		 */
-		this.off = function () {
+		off() {
 			if (this.active) {
 				cameraPop.call(pInst);
 				this.active = false;
 			}
-		};
+		}
 	} //end camera class
 
 	defineLazyP5Property('Camera', boundConstructorFactory(Camera));
@@ -2465,9 +2446,122 @@ deltaTime = ((now - then) / 1000)/INTERVAL_60; // seconds since last frame
 	 * @class Group
 	 * @constructor
 	 */
-	function Group() {
-		//basically extending the array
-		var array = [];
+	class Group extends Array {
+		constructor(...args) {
+			super(...args);
+			/**
+			 * Checks if the the group is overlapping another group or sprite.
+			 * The check is performed using the colliders. If colliders are not set
+			 * they will be created automatically from the image/animation bounding box.
+			 *
+			 * A callback function can be specified to perform additional operations
+			 * when the overlap occurs.
+			 * The function will be called for each single sprite overlapping.
+			 * The parameter of the function are respectively the
+			 * member of the current group and the other sprite passed as parameter.
+			 *
+			 * @example
+			 *     group.overlap(otherSprite, explosion);
+			 *
+			 *     function explosion(spriteA, spriteB) {
+			 *       spriteA.remove();
+			 *       spriteB.score++;
+			 *     }
+			 *
+			 * @method overlap
+			 * @param {Object} target Group or Sprite to check against the current one
+			 * @param {Function} [callback] The function to be called if overlap is positive
+			 * @return {Boolean} True if overlapping
+			 */
+			this.overlap = this._groupCollide.bind(this, 'overlap');
+
+			/**
+			 * Checks if the the group is overlapping another group or sprite.
+			 * If the overlap is positive the sprites in the group will be displaced
+			 * by the colliding one to the closest non-overlapping positions.
+			 *
+			 * The check is performed using the colliders. If colliders are not set
+			 * they will be created automatically from the image/animation bounding box.
+			 *
+			 * A callback function can be specified to perform additional operations
+			 * when the overlap occours.
+			 * The function will be called for each single sprite overlapping.
+			 * The parameter of the function are respectively the
+			 * member of the current group and the other sprite passed as parameter.
+			 *
+			 * @example
+			 *     group.collide(otherSprite, explosion);
+			 *
+			 *     function explosion(spriteA, spriteB) {
+			 *       spriteA.remove();
+			 *       spriteB.score++;
+			 *     }
+			 *
+			 * @method collide
+			 * @param {Object} target Group or Sprite to check against the current one
+			 * @param {Function} [callback] The function to be called if overlap is positive
+			 * @return {Boolean} True if overlapping
+			 */
+			this.collide = this._groupCollide.bind(this, 'collide');
+
+			/**
+			 * Checks if the the group is overlapping another group or sprite.
+			 * If the overlap is positive the sprites in the group will displace
+			 * the colliding ones to the closest non-overlapping positions.
+			 *
+			 * The check is performed using the colliders. If colliders are not set
+			 * they will be created automatically from the image/animation bounding box.
+			 *
+			 * A callback function can be specified to perform additional operations
+			 * when the overlap occurs.
+			 * The function will be called for each single sprite overlapping.
+			 * The parameter of the function are respectively the
+			 * member of the current group and the other sprite passed as parameter.
+			 *
+			 * @example
+			 *     group.displace(otherSprite, explosion);
+			 *
+			 *     function explosion(spriteA, spriteB) {
+			 *       spriteA.remove();
+			 *       spriteB.score++;
+			 *     }
+			 *
+			 * @method displace
+			 * @param {Object} target Group or Sprite to check against the current one
+			 * @param {Function} [callback] The function to be called if overlap is positive
+			 * @return {Boolean} True if overlapping
+			 */
+			this.displace = this._groupCollide.bind(this, 'displace');
+
+			/**
+			 * Checks if the the group is overlapping another group or sprite.
+			 * If the overlap is positive the sprites will bounce affecting each
+			 * other's trajectories depending on their .velocity, .mass and .restitution.
+			 *
+			 * The check is performed using the colliders. If colliders are not set
+			 * they will be created automatically from the image/animation bounding box.
+			 *
+			 * A callback function can be specified to perform additional operations
+			 * when the overlap occours.
+			 * The function will be called for each single sprite overlapping.
+			 * The parameter of the function are respectively the
+			 * member of the current group and the other sprite passed as parameter.
+			 *
+			 * @example
+			 *     group.bounce(otherSprite, explosion);
+			 *
+			 *     function explosion(spriteA, spriteB) {
+			 *       spriteA.remove();
+			 *       spriteB.score++;
+			 *     }
+			 *
+			 * @method bounce
+			 * @param {Object} target Group or Sprite to check against the current one
+			 * @param {Function} [callback] The function to be called if overlap is positive
+			 * @return {Boolean} True if overlapping
+			 */
+			this.bounce = this._groupCollide.bind(this, 'bounce');
+		}
 
 		/**
 		 * Gets the member at index i.
@@ -2475,9 +2569,9 @@ deltaTime = ((now - then) / 1000)/INTERVAL_60; // seconds since last frame
 		 * @method get
 		 * @param {Number} i The index of the object to retrieve
 		 */
-		array.get = function (i) {
-			return array[i];
-		};
+		get(i) {
+			return this[i];
+		}
 
 		/**
 		 * Checks if the group contains a sprite.
@@ -2486,47 +2580,49 @@ deltaTime = ((now - then) / 1000)/INTERVAL_60; // seconds since last frame
 		 * @param {Sprite} sprite The sprite to search
 		 * @return {Number} Index or -1 if not found
 		 */
-		array.contains = function (sprite) {
+		contains(sprite) {
 			return this.indexOf(sprite) > -1;
-		};
+		}
 
 		/**
 		 * Same as Group.contains
 		 * @method indexOf
 		 */
-		array.indexOf = function (item) {
-			for (var i = 0, len = array.length; i < len; ++i) {
-				if (virtEquals(item, array[i])) {
+		indexOf(item) {
+			for (var i = 0, len = this.length; i < len; ++i) {
+				if (this._virtEquals(item, this[i])) {
 					return i;
 				}
 			}
 			return -1;
-		};
+		}
 
 		/**
-		 * Adds a sprite to the group.
+		 * Adds a sprite to the group. Returns true if the sprite was added
+		 * because it was not already in the group.
 		 *
 		 * @method add
 		 * @param {Sprite} s The sprite to be added
 		 */
-		array.add = function (s) {
+		add(s) {
 			if (!(s instanceof Sprite)) {
 				throw 'Error: you can only add sprites to a group';
 			}
 
 			if (-1 === this.indexOf(s)) {
-				array.push(s);
+				this.push(s);
 				s.groups.push(this);
+				return true;
 			}
-		};
+		}
 
 		/**
 		 * Same as group.length
 		 * @method size
 		 */
-		array.size = function () {
-			return array.length;
-		};
+		size() {
+			return this.length;
+		}
 
 		/**
 		 * Removes all the sprites in the group
@@ -2534,11 +2630,11 @@ deltaTime = ((now - then) / 1000)/INTERVAL_60; // seconds since last frame
 		 *
 		 * @method removeSprites
 		 */
-		array.removeSprites = function () {
-			while (array.length > 0) {
-				array[0].remove();
+		removeSprites() {
+			while (this.length > 0) {
+				this[0].remove();
 			}
-		};
+		}
 
 		/**
 		 * Removes all references to the group.
@@ -2546,9 +2642,9 @@ deltaTime = ((now - then) / 1000)/INTERVAL_60; // seconds since last frame
 		 *
 		 * @method clear
 		 */
-		array.clear = function () {
-			array.length = 0;
-		};
+		clear() {
+			this.length = 0;
+		}
 
 		/**
 		 * Removes a sprite from the group.
@@ -2558,16 +2654,16 @@ deltaTime = ((now - then) / 1000)/INTERVAL_60; // seconds since last frame
 		 * @param {Sprite} item The sprite to be removed
 		 * @return {Boolean} True if sprite was found and removed
 		 */
-		array.remove = function (item) {
+		remove(item) {
 			if (!(item instanceof Sprite)) {
 				throw 'Error: you can only remove sprites from a group';
 			}
 
 			var i,
 				removed = false;
-			for (i = array.length - 1; i >= 0; i--) {
-				if (array[i] === item) {
-					array.splice(i, 1);
+			for (i = this.length - 1; i >= 0; i--) {
+				if (this[i] === item) {
+					this.splice(i, 1);
 					removed = true;
 				}
 			}
@@ -2581,15 +2677,15 @@ deltaTime = ((now - then) / 1000)/INTERVAL_60; // seconds since last frame
 			}
 
 			return removed;
-		};
+		}
 
 		/**
 		 * Returns a copy of the group as standard array.
 		 * @method toArray
 		 */
-		array.toArray = function () {
-			return array.slice(0);
-		};
+		toArray() {
+			return this.slice(0);
+		}
 
 		/**
 		 * Returns the highest depth in a group
@@ -2597,15 +2693,15 @@ deltaTime = ((now - then) / 1000)/INTERVAL_60; // seconds since last frame
 		 * @method maxDepth
 		 * @return {Number} The depth of the sprite drawn on the top
 		 */
-		array.maxDepth = function () {
-			if (array.length === 0) {
+		maxDepth() {
+			if (this.length === 0) {
 				return 0;
 			}
 
-			return array.reduce(function (maxDepth, sprite) {
+			return this.reduce(function (maxDepth, sprite) {
 				return Math.max(maxDepth, sprite.depth);
 			}, -Infinity);
-		};
+		}
 
 		/**
 		 * Returns the lowest depth in a group
@@ -2613,22 +2709,22 @@ deltaTime = ((now - then) / 1000)/INTERVAL_60; // seconds since last frame
 		 * @method minDepth
 		 * @return {Number} The depth of the sprite drawn on the bottom
 		 */
-		array.minDepth = function () {
-			if (array.length === 0) {
+		minDepth() {
+			if (this.length === 0) {
 				return 99999;
 			}
 
-			return array.reduce(function (minDepth, sprite) {
+			return this.reduce(function (minDepth, sprite) {
 				return Math.min(minDepth, sprite.depth);
 			}, Infinity);
-		};
+		}
 
 		/**
 		 * Draws all the sprites in the group.
 		 *
 		 * @method draw
 		 */
-		array.draw = function () {
+		draw() {
 			//sort by depth
 			this.sort(function (a, b) {
 				return a.depth - b.depth;
@@ -2637,10 +2733,10 @@ deltaTime = ((now - then) / 1000)/INTERVAL_60; // seconds since last frame
 			for (var i = 0; i < this.size(); i++) {
 				this.get(i).display();
 			}
-		};
+		}
 
 		//internal use
-		function virtEquals(obj, other) {
+		_virtEquals(obj, other) {
 			if (obj === null || other === null) {
 				return obj === null && other === null;
 			}
@@ -2668,126 +2764,11 @@ deltaTime = ((now - then) / 1000)/INTERVAL_60; // seconds since last frame
 		 * @param {Function} [callback] on collision.
 		 * @return {boolean} True if any collision/overlap occurred
 		 */
-		function _groupCollide(type, target, callback) {
+		_groupCollide(type, target, callback) {
 			var didCollide = false;
 			for (var i = 0; i < this.size(); i++) didCollide = this.get(i).AABBops(type, target, callback) || didCollide;
 			return didCollide;
 		}
-
-		/**
-		 * Checks if the the group is overlapping another group or sprite.
-		 * The check is performed using the colliders. If colliders are not set
-		 * they will be created automatically from the image/animation bounding box.
-		 *
-		 * A callback function can be specified to perform additional operations
-		 * when the overlap occurs.
-		 * The function will be called for each single sprite overlapping.
-		 * The parameter of the function are respectively the
-		 * member of the current group and the other sprite passed as parameter.
-		 *
-		 * @example
-		 *     group.overlap(otherSprite, explosion);
-		 *
-		 *     function explosion(spriteA, spriteB) {
-		 *       spriteA.remove();
-		 *       spriteB.score++;
-		 *     }
-		 *
-		 * @method overlap
-		 * @param {Object} target Group or Sprite to check against the current one
-		 * @param {Function} [callback] The function to be called if overlap is positive
-		 * @return {Boolean} True if overlapping
-		 */
-		array.overlap = _groupCollide.bind(array, 'overlap');
-
-		/**
-		 * Checks if the the group is overlapping another group or sprite.
-		 * If the overlap is positive the sprites in the group will be displaced
-		 * by the colliding one to the closest non-overlapping positions.
-		 *
-		 * The check is performed using the colliders. If colliders are not set
-		 * they will be created automatically from the image/animation bounding box.
-		 *
-		 * A callback function can be specified to perform additional operations
-		 * when the overlap occours.
-		 * The function will be called for each single sprite overlapping.
-		 * The parameter of the function are respectively the
-		 * member of the current group and the other sprite passed as parameter.
-		 *
-		 * @example
-		 *     group.collide(otherSprite, explosion);
-		 *
-		 *     function explosion(spriteA, spriteB) {
-		 *       spriteA.remove();
-		 *       spriteB.score++;
-		 *     }
-		 *
-		 * @method collide
-		 * @param {Object} target Group or Sprite to check against the current one
-		 * @param {Function} [callback] The function to be called if overlap is positive
-		 * @return {Boolean} True if overlapping
-		 */
-		array.collide = _groupCollide.bind(array, 'collide');
-
-		/**
-		 * Checks if the the group is overlapping another group or sprite.
-		 * If the overlap is positive the sprites in the group will displace
-		 * the colliding ones to the closest non-overlapping positions.
-		 *
-		 * The check is performed using the colliders. If colliders are not set
-		 * they will be created automatically from the image/animation bounding box.
-		 *
-		 * A callback function can be specified to perform additional operations
-		 * when the overlap occurs.
-		 * The function will be called for each single sprite overlapping.
-		 * The parameter of the function are respectively the
-		 * member of the current group and the other sprite passed as parameter.
-		 *
-		 * @example
-		 *     group.displace(otherSprite, explosion);
-		 *
-		 *     function explosion(spriteA, spriteB) {
-		 *       spriteA.remove();
-		 *       spriteB.score++;
-		 *     }
-		 *
-		 * @method displace
-		 * @param {Object} target Group or Sprite to check against the current one
-		 * @param {Function} [callback] The function to be called if overlap is positive
-		 * @return {Boolean} True if overlapping
-		 */
-		array.displace = _groupCollide.bind(array, 'displace');
-
-		/**
-		 * Checks if the the group is overlapping another group or sprite.
-		 * If the overlap is positive the sprites will bounce affecting each
-		 * other's trajectories depending on their .velocity, .mass and .restitution.
-		 *
-		 * The check is performed using the colliders. If colliders are not set
-		 * they will be created automatically from the image/animation bounding box.
-		 *
-		 * A callback function can be specified to perform additional operations
-		 * when the overlap occours.
-		 * The function will be called for each single sprite overlapping.
-		 * The parameter of the function are respectively the
-		 * member of the current group and the other sprite passed as parameter.
-		 *
-		 * @example
-		 *     group.bounce(otherSprite, explosion);
-		 *
-		 *     function explosion(spriteA, spriteB) {
-		 *       spriteA.remove();
-		 *       spriteB.score++;
-		 *     }
-		 *
-		 * @method bounce
-		 * @param {Object} target Group or Sprite to check against the current one
-		 * @param {Function} [callback] The function to be called if overlap is positive
-		 * @return {Boolean} True if overlapping
-		 */
-		array.bounce = _groupCollide.bind(array, 'bounce');
-
-		return array;
 	}
 
 	p5.prototype.Group = Group;
@@ -2811,7 +2792,7 @@ deltaTime = ((now - then) / 1000)/INTERVAL_60; // seconds since last frame
 		this.draw = function () {
 			pInst.noFill();
 			pInst.stroke(0, 255, 0);
-			// pInst.rectMode(CENTER);
+			pInst.rectMode(CENTER);
 			pInst.ellipse(this.center.x + this.offset.x, this.center.y + this.offset.y, this.radius * 2, this.radius * 2);
 		};
 
@@ -2886,7 +2867,10 @@ deltaTime = ((now - then) / 1000)/INTERVAL_60; // seconds since last frame
 		else this.offset = _offset;
 
 		this.min = function () {
-			return createVector(this.center.x + this.offset.x, this.center.y + this.offset.y);
+			return createVector(
+				this.center.x + this.offset.x - this.extents.x,
+				this.center.y + this.offset.y - this.extents.y
+			);
 		};
 
 		this.max = function () {
@@ -2897,23 +2881,23 @@ deltaTime = ((now - then) / 1000)/INTERVAL_60; // seconds since last frame
 		};
 
 		this.right = function () {
-			return this.center.x + this.offset.x + this.extents.x;
+			return this.center.x + this.offset.x + this.extents.x / 2;
 		};
 
 		this.left = function () {
-			return this.center.x + this.offset.x;
+			return this.center.x + this.offset.x - this.extents.x / 2;
 		};
 
 		this.top = function () {
-			return this.center.y + this.offset.y;
+			return this.center.y + this.offset.y - this.extents.y / 2;
 		};
 
 		this.bottom = function () {
-			return this.center.y + this.offset.y + this.extents.y;
+			return this.center.y + this.offset.y + this.extents.y / 2;
 		};
 
 		this.size = function () {
-			return createVector(this.extents.x, this.extents.y);
+			return createVector(this.extents.x * 2, this.extents.y * 2);
 		};
 
 		this.rotate = function (r) {
@@ -2936,8 +2920,8 @@ deltaTime = ((now - then) / 1000)/INTERVAL_60; // seconds since last frame
 			//fill(col);
 			pInst.noFill();
 			pInst.stroke(0, 255, 0);
-			// pInst.rectMode(CENTER);
-			pInst.rect(this.center.x + this.offset.x, this.center.y + this.offset.y, this.size().x, this.size().y);
+			pInst.rectMode(CENTER);
+			pInst.rect(this.center.x + this.offset.x, this.center.y + this.offset.y, this.size().x / 2, this.size().y / 2);
 		};
 
 		this.overlap = function (other) {
@@ -3035,7 +3019,7 @@ deltaTime = ((now - then) / 1000)/INTERVAL_60; // seconds since last frame
 		this.minkowskiDifference = function (other) {
 			var topLeft = this.min().sub(other.max());
 			var fullSize = this.size().add(other.size());
-			return new AABB(pInst, topLeft, fullSize);
+			return new AABB(pInst, topLeft.add(fullSize.div(2)), fullSize.div(2));
 		};
 
 		this.closestPointOnBoundsToPoint = function (point) {
@@ -3064,7 +3048,7 @@ deltaTime = ((now - then) / 1000)/INTERVAL_60; // seconds since last frame
 	defineLazyP5Property('AABB', boundConstructorFactory(AABB));
 
 	/**
-	 * An Animation object contains a series of images (p5.Image) that
+	 * An SpriteAnimation object contains a series of images (p5.Image) that
 	 * can be displayed sequentially.
 	 *
 	 * All files must be png images. You must include the directory from the sketch root,
@@ -3101,13 +3085,13 @@ deltaTime = ((now - then) / 1000)/INTERVAL_60; // seconds since last frame
 	 *       animation(glitch, 200, 100);
 	 *     }
 	 *
-	 * @class Animation
+	 * @class SpriteAnimation
 	 * @constructor
 	 * @param {String} fileName1 First file in a sequence OR first image file
 	 * @param {String} fileName2 Last file in a sequence OR second image file
 	 * @param {String} [...fileNameN] Any number of image files after the first two
 	 */
-	function Animation(pInst) {
+	function SpriteAnimation(pInst) {
 		var frameArguments = Array.prototype.slice.call(arguments, 1);
 		var i;
 
@@ -3188,13 +3172,13 @@ deltaTime = ((now - then) / 1000)/INTERVAL_60; // seconds since last frame
 			//make sure the extensions are fine
 			var ext1 = from.substring(from.length - 4, from.length);
 			if (ext1 !== '.png') {
-				pInst.print('Animation error: you need to use .png files (filename ' + from + ')');
+				pInst.print('SpriteAnimation error: you need to use .png files (filename ' + from + ')');
 				from = -1;
 			}
 
 			var ext2 = to.substring(to.length - 4, to.length);
 			if (ext2 !== '.png') {
-				pInst.print('Animation error: you need to use .png files (filename ' + to + ')');
+				pInst.print('SpriteAnimation error: you need to use .png files (filename ' + to + ')');
 				to = -1;
 			}
 
@@ -3204,12 +3188,12 @@ deltaTime = ((now - then) / 1000)/INTERVAL_60; // seconds since last frame
 				var digits2 = 0;
 
 				//skip extension work backwards to find the numbers
-				for (i = from.length - 4; i >= 0; i--) {
+				for (i = from.length - 5; i >= 0; i--) {
 					if (from.charAt(i) >= '0' && from.charAt(i) <= '9') digits1++;
 					else break;
 				}
 
-				for (i = to.length - 4; i >= 0; i--) {
+				for (i = to.length - 5; i >= 0; i--) {
 					if (to.charAt(i) >= '0' && to.charAt(i) <= '9') digits2++;
 					else break;
 				}
@@ -3279,10 +3263,10 @@ deltaTime = ((now - then) / 1000)/INTERVAL_60; // seconds since last frame
 		 * using the same animation you need to clone it.
 		 *
 		 * @method clone
-		 * @return {Animation} A clone of the current animation
+		 * @return {SpriteAnimation} A clone of the current animation
 		 */
 		this.clone = function () {
-			var myClone = new Animation(pInst); //empty
+			var myClone = new SpriteAnimation(pInst); //empty
 			myClone.images = [];
 
 			if (this.spriteSheet) {
@@ -3320,7 +3304,7 @@ deltaTime = ((now - then) / 1000)/INTERVAL_60; // seconds since last frame
 
 				//this.currentImageMode = g.imageMode;
 				pInst.push();
-				// pInst.imageMode(CENTER);
+				pInst.imageMode(CENTER);
 
 				pInst.translate(this.xpos, this.ypos);
 				if (pInst._angleMode === pInst.RADIANS) {
@@ -3388,10 +3372,7 @@ deltaTime = ((now - then) / 1000)/INTERVAL_60; // seconds since last frame
 					if (frame < this.images.length - 1) frame++;
 				}
 			}
-			if (this.onComplete && ((targetFrame == -1 && frame == this.images.length - 1) || frame == targetFrame)) {
-				if (this.looping) targetFrame = -1;
-				this.onComplete(); //fire when on last frame
-			}
+			if (frame == this.images.length - 1 && this.onComplete != undefined) this.onComplete(); //fire when on last frame
 
 			if (previousFrame !== frame) this.frameChanged = true;
 		}; //end update
@@ -3428,7 +3409,7 @@ deltaTime = ((now - then) / 1000)/INTERVAL_60; // seconds since last frame
 		 * fire when animation ends
 		 *
 		 * @method onComplete
-		 * @return {Animation}
+		 * @return {SpriteAnimation}
 		 */
 		this.onComplete = function () {
 			return undefined;
@@ -3572,10 +3553,10 @@ deltaTime = ((now - then) / 1000)/INTERVAL_60; // seconds since last frame
 		};
 	}
 
-	defineLazyP5Property('Animation', boundConstructorFactory(Animation));
+	defineLazyP5Property('SpriteAnimation', boundConstructorFactory(SpriteAnimation));
 
 	/**
-	 * Represents a sprite sheet and all it's frames.  To be used with Animation,
+	 * Represents a sprite sheet and all it's frames.  To be used with SpriteAnimation,
 	 * or static drawing single frames.
 	 *
 	 *  There are two different ways to load a SpriteSheet

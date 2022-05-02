@@ -1077,6 +1077,14 @@ function createAni(spriteSheetImg, size, pos, frameCount, frameDelay) {
 	return ani;
 }
 
+function loadImg(imgPath) {
+	return new Promise((resolve) => {
+		loadImage(imgPath, () => {
+			resolve();
+		});
+	});
+}
+
 {
 	class Tiles {
 		constructor(tileSize, x, y, depth) {
@@ -1230,21 +1238,22 @@ function createAni(spriteSheetImg, size, pos, frameCount, frameDelay) {
 				}
 				let sprite = createSprite(0, 0, w, h);
 				// prettier-ignore
-				Object.defineProperty(sprite, 'row', {
-					get: function () { return this._row },
-					set: function (row) {
-						this._row = row;
-						this.destRow = row;
-						this.y = _this.y + row * h;
-					}
-				});
-				// prettier-ignore
-				Object.defineProperty(sprite, 'col', {
-					get: function () { return this._col },
-					set: function (col) {
-						this._col = col;
-						this.destCol = col;
-						this.x = _this.x + col * w;
+				Object.defineProperties(sprite, {
+					row: {
+						get: function () { return this._row },
+						set: function (row) {
+							this._row = row;
+							this.destRow = row;
+							this.y = _this.y + row * h;
+						}
+					},
+					col: {
+						get: function () { return this._col },
+						set: function (col) {
+							this._col = col;
+							this.destCol = col;
+							this.x = _this.x + col * w;
+						}
 					}
 				});
 				sprite.row = row;
@@ -1311,7 +1320,11 @@ function createAni(spriteSheetImg, size, pos, frameCount, frameDelay) {
 						speed = Math.abs(speed);
 					}
 					sprite.isMoving = true;
-					sprite.attractionPoint(speed, _this.x + destCol * sprite.w, _this.y + destRow * sprite.h);
+					sprite.attractionPoint(
+						speed,
+						_this.x + _this.tileSize / 2 + destCol * sprite.w,
+						_this.y + _this.tileSize / 2 + destRow * sprite.h
+					);
 
 					let dist = Math.max(Math.abs(sprite.row - destRow), Math.abs(sprite.col - destCol));
 					let frames = 0;
@@ -1328,8 +1341,8 @@ function createAni(spriteSheetImg, size, pos, frameCount, frameDelay) {
 								continue;
 							}
 							// calculate the sprite's row, col grid position without rounding
-							let row = (sprite.position.y - _this.y) / sprite.w;
-							let col = (sprite.position.x - _this.x) / sprite.h;
+							let row = (sprite.y - _this.y) / sprite.w;
+							let col = (sprite.x - _this.x) / sprite.h;
 							// see if the sprite is too far from a whole number row, col coordinate
 							if (Math.abs(row - Math.round(row)) % 1 > margin || Math.abs(col - Math.round(col)) % 1 > margin)
 								continue;
@@ -3211,37 +3224,28 @@ READY.
 
 		if (img) sprite.addImage(img);
 
-		// prettier-ignore
-		Object.defineProperty(sprite, 'x', {
-			get: function () { return this.position.x },
-			set: function (x) { this.position.x = x }
-		});
-		// prettier-ignore
-		Object.defineProperty(sprite, 'y', {
-			get: function () { return this.position.y },
-			set: function (y) { this.position.y = y }
-		});
-		// prettier-ignore
-		Object.defineProperty(sprite, 'w', {
-			get: function () { return this.width },
-			set: function (w) { this.width = w }
-		});
-		// prettier-ignore
-		Object.defineProperty(sprite, 'h', {
-			get: function () { return this.height },
-			set: function (h) { this.height = h }
-		});
+		sprite.halfWidth = Math.round(sprite.width / 2);
+		sprite.halfHeight = Math.round(sprite.height / 2);
 
-		// sprite.ani = function (name, start, end) {
-		// 	return new Promise((resolve, reject) => {
-		// 		this.changeAnimation(name);
-		// 		if (start) this.animation.changeFrame(start);
-		// 		if (end) this.animation.goToFrame(end);
-		// 		this.animation.onComplete = () => {
-		// 			resolve();
-		// 		};
-		// 	});
-		// };
+		// prettier-ignore
+		Object.defineProperties(sprite, {
+			x: {
+				get: function () { return this.position.x - this.halfWidth },
+				set: function (x) { this.position.x = x + this.halfWidth }
+			},
+			y: {
+				get: function () { return this.position.y - this.halfHeight },
+				set: function (y) { this.position.y = y + this.halfHeight }
+			},
+			w: {
+				get: function () { return this.width },
+				set: function (w) { this.width = w; this.halfWidth = Math.round(w / 2); }
+			},
+			h: {
+				get: function () { return this.height },
+				set: function (h) { this.height = h; this.halfHeight = Math.round(h / 2); }
+			}
+		});
 
 		sprite._aniChanged = 0;
 
