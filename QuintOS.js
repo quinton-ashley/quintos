@@ -1205,8 +1205,8 @@ function loadImg(imgPath) {
 				dist ??= 1;
 				for (let i = 0; i < this.length; i++) {
 					let sprite = this[i];
-					let row = (sprite.position.y - _this.y) / sprite.w;
-					let col = (sprite.position.x - _this.x) / sprite.h;
+					let row = (sprite.y - _this.y) / sprite.w;
+					let col = (sprite.x - _this.x) / sprite.h;
 					if (Math.abs(row) % 1 >= dist || Math.abs(col) % 1 >= dist) continue;
 					row = Math.round(row);
 					col = Math.round(col);
@@ -1322,8 +1322,8 @@ function loadImg(imgPath) {
 					sprite.isMoving = true;
 					sprite.attractionPoint(
 						speed,
-						_this.x + _this.tileSize / 2 + destCol * sprite.w,
-						_this.y + _this.tileSize / 2 + destRow * sprite.h
+						_this.x + sprite.halfWidth + destCol * sprite.w,
+						_this.y + sprite.halfHeight + destRow * sprite.h
 					);
 
 					let dist = Math.max(Math.abs(sprite.row - destRow), Math.abs(sprite.col - destCol));

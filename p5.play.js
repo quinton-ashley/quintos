@@ -1902,6 +1902,8 @@ deltaTime = ((now - then) / 1000)/INTERVAL_60; // seconds since last frame
 			if (anim) {
 				this.currentAnimation = label;
 				this.animation = anim;
+				// reset to frame 0 of that animation
+				if (this.autoResetAnimations) this.animation.changeFrame(0);
 			} else {
 				this.p.print('changeAnimation error: no animation labeled ' + label);
 			}
@@ -3372,7 +3374,10 @@ deltaTime = ((now - then) / 1000)/INTERVAL_60; // seconds since last frame
 					if (frame < this.images.length - 1) frame++;
 				}
 			}
-			if (frame == this.images.length - 1 && this.onComplete != undefined) this.onComplete(); //fire when on last frame
+			if (this.onComplete && ((targetFrame == -1 && frame == this.images.length - 1) || frame == targetFrame)) {
+				if (this.looping) targetFrame = -1;
+				this.onComplete(); //fire when on last frame
+			}
 
 			if (previousFrame !== frame) this.frameChanged = true;
 		}; //end update
