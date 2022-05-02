@@ -273,7 +273,6 @@ http://molleindustria.org/
 	 * @param {Sprite} sprite Sprite to be displayed
 	 */
 	p5.prototype.loadAnimation = function () {
-		// return construct(this.SpriteAnimation, arguments);
 		return new SpriteAnimation(this, ...arguments);
 	};
 
@@ -284,7 +283,6 @@ http://molleindustria.org/
 	 * @method loadSpriteSheet
 	 */
 	p5.prototype.loadSpriteSheet = function () {
-		// return construct(this.SpriteSheet, arguments);
 		return new SpriteSheet(this, ...arguments);
 	};
 
@@ -1128,9 +1126,20 @@ deltaTime = ((now - then) / 1000)/INTERVAL_60; // seconds since last frame
 			 */
 			this.groups = [];
 
+			/**
+			 * Keys are the animation label, values are SpriteAnimation objects.
+			 *
+			 * @property animations
+			 * @type {Object}
+			 */
 			this.animations = {};
 
-			//The current animation's label.
+			/**
+			 * The current animation's label.
+			 *
+			 * @property currentAnimation
+			 * @type {String}
+			 */
 			this.currentAnimation = '';
 
 			/**
@@ -1140,6 +1149,18 @@ deltaTime = ((now - then) / 1000)/INTERVAL_60; // seconds since last frame
 			 * @type {SpriteAnimation}
 			 */
 			this.animation = undefined;
+
+			/**
+			 * If false, animations that are stopped before they are completed,
+			 * typically by a call to sprite.changeAnimation, will start at the frame
+			 * they were stopped at. If true, animations will always start playing from
+			 * frame 0 unless specified by the user in a seperate anim.changeFrame
+			 * call.
+			 *
+			 * @property autoResetAnimations
+			 * @type {SpriteAnimation}
+			 */
+			this.autoResetAnimations = false;
 
 			/**
 			 * Internal variable to keep track of whether this sprite is drawn while
@@ -1887,7 +1908,11 @@ deltaTime = ((now - then) / 1000)/INTERVAL_60; // seconds since last frame
 		}
 
 		/**
-		 * Changes the displayed animation.
+		 * Changes the displayed animation. The animation must be added first
+		 * using the sprite.addAnimation method. The animation could also be
+		 * added using the group.addAnimation method to a group the sprite
+		 * has been added to.
+		 *
 		 * See SpriteAnimation for more control over the sequence.
 		 *
 		 * @method changeAnimation
@@ -2453,6 +2478,15 @@ deltaTime = ((now - then) / 1000)/INTERVAL_60; // seconds since last frame
 	class Group extends Array {
 		constructor(...args) {
 			super(...args);
+
+			/**
+			 * Keys are the animation label, values are SpriteAnimation objects.
+			 *
+			 * @property animations
+			 * @type {Object}
+			 */
+			this.animations = {};
+
 			/**
 			 * Checks if the the group is overlapping another group or sprite.
 			 * The check is performed using the colliders. If colliders are not set
@@ -2736,6 +2770,91 @@ deltaTime = ((now - then) / 1000)/INTERVAL_60; // seconds since last frame
 
 			for (var i = 0; i < this.size(); i++) {
 				this.get(i).display();
+			}
+		}
+
+		/**
+		 * Adds an image to the Group.
+		 * An image will be considered a one-frame animation.
+		 * The image should be preloaded in the preload() function using p5 loadImage.
+		 * Animations require a identifying label (string) to change them.
+		 * The image is stored in the Group but not necessarily displayed
+		 * until Sprite.changeAnimation(label) is called
+		 *
+		 * Usages:
+		 * - group.addImage(label, image);
+		 * - group.addImage(image);
+		 *
+		 * If only an image is passed no label is specified
+		 *
+		 * @method addImage
+		 * @param {String|p5.Image} label Label or image
+		 * @param {p5.Image} [img] Image
+		 */
+		addImage() {
+			if (typeof arguments[0] === 'string' && arguments[1] instanceof p5.Image)
+				this.addAnimation(arguments[0], arguments[1]);
+			else if (arguments[0] instanceof p5.Image) this.addAnimation('normal', arguments[0]);
+			else throw 'addImage error: allowed usages are <image> or <label>, <image>';
+		}
+
+		/**
+		 * Adds an animation to the group.
+		 * The animation should be preloaded in the preload() function
+		 * using loadAnimation.
+		 * Animations require a identifying label (string) to change them.
+		 * Animations are stored in the group but not necessarily displayed
+		 * until Sprite.changeAnimation(label) is called.
+		 *
+		 * Usage:
+		 * - group.addAnimation(label, animation);
+		 *
+		 * Alternative usages. See SpriteAnimation for more information on file sequences:
+		 * - group.addAnimation(label, firstFrame, lastFrame);
+		 * - group.addAnimation(label, frame1, frame2, frame3...);
+		 *
+		 * @method addAnimation
+		 * @param {String} label SpriteAnimation identifier
+		 * @param {SpriteAnimation} animation The preloaded animation
+		 */
+		addAnimation(label) {
+			var anim;
+
+			if (typeof label !== 'string') {
+				this.p.print('Sprite.addAnimation error: the first argument must be a label (String)');
+				return -1;
+			} else if (arguments.length < 2) {
+				this.p.print('addAnimation error: you must specify a label and n frame images');
+				return -1;
+			} else if (arguments[1] instanceof SpriteAnimation) {
+				var sourceAnimation = arguments[1];
+
+				var newAnimation = sourceAnimation.clone();
+
+				this.animations[label] = newAnimation;
+
+				if (this.currentAnimation === '') {
+					this.currentAnimation = label;
+					this.animation = newAnimation;
+				}
+
+				newAnimation.isSpriteAnimation = true;
+
+				return newAnimation;
+			} else {
+				var animFrames = [];
+				for (var i = 1; i < arguments.length; i++) animFrames.push(arguments[i]);
+
+				anim = new SpriteAnimation(this, ...animFrames);
+				this.animations[label] = anim;
+
+				if (this.currentAnimation === '') {
+					this.currentAnimation = label;
+					this.animation = anim;
+				}
+				anim.isSpriteAnimation = true;
+
+				return anim;
 			}
 		}
 
@@ -3736,15 +3855,6 @@ deltaTime = ((now - then) / 1000)/INTERVAL_60; // seconds since last frame
 	}
 
 	defineLazyP5Property('SpriteSheet', boundConstructorFactory(SpriteSheet));
-
-	//general constructor to be able to feed arguments as array
-	function construct(constructor, args) {
-		function F() {
-			return constructor.apply(this, args);
-		}
-		F.prototype = constructor.prototype;
-		return new F();
-	}
 
 	/*
 	 * Javascript Quadtree

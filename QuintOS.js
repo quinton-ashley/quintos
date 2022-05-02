@@ -1183,7 +1183,7 @@ function loadImg(imgPath) {
 				size ??= _this.tileSize;
 				pos ??= line || 0;
 				let sheet = this.spriteSheet || _this.spriteSheet;
-				this.animations[name] = createAni(sheet, size, pos, frames, delay);
+				this.addAnimation(name, createAni(sheet, size, pos, frames, delay));
 			};
 
 			// deprecated
@@ -1218,10 +1218,7 @@ function loadImg(imgPath) {
 					sprite.x = _this.x + col * sprite.h;
 				}
 			};
-			/*
-			 * createSprite
-			 * layer is optional, defaults to zero
-			 */
+
 			group.createSprite = function (ani, row, col, layer) {
 				if (typeof ani == 'number') {
 					// shift parameters over
@@ -3212,8 +3209,101 @@ READY.
 	QuintOS.palettes = palettes[QuintOS.sys] || [];
 	QuintOS.palette = QuintOS.palettes[0] || {};
 
+	// prettier-ignore
+	Object.defineProperties(p5.prototype.Sprite.prototype, {
+		x: {
+			get: function () { return this.position.x - this.halfWidth },
+			set: function (x) { this.position.x = x + this.halfWidth }
+		},
+		y: {
+			get: function () { return this.position.y - this.halfHeight },
+			set: function (y) { this.position.y = y + this.halfHeight }
+		},
+		w: {
+			get: function () { return this.width },
+			set: function (w) { this.width = w; this.halfWidth = Math.round(w / 2); }
+		},
+		h: {
+			get: function () { return this.height },
+			set: function (h) { this.height = h; this.halfHeight = Math.round(h / 2); }
+		}
+	});
+
+	p5.prototype.Sprite.prototype.ani = async function (...anis) {
+		let count = ++this._aniChanged;
+
+		for (let i = 0; i < anis.length; i++) {
+			if (typeof anis[i] == 'string') anis[i] = { name: anis[i] };
+			let ani = anis[i];
+			if (ani.name[0] == '!') {
+				ani.name = ani.name.slice(1);
+				ani.start = -1;
+				ani.end = 0;
+			}
+		}
+
+		let _ani = (name, start, end) => {
+			return new Promise((resolve) => {
+				this.changeAnimation(name);
+				if (start < 0) {
+					start = this.animation.images.length + start;
+				}
+				if (start) this.animation.changeFrame(start);
+				if (end != undefined) this.animation.goToFrame(end);
+				this.animation.onComplete = () => {
+					resolve();
+				};
+			});
+		};
+
+		for (let i = 0; i < anis.length; i++) {
+			let ani = anis[i];
+			if (ani.name == '*') {
+				if (count == this._aniChanged) i = 0;
+				continue;
+			}
+			let { name, start, end } = ani;
+			await _ani(name, start, end);
+		}
+	};
+
+	p5.prototype.Sprite.prototype.img = function (img) {
+		return this.ani(img);
+	};
+
+	p5.prototype.Sprite.prototype.addAni = function (name, atlas) {
+		if (typeof name != 'string') {
+			atlas = name;
+			name = 'default0';
+		}
+		let { size, pos, line, frames, delay } = atlas;
+		size ??= [this.w / this.scale, this.h / this.scale];
+		pos ??= line || 0;
+		this.addAnimation(name, createAni(this.spriteSheet, size, pos, frames, delay));
+	};
+
+	// deprecated
+	p5.prototype.Sprite.prototype.loadAni = function (name, atlas) {
+		this.addAni(name, atlas);
+	};
+
+	p5.prototype.Sprite.prototype.addImg = function (name, atlas) {
+		this.addAni(name, atlas);
+	};
+
+	// deprecated
+	p5.prototype.Sprite.prototype.loadImg = function (name, atlas) {
+		this.addAni(name, atlas);
+	};
+
 	let _createSprite = createSprite;
 
+	/**
+	 * Creates a sprite
+	 *
+	 * @method createSprite
+	 * @return a p5.play Sprite
+	 */
 	window.createSprite = (x, y, w, h) => {
 		let img;
 		if (typeof x == 'object') img = x;
@@ -3227,94 +3317,7 @@ READY.
 		sprite.halfWidth = Math.round(sprite.width / 2);
 		sprite.halfHeight = Math.round(sprite.height / 2);
 
-		// prettier-ignore
-		Object.defineProperties(sprite, {
-			x: {
-				get: function () { return this.position.x - this.halfWidth },
-				set: function (x) { this.position.x = x + this.halfWidth }
-			},
-			y: {
-				get: function () { return this.position.y - this.halfHeight },
-				set: function (y) { this.position.y = y + this.halfHeight }
-			},
-			w: {
-				get: function () { return this.width },
-				set: function (w) { this.width = w; this.halfWidth = Math.round(w / 2); }
-			},
-			h: {
-				get: function () { return this.height },
-				set: function (h) { this.height = h; this.halfHeight = Math.round(h / 2); }
-			}
-		});
-
 		sprite._aniChanged = 0;
-
-		sprite.ani = async function (...anis) {
-			let count = ++sprite._aniChanged;
-
-			for (let i = 0; i < anis.length; i++) {
-				if (typeof anis[i] == 'string') anis[i] = { name: anis[i] };
-				let ani = anis[i];
-				if (ani.name[0] == '!') {
-					ani.name = ani.name.slice(1);
-					ani.start = -1;
-					ani.end = 0;
-				}
-			}
-
-			let _ani = (name, start, end) => {
-				return new Promise((resolve) => {
-					this.changeAnimation(name);
-					if (start < 0) {
-						start = this.animation.images.length + start;
-					}
-					if (start) this.animation.changeFrame(start);
-					if (end != undefined) this.animation.goToFrame(end);
-					this.animation.onComplete = () => {
-						resolve();
-					};
-				});
-			};
-
-			for (let i = 0; i < anis.length; i++) {
-				let ani = anis[i];
-				if (ani.name == '*') {
-					if (count == sprite._aniChanged) i = 0;
-					continue;
-				}
-				let { name, start, end } = ani;
-				await _ani(name, start, end);
-			}
-		};
-
-		sprite.img = function (img) {
-			return sprite.ani(img);
-		};
-
-		sprite.addAni = function (name, atlas) {
-			if (typeof name != 'string') {
-				atlas = name;
-				name = 'default0';
-			}
-			let { size, pos, line, frames, delay } = atlas;
-			size ??= [this.w / this.scale, this.h / this.scale];
-			pos ??= line || 0;
-			this.addAnimation(name, createAni(this.spriteSheet, size, pos, frames, delay));
-		};
-
-		// deprecated
-		sprite.loadAni = function (name, atlas) {
-			this.addAni(name, atlas);
-		};
-
-		sprite.addImg = function (name, atlas) {
-			this.addAni(name, atlas);
-		};
-
-		// deprecated
-		sprite.loadImg = function (name, atlas) {
-			this.addAni(name, atlas);
-		};
 
 		return sprite;
 	};
