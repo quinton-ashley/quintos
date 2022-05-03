@@ -3210,7 +3210,7 @@ READY.
 	QuintOS.palette = QuintOS.palettes[0] || {};
 
 	// prettier-ignore
-	Object.defineProperties(p5.prototype.Sprite.prototype, {
+	Object.defineProperties(Sprite.prototype, {
 		x: {
 			get: function () { return this.position.x - this.halfWidth },
 			set: function (x) { this.position.x = x + this.halfWidth }
@@ -3229,7 +3229,7 @@ READY.
 		}
 	});
 
-	p5.prototype.Sprite.prototype.ani = async function (...anis) {
+	Sprite.prototype.ani = async function (...anis) {
 		let count = ++this._aniChanged;
 
 		for (let i = 0; i < anis.length; i++) {
@@ -3267,11 +3267,11 @@ READY.
 		}
 	};
 
-	p5.prototype.Sprite.prototype.img = function (img) {
+	Sprite.prototype.img = function (img) {
 		return this.ani(img);
 	};
 
-	p5.prototype.Sprite.prototype.addAni = function (name, atlas) {
+	Sprite.prototype.addAni = function (name, atlas) {
 		if (typeof name != 'string') {
 			atlas = name;
 			name = 'default0';
@@ -3283,16 +3283,16 @@ READY.
 	};
 
 	// deprecated
-	p5.prototype.Sprite.prototype.loadAni = function (name, atlas) {
+	Sprite.prototype.loadAni = function (name, atlas) {
 		this.addAni(name, atlas);
 	};
 
-	p5.prototype.Sprite.prototype.addImg = function (name, atlas) {
+	Sprite.prototype.addImg = function (name, atlas) {
 		this.addAni(name, atlas);
 	};
 
 	// deprecated
-	p5.prototype.Sprite.prototype.loadImg = function (name, atlas) {
+	Sprite.prototype.loadImg = function (name, atlas) {
 		this.addAni(name, atlas);
 	};
 
