@@ -4,8 +4,8 @@ body.gridc {
 }
 
 .gridc .screen {
-	font-family: GridC, Pixel7, monospace;
-	font-size: 3.2vw;
+	font-family: Bit5x7, GridC, VT323, Pixel7, monospace;
+	font-size: 1.6vw;
 	position: absolute;
 	z-index: 1;
 }
@@ -22,7 +22,7 @@ body.gridc {
 
 .gridc #screen0 {
 	filter: drop-shadow(0 0 0.5vw #e5b930);
-	/* margin-top: -0.25vw; */
+	/* margin-top: -0.14vw; */
 }
 
 .gridc #screen0,
@@ -31,26 +31,20 @@ body.gridc {
 }
 
 .gridc .terminalScreen {
-	margin-top: 1vw;
 	width: 84vw;
-	height: 63vw;
+	height: 47.25vw;
+	margin-top: 1vw;
 	margin-left: 1vw;
 	border: solid #111 2vw;
-	background-color: #333;
-	background: radial-gradient(#333 60%, #e5b930 600%);
+	background: repeating-linear-gradient(#464640 0, #585956 0.08vw, #585956 0.26vw, #464640 0.3498vw);
 }
 
 .gridc main,
-.gridc #defaultCanvas0 {
-	position: absolute;
-	width: 84vw;
-	height: 63vw;
-}
-
+.gridc #defaultCanvas0,
 .gridc #screen0 {
 	position: absolute;
 	width: 84vw;
-	height: 61.425vw;
+	height: 47.25vw;
 }
 
 .gridc .center {
@@ -63,14 +57,14 @@ body.gridc {
 .gridc .screenBox {
 	position: relative;
 	width: 100vw;
-	height: 90.3vw;
+	height: 75vw;
 	background-color: #222;
 }
 
 .gridc .frame {
 	position: absolute;
 	width: 94.95vw;
-	height: 85vw;
+	height: 69.5vw;
 	background-color: #555;
 	left: 1.96vw;
 	top: 1.96vw;
@@ -81,7 +75,7 @@ body.gridc {
 .gridc .screenBox2 {
 	position: absolute;
 	width: 100%;
-	height: 74.04vw;
+	height: 60vw;
 	background-color: #222;
 }
 
@@ -90,7 +84,7 @@ body.gridc {
 	left: 2.5vw;
 	top: 2.5vw;
 	width: 90vw;
-	height: 69vw;
+	height: 53.5vw;
 	background-color: #7a7a7a;
 	/* border-radius: 30%/2%; */
 	background-color: #111;
@@ -397,4 +391,34 @@ body.gridc {
 	border-radius: 50%;
 	left: 103.09vw;
 	top: 12.44vw;
+}
+
+@media screen and (max-width: 1000px) {
+	.gridc .screen {
+		font-family: GridC, Bit5x7, VT323, Pixel7, monospace;
+		font-size: 3.23vw;
+	}
+
+	.gridc .terminalScreen,
+	.gridc main,
+	.gridc #defaultCanvas0,
+	.gridc #screen0 {
+		height: 70.875vw;
+	}
+
+	.gridc .frame {
+		height: 93vw;
+	}
+
+	.gridc .screenBox {
+		height: 98vw;
+	}
+
+	.gridc .screenBox2 {
+		height: 85vw;
+	}
+
+	.gridc .screenBox3 {
+		height: 77vw;
+	}
 }

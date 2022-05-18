@@ -2395,8 +2395,6 @@ async function preload() {
 </div>`
 	};
 
-	pages.gridc2 = pages.gridc;
-
 	// `<figure class="icon trash click"><img src="https://dl.dropboxusercontent.com/s/c5w4rhgk2g34de7/icon_trash.png?dl=0" alt=""/>
 	// 	<figcaption>Trash</figcaption>
 	// </figure>
@@ -2523,9 +2521,6 @@ async function preload() {
 		rows = 2;
 		cols = 23;
 	} else if (QuintOS.sys == 'gridc') {
-		rows = 26;
-		cols = 80;
-	} else if (QuintOS.sys == 'gridc2') {
 		rows = 30;
 		cols = 80;
 	} else if (QuintOS.sys == 'zx') {
@@ -2568,11 +2563,6 @@ async function preload() {
 			w: 40
 		},
 		gridc: {
-			row: 1,
-			col: 1,
-			w: 78
-		},
-		gridc2: {
 			row: 1,
 			col: 1,
 			w: 78
@@ -3119,7 +3109,6 @@ READY.
 		]
 	};
 
-	palettes.gridc2 = palettes.gridc;
 	palettes.arcv = palettes.zx;
 
 	/*#0f380f; #306230; #8bac0f; #9bbc0f; */
@@ -3349,7 +3338,7 @@ READY.
 	} else if (QuintOS.sys == 'arcv') {
 		resizeCanvas(320, 400);
 	} else if (QuintOS.sys == 'gridc') {
-		resizeCanvas(320, 240);
+		resizeCanvas(320, 270);
 	} else if (QuintOS.sys == 'gridc2') {
 		resizeCanvas(480, 270);
 	} else if (QuintOS.sys == 'zx') {
