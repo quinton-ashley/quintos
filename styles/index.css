@@ -30,6 +30,11 @@ canvas {
 }
 
 @font-face {
+	font-family: Bit5x7;
+	src: url('../fonts/5x7-type-2.ttf');
+}
+
+@font-face {
 	font-family: Digital7;
 	src: url('../fonts/Digital7.woff2');
 }
@@ -62,6 +67,11 @@ canvas {
 @font-face {
 	font-family: FSEX302;
 	src: url('../fonts/FSEX302.ttf');
+}
+
+@font-face {
+	font-family: GridC;
+	src: url('../fonts/GridC.ttf');
 }
 
 @font-face {
@@ -115,7 +125,7 @@ row {
 }
 
 tile {
-	text-align: center;
+	text-align: left;
 }
 
 .hovered {

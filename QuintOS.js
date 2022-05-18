@@ -7,14 +7,14 @@ window.QuintOS = {
 		/*02*/ ['Pong', 'zx'],
 		/*03*/ ['Hangman', 'a2'],
 		/*04*/ ['QuickClicks', 'gridc'],
-		/*05*/ ['ClickAPath', 'gridc'],
+		/*05*/ ['CodeBreaker', 'gridc'],
 		/*06*/ ['TicTacToe', 'gridc'],
 		/*07*/ ['WorldWideWeb', 'macin'],
-		/*08*/ ['WheelOfFortune', 'a2'],
-		/*09*/ ['Contain', 'zx'], // TODO arc
+		/*08*/ ['Wordle', 'a2'],
+		/*09*/ ['Contain', 'zx'],
 		/*10*/ ['TicTacAIO', 'gridc'],
 		/*11*/ ['SpeakAndSpell', 'calcu'], // TODO sas
-		/*12*/ ['Snake', 'gameboi'], // TODO gameboi
+		/*12*/ ['Snake', 'gameboi'],
 		/*13*/ ['SketchBook', 'c64'],
 		/*14*/ ['SuperJump', 'arcv'],
 		/*15*/ ['Sokoban', 'c64']
@@ -167,20 +167,20 @@ QuintOS.text = async (txt, row, col, w, h, speed) => {
 };
 
 /* Display an application window frame */
-QuintOS.frame = async (row, col, w, h, style, speed, c) => {
+QuintOS.frame = async (row, col, rows, cols, style, speed, c) => {
 	row ??= 0;
 	col ??= 0;
-	w ??= QuintOS.cols;
-	h ??= QuintOS.rows;
+	cols ??= QuintOS.cols;
+	rows ??= QuintOS.rows;
 	style ??= 'solid';
 	c ??= '─';
 	if (QuintOS.sys == 'a2') c = '*';
 	if (QuintOS.sys == 'gridc') c = '═';
-	await textRect(row, col, w, h, style, c, speed);
+	await textRect(row, col, rows, cols, style, c, speed);
 };
 
 /* Display a rectangle with character or character set */
-async function textRect(row, col, w, h, style, c, speed) {
+async function textRect(row, col, rows, cols, style, c, speed) {
 	style ??= 'solid';
 	if (QuintOS.sys == 'cpet') {
 		c = {
@@ -223,27 +223,27 @@ async function textRect(row, col, w, h, style, c, speed) {
 	if (speed) await delay();
 	if (style != 'outline') {
 		QuintOS._drawChar(row, col, c.tl);
-		QuintOS._drawChar(row, col + w - 1, c.tr);
-		QuintOS._drawChar(row + h - 1, col, c.bl);
-		QuintOS._drawChar(row + h - 1, col + w - 1, c.br);
+		QuintOS._drawChar(row, col + cols - 1, c.tr);
+		QuintOS._drawChar(row + rows - 1, col, c.bl);
+		QuintOS._drawChar(row + rows - 1, col + cols - 1, c.br);
 	}
 
 	let chars = 0;
-	for (let i = row + 1, j = col + 1; i < row + h / 2 || j < col + w / 2; i++, j++) {
+	for (let i = row + 1, j = col + 1; i < row + rows / 2 || j < col + cols / 2; i++, j++) {
 		if (speed && chars % speed == 0) await delay();
 		// Horizontal Lines
-		if (j < col + w / 2 && (style != 'dashed' || (j - col + 1) % 2)) {
+		if (j < col + cols / 2 && (style != 'dashed' || (j - col + 1) % 2)) {
 			QuintOS._drawChar(row, j, c.hori);
-			QuintOS._drawChar(row + h - 1, j, c.hori);
-			QuintOS._drawChar(row, col + w - (j - col + 1), c.hori);
-			QuintOS._drawChar(row + h - 1, col + w - (j - col + 1), c.hori);
+			QuintOS._drawChar(row + rows - 1, j, c.hori);
+			QuintOS._drawChar(row, col + cols - (j - col + 1), c.hori);
+			QuintOS._drawChar(row + rows - 1, col + cols - (j - col + 1), c.hori);
 		}
 		// Vertical Lines
-		if (i < row + h / 2 && (style != 'dashed' || (i - row + 1) % 2)) {
+		if (i < row + rows / 2 && (style != 'dashed' || (i - row + 1) % 2)) {
 			QuintOS._drawChar(i, col, c.vert);
-			QuintOS._drawChar(i, col + w - 1, c.vert);
-			QuintOS._drawChar(row + h - (i - row + 1), col, c.vert);
-			QuintOS._drawChar(row + h - (i - row + 1), col + w - 1, c.vert);
+			QuintOS._drawChar(i, col + cols - 1, c.vert);
+			QuintOS._drawChar(row + rows - (i - row + 1), col, c.vert);
+			QuintOS._drawChar(row + rows - (i - row + 1), col + cols - 1, c.vert);
 		}
 		chars++;
 	}
@@ -551,7 +551,7 @@ async function alert(txt, row, col, w, h) {
 		} else {
 			QuintOS._textSync(_txt.lines, _txt.row, _txt.col);
 		}
-		await textRect(row, col, w, h + th);
+		await textRect(row, col, h + th, w);
 	} else {
 		erase();
 		txt = txt.slice(0, QuintOS.cols);
@@ -630,7 +630,7 @@ async function prompt(txt, row, col, w, h) {
 		} else {
 			QuintOS._textSync(_txt.lines, _txt.row, _txt.col);
 		}
-		await textRect(row, col, w, h + th);
+		await textRect(row, col, h + th, w);
 	} else {
 		window.erase();
 		txt = txt.slice(0, QuintOS.cols);
@@ -926,117 +926,6 @@ window.addEventListener('keydown', function (e) {
 		e.preventDefault();
 	}
 });
-
-/**
- * Gets a color from a color palette
- * c is the color key
- * palette can be a palette object or number index
- *   in the system's palettes array
- */
-function colorPal(c, palette) {
-	if (typeof palette == 'number') {
-		palette = QuintOS.palettes[palette];
-	}
-	palette ??= QuintOS.palettes[0];
-	c = palette[c];
-	if (!c) return color(0, 0, 0, 0);
-	return color(c);
-}
-
-let keyCodes = {
-	_: 189,
-	'-': 189,
-	',': 188,
-	';': 188,
-	':': 190,
-	'!': 49,
-	'?': 219,
-	'.': 190,
-	'"': 50,
-	'(': 56,
-	')': 57,
-	'§': 51,
-	'*': 187,
-	'/': 55,
-	'&': 54,
-	'#': 191,
-	'%': 53,
-	'°': 220,
-	'+': 187,
-	'=': 48,
-	"'": 191,
-	$: 52,
-	Alt: 18,
-	ArrowUp: 38,
-	ArrowDown: 40,
-	ArrowLeft: 37,
-	ArrowRight: 39,
-	CapsLock: 20,
-	Clear: 12,
-	Control: 17,
-	Delete: 46,
-	Escape: 27,
-	Insert: 45,
-	PageDown: 34,
-	PageUp: 33,
-	Shift: 16,
-	Tab: 9
-};
-
-/**
- * Get the keyCode of a key
- * @param {string} keyName
- * @returns {number} keyCode
- */
-function getKeyCode(keyName) {
-	let code = keyCodes[keyName];
-	if (code) return code;
-	return keyName.toUpperCase().charCodeAt(0);
-}
-
-/**
- * Check if key is down
- * @param {string} keyName
- * @returns {boolean} true if key is down
- */
-function isKeyDown(keyName) {
-	return keyIsDown(getKeyCode(keyName));
-}
-
-function spriteArt(txt, scale, palette) {
-	scale ??= 1;
-	if (typeof palette == 'number') {
-		palette = QuintOS.palettes[palette];
-	}
-	palette ??= QuintOS.palette;
-	let lines = txt; // accepts 2D arrays of characters
-	if (typeof txt == 'string') {
-		txt = txt.replace(/^[\n\t]+|\s+$/g, ''); // trim newlines
-		lines = txt.split('\n');
-	}
-	let x = 0;
-	let y = 0;
-	let w = 0;
-	for (let line of lines) {
-		if (line.length > w) w = line.length;
-	}
-	let h = lines.length;
-	let img = createImage(w * scale, h * scale);
-	img.loadPixels();
-
-	for (let i = 0; i < lines.length; i++) {
-		for (let j = 0; j < lines[i].length; j++) {
-			for (let sX = 0; sX < scale; sX++) {
-				for (let sY = 0; sY < scale; sY++) {
-					let c = colorPal(lines[i][j], palette);
-					img.set(j * scale + sX, i * scale + sY, c);
-				}
-			}
-		}
-	}
-	img.updatePixels();
-	return img; // return the p5 graphics object
-}
 
 function createAni(spriteSheetImg, size, pos, frameCount, frameDelay) {
 	let w, h;
@@ -1409,8 +1298,12 @@ async function preload() {
 				break;
 			}
 		}
-		if (QuintOS.game.toLowerCase() == 'wordle') {
-			QuintOS.game = 'Wordle';
+		let g = QuintOS.game.toLowerCase();
+		if (g == 'clickapath') {
+			QuintOS.game = 'ClickAPath';
+			QuintOS.level = 5;
+		} else if (g == 'wheeloffortune') {
+			QuintOS.game = 'WheelOfFortune';
 			QuintOS.level = 8;
 		}
 		QuintOS.level ??= -1;
@@ -2502,6 +2395,8 @@ async function preload() {
 </div>`
 	};
 
+	pages.gridc2 = pages.gridc;
+
 	// `<figure class="icon trash click"><img src="https://dl.dropboxusercontent.com/s/c5w4rhgk2g34de7/icon_trash.png?dl=0" alt=""/>
 	// 	<figcaption>Trash</figcaption>
 	// </figure>
@@ -2628,6 +2523,9 @@ async function preload() {
 		rows = 2;
 		cols = 23;
 	} else if (QuintOS.sys == 'gridc') {
+		rows = 26;
+		cols = 80;
+	} else if (QuintOS.sys == 'gridc2') {
 		rows = 30;
 		cols = 80;
 	} else if (QuintOS.sys == 'zx') {
@@ -2670,6 +2568,11 @@ async function preload() {
 			w: 40
 		},
 		gridc: {
+			row: 1,
+			col: 1,
+			w: 78
+		},
+		gridc2: {
 			row: 1,
 			col: 1,
 			w: 78
@@ -2880,7 +2783,7 @@ CopyLeft 1977`
 			{
 				name: 'bg',
 				col: 5,
-				row: 4,
+				row: 2,
 				speed: 100,
 				txt: (() => {
 					let p = ['\\', ' ', ' ', '\\', '_', '_'];
@@ -2898,7 +2801,7 @@ CopyLeft 1977`
 			{
 				name: 'logo',
 				col: 2,
-				row: 2,
+				row: 1,
 				speed: 50,
 				txt: `
           ________\n         /\\       \\\n        /  \\       \\
@@ -2907,12 +2810,12 @@ CopyLeft 1977`
   /  \\   \\/___/  \\       \\\n /    \\       \\   \\       \\
 /      \\_______\\   \\_______\\\n\\      /       /   /       /
  \\    /       /   /       /\n  \\  /       /\\  /       /
-   \\/_______/  \\/_______/`
+   \\/_______/  \\/_______/`.slice(1)
 			},
 			{
 				name: 'h1',
 				col: 20,
-				row: 10,
+				row: 8,
 				speed: 10,
 				txt: `
  ██████╗ ██╗   ██╗██╗███╗   ██╗████████╗ ██████╗ ███████╗
@@ -2932,7 +2835,7 @@ CopyLeft 1977`
 			{
 				name: 'info',
 				col: 20,
-				row: 23,
+				row: 21,
 				speed: 2,
 				txt: `
 THE Personal Computer: Powered by JavaScript™
@@ -3142,6 +3045,8 @@ READY.
 			{
 				' ': '',
 				'.': '',
+				'-': '',
+				_: '',
 				b: '#000000', // Black
 				u: '#0000d8', // blUe
 				r: '#d80000', // Red
@@ -3165,6 +3070,8 @@ READY.
 			{
 				' ': '',
 				'.': '',
+				'-': '',
+				_: '',
 				b: '#000000', // blacK
 				d: '#626252', // Dark-gray
 				m: '#898989', // Mid-gray
@@ -3187,6 +3094,8 @@ READY.
 			{
 				' ': '',
 				'.': '',
+				'-': '',
+				_: '',
 				0: '#071821',
 				1: '#306850',
 				2: '#86c06c',
@@ -3198,9 +3107,19 @@ READY.
 			// 	2: '#aaaaaa',
 			// 	3: '#ffffff'
 			// }
+		],
+		gridc: [
+			{
+				' ': '',
+				'.': '',
+				'-': '',
+				_: '',
+				X: '#e5b930'
+			}
 		]
 	};
 
+	palettes.gridc2 = palettes.gridc;
 	palettes.arcv = palettes.zx;
 
 	/*#0f380f; #306230; #8bac0f; #9bbc0f; */
@@ -3209,25 +3128,25 @@ READY.
 	QuintOS.palettes = palettes[QuintOS.sys] || [];
 	QuintOS.palette = QuintOS.palettes[0] || {};
 
-	// prettier-ignore
-	Object.defineProperties(Sprite.prototype, {
-		x: {
-			get: function () { return this.position.x - this.halfWidth },
-			set: function (x) { this.position.x = x + this.halfWidth }
-		},
-		y: {
-			get: function () { return this.position.y - this.halfHeight },
-			set: function (y) { this.position.y = y + this.halfHeight }
-		},
-		w: {
-			get: function () { return this.width },
-			set: function (w) { this.width = w; this.halfWidth = Math.round(w / 2); }
-		},
-		h: {
-			get: function () { return this.height },
-			set: function (h) { this.height = h; this.halfHeight = Math.round(h / 2); }
+	const _colorPal = colorPal;
+
+	window.colorPal = (c, palette) => {
+		if (typeof palette == 'number') {
+			palette = QuintOS.palettes[palette];
 		}
-	});
+		palette ??= QuintOS.palette;
+		return _colorPal(c, palette);
+	};
+
+	const _spriteArt = spriteArt;
+
+	window.spriteArt = (txt, scale, palette) => {
+		if (typeof palette == 'number') {
+			palette = QuintOS.palettes[palette];
+		}
+		palette ??= QuintOS.palette;
+		return _spriteArt(txt, scale, palette);
+	};
 
 	Sprite.prototype.ani = async function (...anis) {
 		let count = ++this._aniChanged;
@@ -3294,32 +3213,6 @@ READY.
 	// deprecated
 	Sprite.prototype.loadImg = function (name, atlas) {
 		this.addAni(name, atlas);
-	};
-
-	let _createSprite = createSprite;
-
-	/**
-	 * Creates a sprite
-	 *
-	 * @method createSprite
-	 * @return a p5.play Sprite
-	 */
-	window.createSprite = (x, y, w, h) => {
-		let img;
-		if (typeof x == 'object') img = x;
-		x ??= 0;
-		y ??= 0;
-
-		let sprite = _createSprite(x, y, w, h);
-
-		if (img) sprite.addImage(img);
-
-		sprite.halfWidth = Math.round(sprite.width / 2);
-		sprite.halfHeight = Math.round(sprite.height / 2);
-
-		sprite._aniChanged = 0;
-
-		return sprite;
 	};
 
 	QuintOS.language ??= 'js';
@@ -3437,7 +3330,7 @@ READY.
 		// add the clock
 		setInterval(() => {
 			let time = new Date($.now());
-			QuintOS._textSync([Date.now() + ''], 65, 29);
+			QuintOS._textSync([Date.now() + ''], 29, 65);
 			time = time.toString().split(' GMT')[0];
 			QuintOS._textSync([time + ''], 29, 2);
 		}, 1000);
@@ -3446,7 +3339,6 @@ READY.
 	// onerror = (msg, url, lineNum) => {
 	// 	error(msg + ' ' + url + ':' + lineNum);
 	// };
-	p5.disableFriendlyErrors = false;
 
 	// $('#screen0').parent().addClass('clear');
 	$('#screen0').parent().append($('main'));
@@ -3458,18 +3350,21 @@ READY.
 		resizeCanvas(320, 400);
 	} else if (QuintOS.sys == 'gridc') {
 		resizeCanvas(320, 240);
+	} else if (QuintOS.sys == 'gridc2') {
+		resizeCanvas(480, 270);
 	} else if (QuintOS.sys == 'zx') {
 		resizeCanvas(256, 192);
 	} else if (QuintOS.sys == 'gameboi') {
 		resizeCanvas(160, 144);
 	}
 
-	camera.position.x = width / 2;
-	camera.position.y = height / 2;
 	strokeWeight(2);
+	noSmooth();
 	$('canvas').removeAttr('style');
 
 	await delay(100);
+
+	p5.disableFriendlyErrors = false;
 
 	let title = QuintOS.game;
 	if (QuintOS.level >= 0) {

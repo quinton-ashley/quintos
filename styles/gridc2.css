@@ -1,76 +1,75 @@
-body.gridc {
+body.gridc2 {
 	background-color: #000;
 	color: #e5b930;
 }
 
-.gridc .screen {
-	font-family: GridC, Pixel7, monospace;
-	font-size: 3.2vw;
+.gridc2 .screen {
+	font-family: Bit5x7, VT323, Pixel7, monospace;
+	font-size: 1.6vw;
 	position: absolute;
 	z-index: 1;
 }
 
-.gridc .hovered,
-.gridc tile:hover {
+.gridc2 .hovered,
+.gridc2 tile:hover {
 	color: #653;
 	background-color: #e5b930;
 }
 
-.gridc .terminalScreen {
+.gridc2 .terminalScreen {
 	filter: drop-shadow(0 0 0.91vw #e5b930);
 }
 
-.gridc #screen0 {
+.gridc2 #screen0 {
 	filter: drop-shadow(0 0 0.5vw #e5b930);
-	/* margin-top: -0.25vw; */
+	/* margin-top: -0.14vw; */
 }
 
-.gridc #screen0,
-.gridc .hovered {
+.gridc2 #screen0,
+.gridc2 .hovered {
 	cursor: none;
 }
 
-.gridc .terminalScreen {
-	margin-top: 1vw;
+.gridc2 .terminalScreen {
 	width: 84vw;
-	height: 63vw;
+	height: 47.25vw;
+	margin-top: 1vw;
 	margin-left: 1vw;
 	border: solid #111 2vw;
-	background-color: #333;
-	background: radial-gradient(#333 60%, #e5b930 600%);
+	background: repeating-linear-gradient(#464640 0, #585956 0.08vw, #585956 0.26vw, #464640 0.3498vw);
 }
 
-.gridc main,
-.gridc #defaultCanvas0 {
+.gridc2 main,
+.gridc2 #defaultCanvas0 {
 	position: absolute;
 	width: 84vw;
-	height: 63vw;
+	height: 47.25vw;
 }
 
-.gridc #screen0 {
+.gridc2 #screen0 {
 	position: absolute;
 	width: 84vw;
-	height: 61.425vw;
+	height: 47.25vw;
 }
 
-.gridc .center {
+.gridc2 .center {
 	position: absolute;
 	top: 0.31vw;
 	left: 50%;
 	transform: translateX(-50%);
 }
 
-.gridc .screenBox {
+.gridc2 .screenBox {
 	position: relative;
 	width: 100vw;
-	height: 90.3vw;
+	height: 75vw;
 	background-color: #222;
 }
 
-.gridc .frame {
+.gridc2 .frame {
 	position: absolute;
 	width: 94.95vw;
-	height: 85vw;
+	height: 69.5vw;
 	background-color: #555;
 	left: 1.96vw;
 	top: 1.96vw;
@@ -78,29 +77,29 @@ body.gridc {
 	border-radius: 1%;
 }
 
-.gridc .screenBox2 {
+.gridc2 .screenBox2 {
 	position: absolute;
 	width: 100%;
-	height: 74.04vw;
+	height: 60vw;
 	background-color: #222;
 }
 
-.gridc .screenBox3 {
+.gridc2 .screenBox3 {
 	position: absolute;
 	left: 2.5vw;
 	top: 2.5vw;
 	width: 90vw;
-	height: 69vw;
+	height: 53.5vw;
 	background-color: #7a7a7a;
 	/* border-radius: 30%/2%; */
 	background-color: #111;
 }
 
-.gridc .screenEffect {
+.gridc2 .screenEffect {
 	background: repeating-linear-gradient(to bottom, #171717, #171717 0.33vw, #121212 0.33vw, #121212 7.2px);
 }
 
-.gridc .gridcScreen {
+.gridc2 .gridc2Screen {
 	position: absolute;
 	left: 1.96vw;
 	top: 1.96vw;
@@ -111,38 +110,38 @@ body.gridc {
 	cursor: text;
 }
 
-.gridc .gridcScreen {
+.gridc2 .gridc2Screen {
 	background: radial-gradient(circle, rgba(23, 23, 23, 1) 20%, rgba(30, 30, 30, 1) 100%);
 }
 
-.gridc.lvl02 .gridcScreen {
+.gridc2.lvl02 .gridc2Screen {
 	background: radial-gradient(circle, rgba(23, 23, 23, 1) 20%, rgba(38, 59, 2, 1) 100%);
 }
 
-.gridc.lvl03 .gridcScreen,
-.gridc.lvl04 .gridcScreen {
+.gridc2.lvl03 .gridc2Screen,
+.gridc2.lvl04 .gridc2Screen {
 	background: radial-gradient(circle, rgba(23, 23, 23, 1) 20%, rgba(39, 24, 7, 1) 100%);
 }
 
-.gridc.lvl03 .frame,
-.gridc.lvl04 .frame {
+.gridc2.lvl03 .frame,
+.gridc2.lvl04 .frame {
 	background-color: #555;
 	border-color: #444;
 }
 
-.gridc.lvl03 .screenBox,
-.gridc.lvl03 .screenBox2,
-.gridc.lvl04 .screenBox,
-.gridc.lvl04 .screenBox2 {
+.gridc2.lvl03 .screenBox,
+.gridc2.lvl03 .screenBox2,
+.gridc2.lvl04 .screenBox,
+.gridc2.lvl04 .screenBox2 {
 	background-color: #333;
 }
 
-.gridc.lvl03 .screenBox3,
-.gridc.lvl04 .screenBox3 {
+.gridc2.lvl03 .screenBox3,
+.gridc2.lvl04 .screenBox3 {
 	background-color: #222;
 }
 
-.gridc .bottomFrame {
+.gridc2 .bottomFrame {
 	position: absolute;
 	background-color: #222;
 	width: 100%;
@@ -151,21 +150,21 @@ body.gridc {
 	border-top: 0.65vw #444 solid;
 }
 
-.gridc .fan {
+.gridc2 .fan {
 	position: absolute;
 	background: repeating-linear-gradient(to right, #333, #444 0.98vw, #222 0.98vw, #111 2vw);
 	width: 23.56vw;
 	height: 100%;
 }
 
-.gridc .logo {
+.gridc2 .logo {
 	position: absolute;
 	top: 0.31vw;
 	left: 42.55vw;
 	width: 10.47vw;
 }
 
-.gridc .screenBox .powerButton {
+.gridc2 .screenBox .powerButton {
 	position: absolute;
 	top: 1.64vw;
 	left: 81.82vw;
@@ -175,7 +174,7 @@ body.gridc {
 	cursor: pointer;
 }
 
-.gridc .powerIcon {
+.gridc2 .powerIcon {
 	position: absolute;
 	border: 0.33vw #555555 solid;
 	top: 1.47vw;
@@ -185,7 +184,7 @@ body.gridc {
 	border-radius: 50%;
 }
 
-.gridc .screenBox .powerLight {
+.gridc2 .screenBox .powerLight {
 	position: absolute;
 	width: 1.96vw;
 	height: 1.96vw;
@@ -194,17 +193,17 @@ body.gridc {
 	border-radius: 50%;
 }
 
-.gridc .lightOn {
+.gridc2 .lightOn {
 	background-color: #1bcf60;
 	filter: drop-shadow(0 0 1.09vw #1bcf60);
 }
 
-.gridc .lightOff {
+.gridc2 .lightOff {
 	background-color: #fa4646;
 	filter: drop-shadow(0 0 1.09vw #fa4646);
 }
 
-.gridc .screenFoot {
+.gridc2 .screenFoot {
 	position: relative;
 	width: 90vw;
 	height: 4.91vw;
@@ -213,7 +212,7 @@ body.gridc {
 	box-shadow: inset 0.31vw 3.27vw 1.96vw 0.31vw #222222;
 }
 
-.gridc .computer {
+.gridc2 .computer {
 	position: relative;
 	width: 114.55vw;
 	height: 26.18vw;
@@ -221,7 +220,7 @@ body.gridc {
 	border-radius: 0.98vw;
 }
 
-.gridc .computerFrame {
+.gridc2 .computerFrame {
 	position: absolute;
 	left: 1.96vw;
 	top: 1.96vw;
@@ -231,8 +230,8 @@ body.gridc {
 	border-radius: 0.98vw;
 }
 
-.gridc .computerFan1,
-.gridc .computerFan2 {
+.gridc2 .computerFan1,
+.gridc2 .computerFan2 {
 	position: absolute;
 	background: repeating-linear-gradient(to right, white, white 0.98vw, #333333 0.98vw, #333333 21.6px);
 	height: 7.04vw;
@@ -241,11 +240,11 @@ body.gridc {
 	left: 1.64vw;
 }
 
-.gridc .computerFan2 {
+.gridc2 .computerFan2 {
 	top: 11.62vw;
 }
 
-.gridc div[class^='screw'] {
+.gridc2 div[class^='screw'] {
 	position: absolute;
 	width: 2.62vw;
 	height: 2.62vw;
@@ -253,17 +252,17 @@ body.gridc {
 	border-radius: 50%;
 }
 
-.gridc .screw1 {
+.gridc2 .screw1 {
 	left: 31.09vw;
 	top: 3.93vw;
 }
 
-.gridc .screw2 {
+.gridc2 .screw2 {
 	left: 31.09vw;
 	top: 13.75vw;
 }
 
-.gridc .computerFrame2 {
+.gridc2 .computerFrame2 {
 	position: absolute;
 	width: 42.55vw;
 	height: 15.05vw;
@@ -274,7 +273,7 @@ body.gridc {
 	border-radius: 0.98vw;
 }
 
-.gridc .floppy {
+.gridc2 .floppy {
 	position: absolute;
 	width: 40.58vw;
 	height: 8.18vw;
@@ -283,7 +282,7 @@ body.gridc {
 	background-color: #222222;
 }
 
-.gridc .fingerGrip {
+.gridc2 .fingerGrip {
 	position: absolute;
 	width: 9.82vw;
 	height: 7.53vw;
@@ -293,7 +292,7 @@ body.gridc {
 	border-radius: 0.98vw;
 }
 
-.gridc .slot {
+.gridc2 .slot {
 	position: absolute;
 	width: 95%;
 	height: 1.64vw;
@@ -303,39 +302,39 @@ body.gridc {
 	background-color: black;
 }
 
-.gridc div[class^='socket'] {
+.gridc2 div[class^='socket'] {
 	position: absolute;
 	width: 19.8vw;
 	height: 3.93vw;
 	background-color: black;
 }
 
-.gridc .socket1 {
+.gridc2 .socket1 {
 	top: 10.15vw;
 	left: 0.98vw;
 }
 
-.gridc .socket2 {
+.gridc2 .socket2 {
 	top: 10.15vw;
 	left: 21.76vw;
 }
 
-.gridc .screw3 {
+.gridc2 .screw3 {
 	left: 86.73vw;
 	top: 3.93vw;
 }
 
-.gridc .screw4 {
+.gridc2 .screw4 {
 	left: 94.25vw;
 	top: 3.93vw;
 }
 
-.gridc .screw5 {
+.gridc2 .screw5 {
 	left: 102.44vw;
 	top: 3.93vw;
 }
 
-.gridc .computer .powerButton {
+.gridc2 .computer .powerButton {
 	position: absolute;
 	width: 11.45vw;
 	height: 8.51vw;
@@ -344,7 +343,7 @@ body.gridc {
 	top: 9.82vw;
 }
 
-.gridc .buttonSlide {
+.gridc2 .buttonSlide {
 	position: absolute;
 	width: 90%;
 	height: 3.93vw;
@@ -354,7 +353,7 @@ body.gridc {
 	border-radius: 0.33vw;
 }
 
-.gridc .computerButton {
+.gridc2 .computerButton {
 	position: absolute;
 	width: 45%;
 	height: 2.62vw;
@@ -363,15 +362,15 @@ body.gridc {
 	cursor: pointer;
 }
 
-.gridc .computerButtonOff {
+.gridc2 .computerButtonOff {
 	left: 8%;
 }
 
-.gridc .computerButtonOn {
+.gridc2 .computerButtonOn {
 	left: 48%;
 }
 
-.gridc .offIndicator {
+.gridc2 .offIndicator {
 	position: absolute;
 	width: 1.31vw;
 	height: 1.31vw;
@@ -381,7 +380,7 @@ body.gridc {
 	border: 0.33vw white solid;
 }
 
-.gridc .onIndicator {
+.gridc2 .onIndicator {
 	position: absolute;
 	width: 0.31vw;
 	height: 1.96vw;
@@ -390,7 +389,7 @@ body.gridc {
 	border-right: 0.33vw white solid;
 }
 
-.gridc .computer .powerLight {
+.gridc2 .computer .powerLight {
 	position: absolute;
 	width: 1.96vw;
 	height: 1.96vw;
