@@ -1,10 +1,25 @@
+@font-face {
+	font-family: Bit5x7;
+	src: url('Bit5x7.ttf');
+}
+
+@font-face {
+	font-family: GridC;
+	src: url('GridC.ttf');
+}
+
+@font-face {
+	font-family: Pixel7;
+	src: url('cyrillic_pixel-7.ttf');
+}
+
 body.gridc {
 	background-color: #000;
 	color: #e5b930;
 }
 
 .gridc .screen {
-	font-family: Bit5x7, GridC, VT323, Pixel7, monospace;
+	font-family: Bit5x7, GridC, Pixel7, monospace;
 	font-size: 1.6vw;
 	position: absolute;
 	z-index: 1;
@@ -36,7 +51,7 @@ body.gridc {
 	margin-top: 1vw;
 	margin-left: 1vw;
 	border: solid #111 2vw;
-	background: repeating-linear-gradient(#464640 0, #585956 0.08vw, #585956 0.26vw, #464640 0.3498vw);
+	background: repeating-linear-gradient(#222 0, #333 0.08vw, #333 0.26vw, #222 0.3498vw);
 }
 
 .gridc main,

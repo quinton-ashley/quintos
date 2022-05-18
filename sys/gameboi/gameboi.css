@@ -1,4 +1,18 @@
-/* Layout */
+@font-face {
+	font-family: Early_GameBoy;
+	src: url('Early_GameBoy.ttf');
+}
+
+@font-face {
+	font-family: Pretendo;
+	src: url('Pretendo.woff2');
+}
+
+@font-face {
+	font-family: Press_Start_2P;
+	src: url('Press_Start_2P.woff2');
+}
+
 body.gameboi {
 	background-color: #000;
 	background-image: repeating-linear-gradient(

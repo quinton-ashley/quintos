@@ -1,13 +1,53 @@
-@import 'styles/index.css';
+body {
+	margin: 0;
+	padding: 0;
+	background-color: #000;
+	font-size: 16px;
+	/* text-shadow: 0 0 20px rgba(255, 255, 255, 0.5); */
+}
 
-@import 'styles/a2.css';
-@import 'styles/arc.css';
-@import 'styles/arcv.css';
-@import 'styles/c64.css';
-@import 'styles/calcu.css';
-@import 'styles/cpet.css';
-@import 'styles/gameboi.css';
-@import 'styles/gridc.css';
-@import 'styles/macin.css';
-@import 'styles/sas.css';
-@import 'styles/zx.css';
+@media screen and (-webkit-min-device-pixel-ratio: 0) {
+	::-webkit-scrollbar {
+		display: none !important;
+	}
+}
+
+* {
+	scrollbar-width: none !important;
+}
+
+#p5_loading {
+	display: none;
+}
+
+canvas {
+	image-rendering: pixelated;
+}
+
+row {
+	padding: 0;
+	margin: 0;
+	width: 100%;
+	display: flex;
+	height: 4%;
+}
+
+.screen {
+	width: 100%;
+	height: 100%;
+	font-size: 16px;
+	font-family: monospace;
+}
+
+#screen0 {
+	margin: 0 auto;
+	user-select: none;
+}
+
+tile {
+	text-align: left;
+}
+
+.hovered {
+	cursor: pointer;
+}

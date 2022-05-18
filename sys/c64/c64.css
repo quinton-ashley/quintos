@@ -1,3 +1,8 @@
+@font-face {
+	font-family: C64;
+	src: url('C64_Pro_Mono-STYLE.woff2');
+}
+
 .c64 :root {
 	background-color: #111;
 	background-image: radial-gradient(circle, #222, #111);
