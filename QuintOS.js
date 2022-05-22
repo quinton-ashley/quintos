@@ -1602,27 +1602,6 @@ READY
 			}
 		],
 		zx: [
-			// 			{
-			// 				name: 'h1',
-			// 				col: 0,
-			// 				row: 3,
-			// 				speed: 2,
-			// 				txt: `
-			//   ────────────────▄▄───▐█
-			//   ────▄▄▄───▄██▄──█▀───█─▄
-			//   ──▄██▀█▌─██▄▄──▐█▀▄─▐█▀
-			//   ─▐█▀▀▌───▄▀▌─▌─█─▌──▌─▌
-			//   ─▌▀▄─▐──▀▄─▐▄─▐▄▐▄─▐▄─▐▄
-
-			// ████◣             ██◣ ██◣
-			// █    █             █  █ █
-			// █    █ █ █▐▌██◣██◣ █  █ █
-			// █    █ █ █▐▌█ █ █  █  █ ◥██◣
-			// █    █ █ █▐▌█ █ █  █  █    █
-			// █  ▗ █ ██◤▐▌█ █ █  █  █    █
-			// ◥████◤             ◥██◤ ◥██◤
-			// 	    ▘`
-			// 			},
 			{
 				name: 'bg',
 				col: 0,
@@ -1896,17 +1875,6 @@ READY.
 	};
 
 	async function displayBootscreen() {
-		// let waitForDraw = () =>
-		// 	new Promise((resolve) => {
-		// 		let wasDrawn = false;
-		// 		window.draw = () => {
-		// 			if (!wasDrawn) {
-		// 				wasDrawn = true;
-		// 				resolve();
-		// 			}
-		// 		};
-		// 	});
-
 		if (QuintOS.sys == 'calcu') {
 			let txt0 = "'-.⎽⎽.-'⎺⎺".repeat(3);
 			for (let i = 0; i < 30; i++) {
@@ -1936,19 +1904,6 @@ READY.
 			let txt = el.txt[0] == '/n' ? el.txt.slice(1) : el.txt;
 			await QuintOS.text(txt, el.row, el.col, 0, 0, el.speed);
 		}
-
-		// if (QuintOS.sys == 'calcu') {
-		// 	let txt0 = '|/-\\';
-		// 	for (let i = 0; i < 30; i++) {
-		// 		let ci = i % 4;
-		// 		await QuintOS.text(txt0.slice(ci, ci + 1), 1);
-		// 		await delay(200);
-		// 	}
-		// }
-
-		// await waitForDraw();
-
-		// if (QuintOS.sys == 'calcu') return;
 	}
 
 	let palettes = {
@@ -2058,65 +2013,8 @@ READY.
 		return _spriteArt(txt, scale, palette);
 	};
 
-	Sprite.prototype.ani = async function (...anis) {
-		let count = ++this._aniChanged;
-
-		for (let i = 0; i < anis.length; i++) {
-			if (typeof anis[i] == 'string') anis[i] = { name: anis[i] };
-			let ani = anis[i];
-			if (ani.name[0] == '!') {
-				ani.name = ani.name.slice(1);
-				ani.start = -1;
-				ani.end = 0;
-			}
-		}
-
-		let _ani = (name, start, end) => {
-			return new Promise((resolve) => {
-				this.changeAnimation(name);
-				if (start < 0) {
-					start = this.animation.images.length + start;
-				}
-				if (start) this.animation.changeFrame(start);
-				if (end != undefined) this.animation.goToFrame(end);
-				this.animation.onComplete = () => {
-					resolve();
-				};
-			});
-		};
-
-		for (let i = 0; i < anis.length; i++) {
-			let ani = anis[i];
-			if (ani.name == '*') {
-				if (count == this._aniChanged) i = 0;
-				continue;
-			}
-			let { name, start, end } = ani;
-			await _ani(name, start, end);
-		}
-	};
-
-	Sprite.prototype.img = function (img) {
-		return this.ani(img);
-	};
-
-	Sprite.prototype.addAni = function (name, atlas) {
-		if (typeof name != 'string') {
-			atlas = name;
-			name = 'default0';
-		}
-		let { size, pos, line, frames, delay } = atlas;
-		size ??= [this.w / this.scale, this.h / this.scale];
-		pos ??= line || 0;
-		this.addAnimation(name, createAni(this.spriteSheet, size, pos, frames, delay));
-	};
-
 	// deprecated
 	Sprite.prototype.loadAni = function (name, atlas) {
-		this.addAni(name, atlas);
-	};
-
-	Sprite.prototype.addImg = function (name, atlas) {
 		this.addAni(name, atlas);
 	};
 
@@ -2272,6 +2170,9 @@ READY.
 	$('canvas').removeAttr('style');
 
 	await delay(100);
+
+	centerX = width * 0.5;
+	centerY = height * 0.5;
 
 	p5.disableFriendlyErrors = false;
 
