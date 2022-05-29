@@ -1820,10 +1820,12 @@ READY.
 
 	window.centerX = width * 0.5;
 	window.centerY = height * 0.5;
-	world.origin = {
-		x: centerX,
-		y: centerY
-	};
+	if (typeof world != 'undefined') {
+		world.origin = {
+			x: centerX,
+			y: centerY
+		};
+	}
 
 	p5.disableFriendlyErrors = false;
 
