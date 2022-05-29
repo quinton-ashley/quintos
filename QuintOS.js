@@ -895,28 +895,6 @@ async function exit() {
 	});
 }
 
-function play(sound) {
-	return new Promise((resolve, reject) => {
-		sound.play();
-		sound.onended(() => {
-			resolve();
-		});
-	});
-}
-
-// promise based delay function
-function delay(millisec) {
-	// if no input arg given, delay waits for the next possible animation frame
-	if (!millisec) {
-		return new Promise(requestAnimationFrame);
-	} else {
-		// else it wraps setTimeout in a Promise
-		return new Promise((resolve) => {
-			setTimeout(resolve, millisec);
-		});
-	}
-}
-
 window.addEventListener('keydown', function (e) {
 	if (
 		(e.key == ' ' ||
@@ -931,343 +909,12 @@ window.addEventListener('keydown', function (e) {
 	}
 });
 
-function createAni(spriteSheetImg, size, pos, frameCount, frameDelay) {
-	let w, h;
-	if (typeof size == 'number') {
-		w = size;
-		h = size;
-	} else {
-		w = size[0];
-		h = size[1];
-	}
-
-	// add all the frames in the animation to the frames array
-	let frames = [];
-	frameCount ??= 1; // set frameCount to 1 by default
-	for (let i = 0; i < frameCount; i++) {
-		let x, y;
-		// if pos is a number, that means it's just a line number
-		// and the animation's first frame is at x = 0
-		// the line number is the location of the animation line
-		// given as a distance in tiles from the top of the image
-		if (typeof pos == 'number') {
-			x = w * i;
-			y = h * pos;
-		} else {
-			// pos is the location of the animation line
-			// given as a [row,column] coordinate pair of distances in tiles
-			// from the top left corner of the image
-			x = w * (i + pos[1]); // column
-			y = h * pos[0]; // row
-		}
-
-		frames.push({
-			frame: { x: x, y: y, width: w, height: h }
-		});
-	}
-	let ani = loadAnimation(loadSpriteSheet(spriteSheetImg, frames));
-	if (typeof frameDelay != 'undefined') ani.frameDelay = frameDelay;
-	return ani;
-}
-
 function loadImg(imgPath) {
 	return new Promise((resolve) => {
 		loadImage(imgPath, () => {
 			resolve();
 		});
 	});
-}
-
-{
-	class Tiles {
-		constructor(tileSize, x, y, depth) {
-			this.tileSize = tileSize;
-			this._x = x || 0;
-			this._y = y || 0;
-			this.depth = depth || 0;
-			this.groups = [];
-			this.createGroup();
-		}
-
-		get x() {
-			return this._x;
-		}
-
-		set x(val) {
-			this._x = val;
-			for (let group of this.groups) {
-				for (let i = 0; i < group.length; i++) {
-					let sprite = group[i];
-					sprite.col = sprite.col;
-				}
-			}
-		}
-
-		get y() {
-			return this._y;
-		}
-
-		set y(val) {
-			this._y = val;
-			for (let group of this.groups) {
-				for (let i = 0; i < group.length; i++) {
-					let sprite = group[i];
-					sprite.row = sprite.row;
-				}
-			}
-		}
-
-		createSprite(ani, row, col, layer) {
-			if (typeof ani == 'number') {
-				// shift parameters over
-				layer = col;
-				col = row;
-				row = ani;
-				ani = null;
-			}
-			let group = this.groups[0];
-			if (ani) {
-				for (let i = 0; i < this.groups.length; i++) {
-					group = this.groups[i];
-					if (Object.keys(group.animations).includes(ani)) {
-						break;
-					}
-				}
-			}
-			return group.createSprite(ani, row, col, layer);
-		}
-
-		addAni(name, atlas) {
-			this.groups[0].addAni(name, atlas);
-		}
-
-		// deprecated
-		loadAni(name, atlas) {
-			this.addAni(name, atlas);
-		}
-
-		addImg(name, atlas) {
-			this.addAni(name, atlas);
-		}
-
-		// deprecated
-		loadImg(name, atlas) {
-			this.addAni(name, atlas);
-		}
-
-		removeSprites() {
-			for (let group of this.groups) {
-				group.removeSprites();
-			}
-		}
-
-		createGroup() {
-			let _this = this;
-
-			let group = new Group();
-			group.animations = {};
-
-			group.addAni = function (name, atlas) {
-				if (typeof name != 'string') {
-					atlas = name;
-					name = 'default' + this.animations.length;
-				}
-				let { size, pos, line, frames, delay } = atlas;
-				size ??= _this.tileSize;
-				pos ??= line || 0;
-				let sheet = this.spriteSheet || _this.spriteSheet;
-				this.addAnimation(name, createAni(sheet, size, pos, frames, delay));
-			};
-
-			// deprecated
-			group.loadAni = function (name, atlas) {
-				this.addAni(name, atlas);
-			};
-
-			group.addImg = function (name, atlas) {
-				this.addAni(name, atlas);
-			};
-
-			//deprecated
-			group.loadImg = function (name, atlas) {
-				this.addAni(name, atlas);
-			};
-
-			group.snap = function (o, dist) {
-				if (o.isMoving) return;
-				dist ??= 1;
-				for (let i = 0; i < this.length; i++) {
-					let sprite = this[i];
-					let row = (sprite.y - _this.y) / sprite.w;
-					let col = (sprite.x - _this.x) / sprite.h;
-					if (Math.abs(row) % 1 >= dist || Math.abs(col) % 1 >= dist) continue;
-					row = Math.round(row);
-					col = Math.round(col);
-					sprite._row = row;
-					sprite._col = col;
-					sprite.velocity.x = 0;
-					sprite.velocity.y = 0;
-					sprite.y = _this.y + row * sprite.w;
-					sprite.x = _this.x + col * sprite.h;
-				}
-			};
-
-			group.createSprite = function (ani, row, col, layer) {
-				if (typeof ani == 'number') {
-					// shift parameters over
-					layer = col;
-					col = row;
-					row = ani;
-					ani = null;
-				}
-				let w = _this.tileSize;
-				let h = _this.tileSize;
-				if (typeof _this.tileSize != 'number') {
-					w = _this.tileSize[0];
-					h = _this.tileSize[1];
-				}
-				let sprite = createSprite(0, 0, w, h);
-				// prettier-ignore
-				Object.defineProperties(sprite, {
-					row: {
-						get: function () { return this._row },
-						set: function (row) {
-							this._row = row;
-							this.destRow = row;
-							this.y = _this.y + row * h;
-						}
-					},
-					col: {
-						get: function () { return this._col },
-						set: function (col) {
-							this._col = col;
-							this.destCol = col;
-							this.x = _this.x + col * w;
-						}
-					}
-				});
-				sprite.row = row;
-				sprite.col = col;
-				sprite.layer = layer;
-				sprite.depth = layer ? _this.depth + layer : 0;
-				// always start animations at frame 0
-				// if false, by default p5.play will save which frame an animation is on
-				// when the animation is changed so if the animation hadn't finished
-				// when the sprite uses that animation again it will continue at the frame
-				// it was at before, this is not ideal for most use cases idk why it's
-				// the default so I added this boolean flag for changing that behavior
-				sprite.autoResetAnimations = true;
-
-				/*
-				 * move(direction, speed)
-				 * move(destinationRow, destinationCol, speed)
-				 * Moves the sprite/group in a direction by one tile
-				 * or to a destination row, col
-				 */
-				sprite.move = function (destRow, destCol, speed, cb) {
-					if (typeof destRow == 'undefined') {
-						console.error('sprite.move ERROR: movement direction or destination not defined');
-						return;
-					}
-					// if the sprite is moving stop it from moving in the direction it used to be moving in
-					if (sprite.isMoving) {
-						sprite.velocity.x = 0;
-						sprite.velocity.y = 0;
-					}
-					let direction = true;
-					// if destRow is actually the direction (up, down, left, or right)
-					if (typeof destRow == 'string') {
-						// shift input parameters over by one
-						direction = destRow;
-						cb = speed;
-						speed = destCol;
-						destRow = sprite.destRow;
-						destCol = sprite.destCol;
-						if (direction == 'up') destRow--;
-						if (direction == 'down') destRow++;
-						if (direction == 'left') destCol--;
-						if (direction == 'right') destCol++;
-						if (/(up|down)/.test(direction)) {
-							sprite.destRow = destRow;
-						}
-						if (/(left|right)/.test(direction)) {
-							sprite.destCol = destCol;
-						}
-						sprite.direction = direction;
-					} else {
-						sprite.destRow = destRow;
-						sprite.destCol = destCol;
-					}
-					if (speed == 0) {
-						sprite.row = destRow;
-						sprite.col = destCol;
-						return;
-					}
-
-					speed ??= 1;
-					if (speed <= 0) {
-						console.warn('sprite.move: speed should be a positive number');
-						speed = Math.abs(speed);
-					}
-					sprite.isMoving = true;
-					sprite.attractionPoint(
-						speed,
-						_this.x + sprite.halfWidth + destCol * sprite.w,
-						_this.y + sprite.halfHeight + destRow * sprite.h
-					);
-
-					let dist = Math.max(Math.abs(sprite.row - destRow), Math.abs(sprite.col - destCol));
-					let frames = 0;
-					if (dist == 1) frames = Math.floor((dist * sprite.w) / speed);
-
-					let margin = (speed * 1.5) / sprite.w;
-
-					return (async () => {
-						while (sprite.isMoving) {
-							await delay();
-							// skip calculations if not close enough to destination yet
-							if (frames > 0) {
-								frames--;
-								continue;
-							}
-							// calculate the sprite's row, col grid position without rounding
-							let row = (sprite.y - _this.y) / sprite.w;
-							let col = (sprite.x - _this.x) / sprite.h;
-							// see if the sprite is too far from a whole number row, col coordinate
-							if (Math.abs(row - Math.round(row)) % 1 > margin || Math.abs(col - Math.round(col)) % 1 > margin)
-								continue;
-							row = Math.round(row);
-							col = Math.round(col);
-							sprite._row = row;
-							sprite._col = col;
-							// check if the sprite has reached it's destination
-							if (sprite.isMoving && (sprite.destRow != row || sprite.destCol != col)) continue;
-							// stop moving the sprite
-							sprite.velocity.x = 0;
-							sprite.velocity.y = 0;
-							// move the sprite to the exact row, col coordinate position
-							sprite.y = _this.y + row * sprite.h;
-							sprite.x = _this.x + col * sprite.w;
-							sprite.isMoving = false;
-							// if a callback was given, call it
-							if (typeof cb == 'function') cb();
-						}
-					})();
-				};
-
-				sprite.addToGroup(this);
-				if (ani) sprite.changeAnimation(ani);
-				return sprite;
-			};
-
-			_this.groups.push(group);
-			return group;
-		}
-	}
-
-	window.createTiles = (tileSize, x, y, depth) => {
-		return new Tiles(tileSize, x, y, depth);
-	};
 }
 
 /********************************************************************
@@ -1320,6 +967,7 @@ async function preload() {
 	let sys = QuintOS.sys || QuintOS.system || QuintOS.levels[QuintOS.level || 0][1];
 	QuintOS.sys = sys;
 	QuintOS.system = sys;
+	QuintOS.gpu = [];
 
 	{
 		let dir = `${QuintOS.root}/quintos/sys/${QuintOS.sys}`;
@@ -1453,7 +1101,6 @@ async function preload() {
 	}
 	QuintOS.cols = cols;
 	QuintOS.rows = rows;
-	QuintOS.gpu = [];
 
 	// default values for alerts and prompts for each system
 	let popup = {
@@ -1543,6 +1190,123 @@ tile {
 }
 </style>`);
 	}
+
+	let palettes = {
+		zx: [
+			{
+				' ': '',
+				'.': '',
+				'-': '',
+				_: '',
+				b: '#000000', // Black
+				u: '#0000d8', // blUe
+				r: '#d80000', // Red
+				m: '#d800d8', // Magenta
+				g: '#00d800', // Green
+				c: '#00d8d8', // Cyan
+				y: '#d8d800', // Yellow
+				w: '#ffffff', // White
+				//
+				B: '#000000', // bright 1 black
+				U: '#0000ff', // bright 1 blue
+				R: '#ff0000', // bright 1 red
+				M: '#ff00ff', // bright 1 magenta
+				G: '#00ff00', // bright 1 green
+				C: '#00ffff', // bright 1 cyan
+				Y: '#ffff00', // bright 1 yellow
+				W: '#ffffff' // bright 1 white
+			}
+		],
+		c64: [
+			{
+				' ': '',
+				'.': '',
+				'-': '',
+				_: '',
+				b: '#000000', // blacK
+				d: '#626252', // Dark-gray
+				m: '#898989', // Mid-gray
+				l: '#adadad', // Light-gray
+				w: '#ffffff', // White
+				c: '#cb7e75', // Coral
+				r: '#9f4e44', // Red
+				n: '#6d5412', // browN
+				o: '#a1683c', // Orange
+				y: '#c9d487', // Yellow
+				e: '#9ae29b', // light grEEn
+				g: '#5cab5e', // Green
+				t: '#6abfc6', // Teal
+				u: '#50459b', // blUe
+				i: '#887ecb', // Indigo
+				p: '#a057a3' // Purple
+			}
+		],
+		gameboi: [
+			{
+				' ': '',
+				'.': '',
+				'-': '',
+				_: '',
+				0: '#071821',
+				1: '#306850',
+				2: '#86c06c',
+				3: '#e0f8cf'
+			}
+			// {
+			// 	0: '#000000',
+			// 	1: '#555555',
+			// 	2: '#aaaaaa',
+			// 	3: '#ffffff'
+			// }
+		],
+		gridc: [
+			{
+				' ': '',
+				'.': '',
+				'-': '',
+				_: '',
+				X: '#e5b930'
+			}
+		]
+	};
+
+	palettes.arcv = palettes.zx;
+
+	/*#0f380f; #306230; #8bac0f; #9bbc0f; */
+
+	// assign palettes to the system's palette
+	QuintOS.palettes = palettes[QuintOS.sys] || [];
+	QuintOS.palette = QuintOS.palettes[0] || {};
+
+	const _colorPal = colorPal;
+
+	window.colorPal = (c, palette) => {
+		if (typeof palette == 'number') {
+			palette = QuintOS.palettes[palette];
+		}
+		palette ??= QuintOS.palette;
+		return _colorPal(c, palette);
+	};
+
+	const _spriteArt = spriteArt;
+
+	window.spriteArt = (txt, scale, palette) => {
+		if (typeof palette == 'number') {
+			palette = QuintOS.palettes[palette];
+		}
+		palette ??= QuintOS.palette;
+		return _spriteArt(txt, scale, palette);
+	};
+
+	// deprecated
+	Sprite.prototype.loadAni = function (name, atlas) {
+		this.addAni(name, atlas);
+	};
+
+	// deprecated
+	Sprite.prototype.loadImg = function (name, atlas) {
+		this.addAni(name, atlas);
+	};
 
 	let bootScreens = {
 		calcu: [
@@ -1906,123 +1670,6 @@ READY.
 		}
 	}
 
-	let palettes = {
-		zx: [
-			{
-				' ': '',
-				'.': '',
-				'-': '',
-				_: '',
-				b: '#000000', // Black
-				u: '#0000d8', // blUe
-				r: '#d80000', // Red
-				m: '#d800d8', // Magenta
-				g: '#00d800', // Green
-				c: '#00d8d8', // Cyan
-				y: '#d8d800', // Yellow
-				w: '#ffffff', // White
-				//
-				B: '#000000', // bright 1 black
-				U: '#0000ff', // bright 1 blue
-				R: '#ff0000', // bright 1 red
-				M: '#ff00ff', // bright 1 magenta
-				G: '#00ff00', // bright 1 green
-				C: '#00ffff', // bright 1 cyan
-				Y: '#ffff00', // bright 1 yellow
-				W: '#ffffff' // bright 1 white
-			}
-		],
-		c64: [
-			{
-				' ': '',
-				'.': '',
-				'-': '',
-				_: '',
-				b: '#000000', // blacK
-				d: '#626252', // Dark-gray
-				m: '#898989', // Mid-gray
-				l: '#adadad', // Light-gray
-				w: '#ffffff', // White
-				c: '#cb7e75', // Coral
-				r: '#9f4e44', // Red
-				n: '#6d5412', // browN
-				o: '#a1683c', // Orange
-				y: '#c9d487', // Yellow
-				e: '#9ae29b', // light grEEn
-				g: '#5cab5e', // Green
-				t: '#6abfc6', // Teal
-				u: '#50459b', // blUe
-				i: '#887ecb', // Indigo
-				p: '#a057a3' // Purple
-			}
-		],
-		gameboi: [
-			{
-				' ': '',
-				'.': '',
-				'-': '',
-				_: '',
-				0: '#071821',
-				1: '#306850',
-				2: '#86c06c',
-				3: '#e0f8cf'
-			}
-			// {
-			// 	0: '#000000',
-			// 	1: '#555555',
-			// 	2: '#aaaaaa',
-			// 	3: '#ffffff'
-			// }
-		],
-		gridc: [
-			{
-				' ': '',
-				'.': '',
-				'-': '',
-				_: '',
-				X: '#e5b930'
-			}
-		]
-	};
-
-	palettes.arcv = palettes.zx;
-
-	/*#0f380f; #306230; #8bac0f; #9bbc0f; */
-
-	// assign palettes to the system's palette
-	QuintOS.palettes = palettes[QuintOS.sys] || [];
-	QuintOS.palette = QuintOS.palettes[0] || {};
-
-	const _colorPal = colorPal;
-
-	window.colorPal = (c, palette) => {
-		if (typeof palette == 'number') {
-			palette = QuintOS.palettes[palette];
-		}
-		palette ??= QuintOS.palette;
-		return _colorPal(c, palette);
-	};
-
-	const _spriteArt = spriteArt;
-
-	window.spriteArt = (txt, scale, palette) => {
-		if (typeof palette == 'number') {
-			palette = QuintOS.palettes[palette];
-		}
-		palette ??= QuintOS.palette;
-		return _spriteArt(txt, scale, palette);
-	};
-
-	// deprecated
-	Sprite.prototype.loadAni = function (name, atlas) {
-		this.addAni(name, atlas);
-	};
-
-	// deprecated
-	Sprite.prototype.loadImg = function (name, atlas) {
-		this.addAni(name, atlas);
-	};
-
 	QuintOS.language ??= 'js';
 	if (QuintOS.dir?.includes('games_java')) {
 		QuintOS.language = 'java';
@@ -2171,8 +1818,12 @@ READY.
 
 	await delay(100);
 
-	centerX = width * 0.5;
-	centerY = height * 0.5;
+	window.centerX = width * 0.5;
+	window.centerY = height * 0.5;
+	world.origin = {
+		x: centerX,
+		y: centerY
+	};
 
 	p5.disableFriendlyErrors = false;
 
@@ -2194,6 +1845,7 @@ READY.
 
 	setup();
 
+	// if QuintOS is running in an iframe on quintos.org
 	if (QuintOS.iframe) {
 		outputVolume(0);
 		setTimeout(() => {

@@ -1,3 +1,8 @@
+@font-face {
+	font-family: C64;
+	src: url('../c64//C64_Pro_Mono-STYLE.woff2');
+}
+
 body.arcv {
 	background-color: #111;
 	color: #fff;
