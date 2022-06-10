@@ -253,6 +253,8 @@ async function textRect(row, col, rows, cols, style, c, speed) {
 	}
 }
 
+// function textBox(txt, row, col, w, h) { }
+
 /* Display a line between two points using a character (diagonal lines not supported yet) */
 async function textLine(row1, col1, row2, col2, style, c, speed) {
 	if (row1 == row2) {
@@ -1156,31 +1158,26 @@ async function preload() {
 
 	let screen0 = document.getElementById('screen0');
 
-	if (QuintOS.sys == 'calcu') {
-		QuintOS.screen = screen0.childNodes;
-		for (let i = 0; i < rows; i++) {
-			QuintOS.screen[i].tiles = QuintOS.screen[i].childNodes;
-		}
-	} else {
-		// create rows
-		for (let i = 0; i < rows; i++) {
-			let row = document.createElement('row');
-			screen0.appendChild(row);
-		}
-		QuintOS.screen = screen0.childNodes;
+	// create rows
+	for (let i = 0; i < rows; i++) {
+		let row = document.createElement('row');
+		screen0.appendChild(row);
+	}
+	QuintOS.screen = screen0.childNodes;
 
-		// create single character text tiles
-		for (let i = 0; i < rows; i++) {
-			for (let j = 0; j < cols; j++) {
-				let tile = document.createElement('tile');
-				tile.appendChild(document.createTextNode(' '));
-				QuintOS.screen[i].appendChild(tile);
-			}
-			QuintOS.screen[i].tiles = QuintOS.screen[i].childNodes;
+	// create single character text tiles
+	for (let i = 0; i < rows; i++) {
+		let c = i != 1 || QuintOS.sys != 'calcu' ? cols : 4;
+		for (let j = 0; j < c; j++) {
+			let tile = document.createElement('tile');
+			tile.appendChild(document.createTextNode(' '));
+			QuintOS.screen[i].appendChild(tile);
 		}
-		// the rows will all have the same height
-		// the tiles will all have the same width
-		$('body').append(`
+		QuintOS.screen[i].tiles = QuintOS.screen[i].childNodes;
+	}
+	// the rows will all have the same height
+	// the tiles will all have the same width
+	$('body').append(`
 <style>
 row {
 	height: ${100 / QuintOS.rows}%;
@@ -1189,7 +1186,6 @@ tile {
 	width: ${100 / QuintOS.cols}%;
 }
 </style>`);
-	}
 
 	let palettes = {
 		zx: [
