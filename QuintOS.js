@@ -1817,6 +1817,7 @@ READY.
 	window.centerX = width * 0.5;
 	window.centerY = height * 0.5;
 	if (typeof world != 'undefined') {
+		world.resize();
 		world.origin = {
 			x: centerX,
 			y: centerY
@@ -1841,8 +1842,6 @@ READY.
 		frames.iframe0.src = QuintOS.dir + '/index.html';
 	}
 
-	setup();
-
 	// if QuintOS is running in an iframe on quintos.org
 	if (QuintOS.iframe) {
 		outputVolume(0);
@@ -1850,8 +1849,13 @@ READY.
 			noLoop();
 		}, 6000);
 	}
+
+	// for (let t = 0; draw.toString() == '() => {}' && t < 120; t++) {
+	// 	await delay();
+	// }
+
+	setup();
 }
 
-function setup() {}
-
-function draw() {}
+window.setup = () => {};
+window.draw = () => {};
