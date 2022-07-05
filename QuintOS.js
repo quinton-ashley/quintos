@@ -1,29 +1,36 @@
 let log = console.log; // log becomes a shortcut for console.log
 
-window.QuintOS = {
-	levels: [
-		/*00*/ ['GuessTheNumber', 'calcu'],
-		/*01*/ ['PickAPath', 'cpet'],
-		/*02*/ ['Pong', 'zx'],
-		/*03*/ ['Hangman', 'a2'],
-		/*04*/ ['QuickClicks', 'gridc'],
-		/*05*/ ['CodeBreaker', 'gridc'],
-		/*06*/ ['TicTacToe', 'gridc'],
-		/*07*/ ['WorldWideWeb', 'macin'],
-		/*08*/ ['Wordle', 'a2'],
-		/*09*/ ['Contain', 'zx'],
-		/*10*/ ['TicTacAIO', 'gridc'],
-		/*11*/ ['SpeakAndSpell', 'calcu'], // TODO sas
-		/*12*/ ['Snake', 'gameboi'],
-		/*13*/ ['SketchBook', 'c64'],
-		/*14*/ ['SuperJump', 'arcv'],
-		/*15*/ ['Sokoban', 'c64']
-	]
-};
+if (typeof QuintOS == 'undefined') {
+	window.QuintOS = {};
+}
+
+QuintOS.levels = [
+	/*00*/ ['GuessTheNumber', 'calcu'], // primitives and if/else
+	/*01*/ ['PickAPath', 'cpet'], // array
+	/*02*/ ['Pong', 'zx'], // using objects
+	/*03*/ ['LeafEater', 'gameboi'], // iteration
+	/*04*/ ['Hangman', 'a2'], // strings
+	/*05*/ ['QuickClicks', 'gridc'], // recursion
+	/*06*/ ['BinaryCounter', 'cpet'], // binary
+	/*07*/ ['CodeBreaker', 'gridc'], // loading files
+	/*08*/ ['GenerativeArt', 'c64'], // fun (review)
+	/*09*/ ['TicTacToe', 'gridc'], // 2D Array
+	/*10*/ ['DataDesigner', 'c64'], // creating objects
+	/*11*/ ['WorldWideWeb', 'macin'], // web
+
+	/*12*/ ['Wordle', 'a2'],
+	/*13*/ ['TicTacAIO', 'gridc'],
+	/*14*/ ['SpeakAndSpell', 'calcu'], // TODO sas
+	/*15*/ ['Contain', 'zx'],
+	/*16*/ ['Snake', 'gameboi'],
+	/*17*/ ['SketchBook', 'c64'],
+	/*18*/ ['SuperJump', 'arcv'],
+	/*19*/ ['Sokoban', 'c64']
+];
 
 {
 	let url = location.href.split('?');
-	QuintOS.web = location.hostname != 'localhost' && location.hostname != '127.0.0.1';
+	QuintOS.web ??= location.hostname != 'localhost' && location.hostname != '127.0.0.1';
 	if (!QuintOS.web) {
 		$('head').append('<link rel="icon" href="node_modules/quintos/favicon.png" />');
 	}
@@ -750,7 +757,7 @@ public class ${QuintOS.game} {
 		file = file.replace(/(.*=)(.*\.)*next(Int|Float|Double|Line|Short|Long)*\(\);/gm, '$1 prompt();');
 	} else {
 		file = file.replace(
-			/System\.out\.print(ln)*\(([^\)]*)\);\s*(.*=)(.*\.)*next(Int|Float|Double|Line|Short|Long)*\(\);/gm,
+			/System\.out\.print(ln)*\(([^\)]*)\);\s*(.*=)(.*\.)*next(Int|Float|Double|Short|Long)*\(\);/gm,
 			'$3 prompt($2);'
 		);
 	}
@@ -1818,10 +1825,6 @@ READY.
 	window.centerY = height * 0.5;
 	if (typeof world != 'undefined') {
 		world.resize();
-		world.origin = {
-			x: centerX,
-			y: centerY
-		};
 	}
 
 	p5.disableFriendlyErrors = false;
