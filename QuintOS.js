@@ -20,7 +20,7 @@ QuintOS.levels = [
 
 	/*12*/ ['Wordle', 'a2'],
 	/*13*/ ['TicTacAIO', 'gridc'],
-	/*14*/ ['SpeakAndSpell', 'calcu'], // TODO sas
+	/*14*/ ['SpeakAndSpell', 'sas'],
 	/*15*/ ['Contain', 'zx'],
 	/*16*/ ['Snake', 'gameboi'],
 	/*17*/ ['SketchBook', 'c64'],
@@ -70,7 +70,7 @@ QuintOS._charAt = (row, col) => {
 		(QuintOS.sys == 'calcu' && row == 1 && col > 4)
 	) {
 		QuintOS.error(
-			`Out of bounds error! Could not retreive character at row: ${row} col: ${col}\nThe size of this screen is ${QuintOS.cols}x${QuintOS.rows} characters.`
+			`Out of bounds error! Could not retrieve character at row: ${row} col: ${col}\nThe size of this screen is ${QuintOS.cols}x${QuintOS.rows} characters.`
 		);
 	}
 	return QuintOS.screen[row].tiles[col].childNodes[0].nodeValue;
@@ -290,7 +290,7 @@ QuintOS._overlap = (a, b) => {
 
 QuintOS.erase = () => {
 	let eraser = {
-		row: !/(gameboi|arcv)/.test(QuintOS.sys) ? (QuintOS.sys != 'calcu' ? 1 : 0) : 2,
+		row: !/(gameboi|arcv)/.test(QuintOS.sys) ? (!/(calcu|sas)/.test(QuintOS.sys) ? 1 : 0) : 2,
 		col: !/(a2|gridc)/.test(QuintOS.sys) ? 0 : 1,
 		w: QuintOS.cols - (!/(a2|gridc)/.test(QuintOS.sys) ? 0 : 2),
 		h: QuintOS.rows - (!/(a2|gridc)/.test(QuintOS.sys) ? 0 : 2)
@@ -809,7 +809,7 @@ QuintOS.runGame = async () => {
 	}
 	if (/(a2|gridc)/.test(QuintOS.sys)) QuintOS.frame();
 
-	if (QuintOS.sys == 'calcu') return;
+	if (/(calcu|sas)/.test(QuintOS.sys)) return;
 
 	let title = QuintOS.game;
 	if (QuintOS.level >= 0) {
@@ -1098,15 +1098,18 @@ async function preload() {
 	} else if (QuintOS.sys == 'calcu') {
 		rows = 2;
 		cols = 23;
-	} else if (QuintOS.sys == 'gridc') {
-		rows = 30;
-		cols = 80;
-	} else if (QuintOS.sys == 'zx') {
-		rows = 24;
-		cols = 32;
 	} else if (QuintOS.sys == 'gameboi') {
 		rows = 18;
 		cols = 20;
+	} else if (QuintOS.sys == 'gridc') {
+		rows = 30;
+		cols = 80;
+	} else if (QuintOS.sys == 'sas') {
+		rows = 4;
+		cols = 20;
+	} else if (QuintOS.sys == 'zx') {
+		rows = 24;
+		cols = 32;
 	}
 	QuintOS.cols = cols;
 	QuintOS.rows = rows;
@@ -1153,6 +1156,12 @@ async function preload() {
 			row: 2,
 			col: 2,
 			w: 20
+		},
+		sas: {
+			row: 0,
+			col: 0,
+			w: 23,
+			h: 1
 		},
 		zx: {
 			row: 2,
@@ -1779,6 +1788,7 @@ READY.
 	// await delay(111111111); // test bootscreen
 	if (QuintOS.sys == 'calcu') await delay(1000);
 	if (QuintOS.sys == 'a2') await delay(500);
+	if (QuintOS.sys == 'sas') await delay(1000);
 
 	await eraseRect();
 	QuintOS._lines = 0;
