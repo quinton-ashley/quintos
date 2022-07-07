@@ -1111,8 +1111,10 @@ async function preload() {
 		rows = 24;
 		cols = 32;
 	}
-	QuintOS.cols = cols;
-	QuintOS.rows = rows;
+	QuintOS.cols ??= cols;
+	QuintOS.rows ??= rows;
+	cols = QuintOS.cols;
+	rows = QuintOS.rows;
 
 	// default values for alerts and prompts for each system
 	let popup = {
@@ -1160,7 +1162,7 @@ async function preload() {
 		sas: {
 			row: 0,
 			col: 0,
-			w: 23,
+			w: 8,
 			h: 1
 		},
 		zx: {
@@ -1788,7 +1790,6 @@ READY.
 	// await delay(111111111); // test bootscreen
 	if (QuintOS.sys == 'calcu') await delay(1000);
 	if (QuintOS.sys == 'a2') await delay(500);
-	if (QuintOS.sys == 'sas') await delay(1000);
 
 	await eraseRect();
 	QuintOS._lines = 0;

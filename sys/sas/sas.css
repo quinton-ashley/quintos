@@ -72,7 +72,7 @@ tile {
 tile::before {
 	position: absolute;
 	content: '';
-	opacity: 0.3;
+	opacity: 0.1;
 }
 
 #yellowBox {
