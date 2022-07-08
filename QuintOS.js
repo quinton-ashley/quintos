@@ -30,14 +30,18 @@ QuintOS.levels = [
 
 {
 	let url = location.href.split('?');
-	QuintOS.web ??= location.hostname != 'localhost' && location.hostname != '127.0.0.1';
+	QuintOS.web ??=
+		location.hostname != 'localhost' &&
+		location.hostname != '127.0.0.1' &&
+		(!url[1] || location.href.slice(-9) != 'home.html');
+
 	if (!QuintOS.web) {
 		$('head').append('<link rel="icon" href="node_modules/quintos/favicon.png" />');
 	}
+
 	QuintOS.root = './node_modules';
-	if (QuintOS.web) {
-		QuintOS.root = 'https://quinton-ashley.github.io';
-	}
+	if (QuintOS.web) QuintOS.root = 'https://quinton-ashley.github.io';
+
 	if (url.length > 1) {
 		let params = new URLSearchParams(url[1]);
 		for (let pair of params.entries()) {
