@@ -33,7 +33,7 @@ QuintOS.levels = [
 	QuintOS.web ??=
 		// location.hostname != 'localhost' &&
 		// location.hostname != '127.0.0.1' &&
-		!url[1] || location.href.slice(-9) != 'home.html';
+		!url[1] && location.href.slice(-9) != 'home.html';
 
 	if (!QuintOS.web) {
 		$('head').append('<link rel="icon" href="node_modules/quintos/favicon.png" />');
