@@ -554,7 +554,8 @@ async function alert(txt, row, col, w, h) {
 	if (typeof txt != 'string') txt += '';
 
 	let th;
-	if (QuintOS.sys != 'calcu') {
+	let okayBtn;
+	if (!/(calcu|sas)/.test(QuintOS.sys)) {
 		let _txt = QuintOS._text(txt, row + 1, col + 2, w - 4);
 		th = _txt.lines.length;
 		if (txt) th += 2;
@@ -565,20 +566,20 @@ async function alert(txt, row, col, w, h) {
 			QuintOS._textSync(_txt.lines, _txt.row, _txt.col);
 		}
 		await textRect(row, col, h + th, w);
+
+		let okayRow = row + th;
+		let okayCol = Math.floor(Math.min(col + w / 2, col + w - 4));
+		okayBtn = await button('OKAY', okayRow, okayCol);
 	} else {
 		erase();
 		txt = txt.slice(0, QuintOS.cols);
 		th = await text(txt, row, col, w);
-		await text('OKAY', 1, 0);
+		if (QuintOS.sys == 'calcu') await text('OKAY', 1, 0);
+		else {
+			await text('PRESS ENTER', th + row, 4);
+			w = Math.max(w, 11);
+		}
 	}
-
-	let okayRow = row + th;
-	let okayCol = Math.floor(Math.min(col + w / 2, col + w - 4));
-	if (QuintOS.sys == 'calcu') {
-		okayRow = 1;
-		okayCol = 0;
-	}
-	let okayBtn = await button('OKAY', okayRow, okayCol);
 
 	let _this = this;
 	return new Promise((resolve) => {
@@ -595,13 +596,13 @@ async function alert(txt, row, col, w, h) {
 		let erasing = false;
 		let erase = async () => {
 			erasing = true;
-			if (QuintOS.sys != 'calcu') okayBtn.erase();
+			if (okayBtn) okayBtn.erase();
 			document.removeEventListener('keydown', onKeyDown);
 			await eraseRect(row, col, w, h + th);
 			if (!noRow) QuintOS._lines = row;
 		};
 
-		if (QuintOS.sys == 'calcu') return;
+		if (!okayBtn) return;
 
 		okayBtn.action = async () => {
 			if (erasing) return;
@@ -992,8 +993,10 @@ async function preload() {
 		$('main').remove();
 	}
 
-	if (QuintOS.sys == 'calcu') {
-		$('#keys div p').click(function () {
+	if (/(calcu|sas)/.test(QuintOS.sys)) {
+		let keyElems = '#keys div p';
+		if (QuintOS.sys == 'sas') keyElems = '#keys div';
+		$(keyElems).click(function () {
 			let $this = $(this);
 			let key = $this.attr('name') || $this.text();
 			let count = 1;
@@ -1001,7 +1004,7 @@ async function preload() {
 				count = 23;
 				key = 'Backspace';
 			}
-			if ('ABCDEFGHIJKLMNOPQRSTUVWXYZ'.includes(key)) {
+			if (QuintOS.sys == 'calcu' && 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'.includes(key)) {
 				key = key.toLowerCase();
 			}
 			for (let i = 0; i < count; i++) {
@@ -1676,6 +1679,12 @@ READY.
 				return txt;
 			}
 			await QuintOS.text(makeMaze(), 0, 0, 0, 0, 20);
+		} else if (QuintOS.sys == 'sas') {
+			let boom = '.|+x*';
+			for (let i = 0; i < 5; i++) {
+				await QuintOS.text((boom[i].repeat(20) + '\n').repeat(4), 0, 0, 0, 0, 5);
+			}
+			erase();
 		}
 
 		for (let el of bootScreen) {
