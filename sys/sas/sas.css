@@ -230,6 +230,7 @@ tile::before {
 	color: #ff624d;
 	font-family: 'Times New Roman';
 	font-weight: bold;
+	font-size: 1.8vh;
 	margin-top: 3.8vh;
 	width: 14vh;
 }
