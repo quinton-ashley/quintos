@@ -30,7 +30,8 @@ QuintOS.levels = [
 
 {
 	let url = location.href.split('?');
-	QuintOS.web ??= (url[1] || location.href.slice(-9) == 'home.html') == true;
+	QuintOS.web ??= url[1] || location.href.slice(-9) == 'home.html';
+	if (!QuintOS.web) QuintOS.web = false;
 	// location.hostname != 'localhost' &&
 	// location.hostname != '127.0.0.1' &&
 
