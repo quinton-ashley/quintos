@@ -21,7 +21,7 @@ QuintOS.levels = [
 	/*12*/ ['Wordle', 'a2'],
 	/*13*/ ['TicTacAIO', 'gridc'],
 	/*14*/ ['SpeakAndSpell', 'sas'],
-	/*15*/ ['Contain', 'zx'],
+	/*15*/ ['Tempest', 'zx'],
 	/*16*/ ['Snake', 'gameboi'],
 	/*17*/ ['SketchBook', 'c64'],
 	/*18*/ ['SuperJump', 'arcv'],
@@ -30,7 +30,7 @@ QuintOS.levels = [
 
 {
 	let url = location.href.split('?');
-	QuintOS.web ??= url[1] || location.href.slice(-9) == 'home.html';
+	QuintOS.web ??= location.hostname != '127.0.0.1' || url[1] || location.href.slice(-9) == 'home.html';
 	if (!QuintOS.web) QuintOS.web = false;
 	// location.hostname != 'localhost' &&
 	// location.hostname != '127.0.0.1' &&
