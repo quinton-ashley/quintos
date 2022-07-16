@@ -1,12 +1,11 @@
 @font-face {
-	font-family: C64;
-	src: url('../c64//C64_Pro_Mono-STYLE.woff2');
+	font-family: Vectorb;
+	src: url('../ibm2250/Vectorb.ttf');
 }
 
-body.arcv {
-	background-color: #111;
+body.ibm2250 {
+	background-color: #000;
 	color: #fff;
-	background-image: radial-gradient(circle, #222, #111);
 	width: 100vw;
 	height: 100vh;
 	display: flex;
@@ -16,68 +15,54 @@ body.arcv {
 	overflow: hidden;
 }
 
-.arcv .screen {
-	font-family: C64, monospace;
-	font-size: 2.8vmin;
+.ibm2250 .screen {
+	font-family: Vectorb, monospace;
+	font-size: 5.8vmin;
 	z-index: 1;
 }
 
-.arcv main,
-.arcv #defaultCanvas0,
-.arcv #screen0 {
+.ibm2250 main,
+.ibm2250 #defaultCanvas0,
+.ibm2250 #screen0 {
 	position: absolute;
 	border-radius: 2vmin;
-	width: 77vmin !important;
+	width: 96vmin !important;
 	height: 96vmin !important;
 }
 
-.arcv .hovered {
-	color: black;
+.ibm2250 .hovered {
+	color: #111;
 	background-color: #eee;
 }
 
-.arcv #case {
+.ibm2250 #pc {
+	padding: 0.5vmin;
+	border-radius: 5vmin;
+	background: #a59e94;
+}
+
+.ibm2250 #case {
 	position: relative;
-	padding: 0 5vmin 0 5vmin;
-	background-color: #802e2e;
-	border-radius: 1vmin;
-	border: 5vmin solid #a16060;
+	padding: 0 25vmin 0 25vmin;
+	background: linear-gradient(to right, #111, #99865b 1%, #8c7c55 20%, #8c7c55 80%, #99865b 99%, #111);
+	border-radius: 5vmin;
+	border: 1vmin solid #615d4e;
 	border-top: none;
 	border-bottom: none;
 	perspective: 100vmin;
 }
 
-.arcv #bezel {
-	border-radius: 0.5vmin;
-	background-image: linear-gradient(to right, #262524, #333230, #383735, #333230, #262524);
-	padding: 8vmin;
+.ibm2250 #bezel {
+	background: linear-gradient(#8c7956, #80734e);
+	padding: 4vmin;
 	position: relative;
-	border-left: 2px solid #0c0b0b;
-	border-right: 2px solid #0c0b0b;
-	border-top: 1px solid #a16060;
-	border-bottom: 3px solid #0c0b0b;
-	box-shadow: 0.5vmin #ba8f8f;
-	/* transform-style: preserve-3d; */
-	/* transform: rotateX(10deg); */
+	border-radius: 4vmin;
+	border: 0.25vmin solid #a08d67;
 }
 
-.arcv #bezel::before {
-	content: '';
-	position: absolute;
-	top: 1vmin;
-	left: 1vmin;
-	right: 1vmin;
-	bottom: 1vmin;
-	border: 1px solid #333230;
-	border-left-color: #191817;
-	border-right-color: #191817;
-	border-radius: 1vmin;
-	box-shadow: inset 0 -1.5vmin 2vmin -0.05vmin #191817, inset 0 1.5vmin 2vmin -0.05vmin #191817;
-}
-
-.arcv #tube {
+.ibm2250 #tube {
 	box-shadow: 0 -3px 2px #1e1d1c, 0 2px 0 -1px #827f7a, 0 3px #4d4c49;
-	background-color: #000;
+	background-color: #111;
 	color: #fff;
 	padding: 2px;
 	font-size: 2vmin;
@@ -85,28 +70,17 @@ body.arcv {
 	position: relative;
 	border-radius: 2vmin;
 	user-select: none;
-	width: 77vmin;
+	width: 96vmin;
 	height: 96vmin;
 }
 
-.arcv #tube.clear {
+.ibm2250 #tube.clear {
 	background-color: #222;
 	border: none;
 }
 
-.arcv #tube::before,
-.arcv #tube::after {
-	border-radius: 2vmin;
-	position: absolute;
-	content: '';
-	top: -6vmin;
-	left: -6vmin;
-	right: -6vmin;
-	bottom: -6vmin;
-}
-
-/* .arcv #tube.clear::before,
-.arcv #tube.clear::after {
+/* .ibm2250 #tube.clear::before,
+.ibm2250 #tube.clear::after {
 	border-radius: 2vmin;
 	position: absolute;
 	content: '';
@@ -126,20 +100,20 @@ body.arcv {
 	}
 }
 
-.arcv #tube #screen0::before {
+.ibm2250 #tube #screen0::before {
 	z-index: 20;
 	animation: scanlines 16ms infinite steps(4, start);
 	background-size: 1vw 3px;
 	background-image: linear-gradient(to bottom, transparent 2.7px, rgba(40, 35, 78, 0.6) 2px, rgba(40, 35, 78, 0.9) 3px);
 }
-.arcv #tube.clear #screen0::before {
+.ibm2250 #tube.clear #screen0::before {
 	z-index: 100;
 	animation: scanlines 16ms infinite steps(4, start);
 	background-size: 1vw 3px;
 	background-image: linear-gradient(to bottom, transparent 2.7px, rgba(40, 35, 78, 0.6) 2px, rgba(40, 35, 78, 0.9) 3px);
 } */
 
-/* .arcv #tube::after {
+/* .ibm2250 #tube::after {
 	box-shadow: inset 0 0 1vmin 0.25vmin rgba(0, 0, 0, 0.85), 0 0 10vmin -2vmin #50459b, 0 0 10vmin -5vmin #2c2654;
 	background-blend-mode: multiply, normal, screen;
 	background-image: radial-gradient(ellipse closest-corner, transparent 70%, rgba(80, 69, 155, 0.7)),
@@ -153,7 +127,7 @@ body.arcv {
 			rgba(255, 255, 255, 0) 85.5%
 		);
 } */
-.arcv #tube::after {
+.ibm2250 #tube::after {
 	box-shadow: inset 0 0 1vmin 0.25vmin rgba(0, 0, 0, 0.85), 0 0 10vmin -2vmin #666, 0 0 10vmin -5vmin #333;
 	background-blend-mode: multiply, normal, screen;
 	background-image: radial-gradient(ellipse closest-corner, transparent 70%, rgba(90, 90, 90, 0.7)),
@@ -167,7 +141,7 @@ body.arcv {
 			rgba(255, 255, 255, 0) 85.5%
 		);
 }
-.arcv #bootScreen {
+.ibm2250 #bootScreen {
 	display: block;
 	top: 1%;
 	left: 1%;
@@ -179,7 +153,7 @@ body.arcv {
 	overflow: hidden;
 }
 
-.arcv #bottom-panel {
+.ibm2250 #bottom-panel {
 	position: absolute;
 	top: 100.9%;
 	left: 1vmin;
@@ -198,7 +172,7 @@ body.arcv {
 	perspective: 12in;
 }
 
-.arcv #badge {
+.ibm2250 #badge {
 	position: absolute;
 	z-index: 1;
 	top: -1vmin;
@@ -210,19 +184,19 @@ body.arcv {
 	border-right: 0.25vmin solid #d7c8be;
 }
 
-.arcv #badge #logo {
+.ibm2250 #badge #logo {
 	position: absolute;
 	top: 55%;
 	left: 0.3vmin;
 	transform: translate(0, -50%);
 }
 
-.arcv #badge img {
+.ibm2250 #badge img {
 	width: 7vmin;
 	filter: grayscale() contrast(0.7) brightness(4);
 }
 
-.arcv #badge #brand {
+.ibm2250 #badge #brand {
 	position: absolute;
 	top: 55%;
 	left: 7.6vmin;
@@ -232,7 +206,7 @@ body.arcv {
 	transform: translate(0, -50%);
 }
 
-.arcv #badge::after {
+.ibm2250 #badge::after {
 	content: '';
 	position: absolute;
 	top: 0.5vmin;
@@ -263,7 +237,7 @@ body.arcv {
 	);
 }
 
-.arcv #badge #power {
+.ibm2250 #badge #power {
 	position: absolute;
 	right: 2vmin;
 	top: 0;
@@ -276,7 +250,7 @@ body.arcv {
 	line-height: 11vmin;
 }
 
-.arcv #ident {
+.ibm2250 #ident {
 	line-height: 1.5;
 	position: absolute;
 	top: 1vmin;
@@ -299,7 +273,7 @@ body.arcv {
 	transform: skewx(3.5deg);
 }
 
-.arcv #door {
+.ibm2250 #door {
 	position: absolute;
 	bottom: 0;
 	left: 0;
@@ -309,7 +283,7 @@ body.arcv {
 	border-right: 2px groove #e1d5ce;
 }
 
-.arcv #video,
+.ibm2250 #video,
 #audio {
 	font: normal 1vmin system-ui, sans-serif;
 	color: #5d4739;
@@ -326,7 +300,7 @@ body.arcv {
 		inset 0.5vmin 0.5vmin 0.5vmin -0.5vmin rgba(0, 0, 0, 0.5), inset 1vmin 1vmin 1vmin #8c6c56;
 }
 
-.arcv #video::before,
+.ibm2250 #video::before,
 #audio::before {
 	content: '';
 	position: absolute;
@@ -351,7 +325,7 @@ body.arcv {
 		);
 }
 
-.arcv #video::after,
+.ibm2250 #video::after,
 #audio::after {
 	position: absolute;
 	bottom: -2em;
@@ -360,31 +334,31 @@ body.arcv {
 	text-align: center;
 }
 
-.arcv #video {
+.ibm2250 #video {
 	right: 15vmin;
 }
 
-.arcv #video::before {
+.ibm2250 #video::before {
 	background-color: yellow;
 }
 
-.arcv #video::after {
+.ibm2250 #video::after {
 	content: 'VIDEO';
 }
 
-.arcv #audio {
+.ibm2250 #audio {
 	right: 9vmin;
 }
 
-.arcv #audio::before {
+.ibm2250 #audio::before {
 	background-color: white;
 }
 
-.arcv #audio::after {
+.ibm2250 #audio::after {
 	content: 'AUDIO';
 }
 
-.arcv #power-btn {
+.ibm2250 #power-btn {
 	font: normal 1vmin system-ui, sans-serif;
 	color: #9c7860;
 	position: absolute;
@@ -396,7 +370,7 @@ body.arcv {
 	border: 1px solid #a6856f;
 }
 
-.arcv #power-btn::before {
+.ibm2250 #power-btn::before {
 	content: '';
 	position: absolute;
 	top: 2px;
@@ -412,7 +386,7 @@ body.arcv {
 	border-left: 1px solid #6a645f;
 }
 
-.arcv #power-btn::after {
+.ibm2250 #power-btn::after {
 	content: 'POWER';
 	position: absolute;
 	top: calc(100% + 0.5vmin);

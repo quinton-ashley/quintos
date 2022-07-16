@@ -12,8 +12,8 @@ QuintOS.levels = [
 	/*04*/ ['Hangman', 'a2'], // strings
 	/*05*/ ['QuickClicks', 'gridc'], // recursion
 	/*06*/ ['BinaryCounter', 'cpet'], // binary
-	/*07*/ ['CodeBreaker', 'gridc'], // loading files
-	/*08*/ ['GenerativeArt', 'c64'], // fun (review)
+	/*07*/ ['GenerativeArt', 'ibm2250'], // fun (review)
+	/*08*/ ['CodeBreaker', 'gridc'], // loading files
 	/*09*/ ['TicTacToe', 'gridc'], // 2D Array
 	/*10*/ ['DataDesigner', 'c64'], // creating objects
 	/*11*/ ['WorldWideWeb', 'macin'], // web
@@ -21,10 +21,10 @@ QuintOS.levels = [
 	/*12*/ ['Wordle', 'a2'],
 	/*13*/ ['TicTacAIO', 'gridc'],
 	/*14*/ ['SpeakAndSpell', 'sas'],
-	/*15*/ ['Tempest', 'zx'],
+	/*15*/ ['Contain', 'zx'],
 	/*16*/ ['Snake', 'gameboi'],
 	/*17*/ ['SketchBook', 'c64'],
-	/*18*/ ['SuperJump', 'arcv'],
+	/*18*/ ['SuperJump', 'arc'],
 	/*19*/ ['Sokoban', 'c64']
 ];
 
@@ -294,7 +294,7 @@ QuintOS._overlap = (a, b) => {
 
 QuintOS.erase = () => {
 	let eraser = {
-		row: !/(gameboi|arcv)/.test(QuintOS.sys) ? (!/(calcu|sas)/.test(QuintOS.sys) ? 1 : 0) : 2,
+		row: !/(gameboi|arc|ibm2250)/.test(QuintOS.sys) ? (!/(calcu|sas)/.test(QuintOS.sys) ? 1 : 0) : 2,
 		col: !/(a2|gridc)/.test(QuintOS.sys) ? 0 : 1,
 		w: QuintOS.cols - (!/(a2|gridc)/.test(QuintOS.sys) ? 0 : 2),
 		h: QuintOS.rows - (!/(a2|gridc)/.test(QuintOS.sys) ? 0 : 2)
@@ -820,7 +820,7 @@ QuintOS.runGame = async () => {
 	if (QuintOS.level >= 0) {
 		title = QuintOS.level.toString().padStart(2, '0') + '_' + title;
 	}
-	let col = !/(c64|gameboi|arcv)/.test(QuintOS.sys) ? 2 : 0;
+	let col = !/(c64|gameboi|arc|ibm2250)/.test(QuintOS.sys) ? 2 : 0;
 	button(title, 0, col, () => {
 		if (QuintOS.gameFile) {
 			// open the javascript source in new tab
@@ -832,8 +832,8 @@ QuintOS.runGame = async () => {
 	});
 	if (!QuintOS.user) return;
 	text(' by ', 0, col + title.length);
-	let row = !/(gameboi|arcv)/.test(QuintOS.sys) ? 0 : 1;
-	col = !/(gameboi|arcv)/.test(QuintOS.sys) ? 6 + title.length : 0;
+	let row = !/(gameboi|arc|ibm2250)/.test(QuintOS.sys) ? 0 : 1;
+	col = !/(gameboi|arc|ibm2250)/.test(QuintOS.sys) ? 6 + title.length : 0;
 	if (QuintOS.sys == 'c64') col = 4 + title.length;
 	button(QuintOS.user, row, col, () => {
 		open('https://github.com/' + QuintOS.user);
@@ -1096,9 +1096,15 @@ async function preload() {
 	if (QuintOS.sys == 'a2') {
 		rows = 24;
 		cols = 40;
+	} else if (QuintOS.sys == 'arc') {
+		rows = 34;
+		cols = 28;
 	} else if (QuintOS.sys == 'arcv') {
 		rows = 34;
 		cols = 28;
+	} else if (QuintOS.sys == 'ibm2250') {
+		rows = 16;
+		cols = 16;
 	} else if (/(c64|cpet)/.test(QuintOS.sys)) {
 		rows = 25;
 		cols = 40;
@@ -1130,7 +1136,17 @@ async function preload() {
 			col: 2,
 			w: 36
 		},
+		arc: {
+			row: 16,
+			col: 4,
+			w: 20
+		},
 		arcv: {
+			row: 16,
+			col: 4,
+			w: 20
+		},
+		ibm2250: {
 			row: 16,
 			col: 4,
 			w: 20
@@ -1291,7 +1307,9 @@ tile {
 		]
 	};
 
+	palettes.arc = palettes.c64;
 	palettes.arcv = palettes.zx;
+	palettes.ibm2250 = palettes.zx;
 
 	/*#0f380f; #306230; #8bac0f; #9bbc0f; */
 
@@ -1627,7 +1645,7 @@ READY.
 				txt: 'v7'
 			}
 		],
-		arcv: [
+		arc: [
 			{
 				name: 'logo',
 				row: 13,
@@ -1827,8 +1845,12 @@ READY.
 
 	if (QuintOS.sys == 'c64') {
 		resizeCanvas(320, 200);
-	} else if (QuintOS.sys == 'arcv') {
+	} else if (QuintOS.sys == 'arc') {
 		resizeCanvas(320, 400);
+	} else if (QuintOS.sys == 'arcv') {
+		resizeCanvas(960, 1200);
+	} else if (QuintOS.sys == 'ibm2250') {
+		resizeCanvas(1024, 1024);
 	} else if (QuintOS.sys == 'gridc') {
 		resizeCanvas(320, 270);
 	} else if (QuintOS.sys == 'gridc2') {
