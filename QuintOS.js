@@ -1319,7 +1319,7 @@ tile {
 
 	const _colorPal = colorPal;
 
-	window.colorPal = (c, palette) => {
+	p5.prototype.colorPal = (c, palette) => {
 		if (typeof palette == 'number') {
 			palette = QuintOS.palettes[palette];
 		}
@@ -1329,7 +1329,7 @@ tile {
 
 	const _spriteArt = spriteArt;
 
-	window.spriteArt = (txt, scale, palette) => {
+	p5.prototype.spriteArt = (txt, scale, palette) => {
 		if (typeof palette == 'number') {
 			palette = QuintOS.palettes[palette];
 		}

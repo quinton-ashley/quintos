@@ -17,7 +17,7 @@ body.ibm2250 {
 
 .ibm2250 .screen {
 	font-family: Vectorb, monospace;
-	font-size: 5.6vmin;
+	font-size: 4.5vmin;
 	z-index: 1;
 	user-select: none;
 }
@@ -26,8 +26,8 @@ body.ibm2250 {
 .ibm2250 #defaultCanvas0,
 .ibm2250 #screen0 {
 	position: absolute;
-	width: 90vmin !important;
-	height: 90vmin !important;
+	width: 85.3vmin !important;
+	height: 85vmin !important;
 }
 
 .ibm2250 #screen0 {
@@ -92,8 +92,8 @@ body.ibm2250 {
 	border-radius: 10% / 80%;
 	width: 90vmin;
 	height: 85.3vmin;
-	padding-left: 6vmin;
-	padding-right: 6vmin;
+	padding-left: 8vmin;
+	padding-right: 4vmin;
 	border: 0.3vmin solid #4d4c49;
 	border-top: 0;
 	border-bottom: 0;
