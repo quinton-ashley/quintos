@@ -1869,8 +1869,8 @@ READY.
 
 	window.centerX = width * 0.5;
 	window.centerY = height * 0.5;
-	if (typeof world != 'undefined') {
-		world.resize();
+	if (typeof p5play.world !== 'undefined') {
+		p5play.world.resize();
 	}
 
 	p5.disableFriendlyErrors = false;
