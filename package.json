@@ -1,7 +1,7 @@
 {
 	"author": "quinton-ashley",
 	"name": "quintos",
-	"description": "Addon to p5.js for making retro games",
+	"description": "QuintOS is an education retro game engine",
 	"license": "GPL-3.0-only",
 	"repository": {
 		"type": "git",
@@ -14,5 +14,5 @@
 		"version": "git add -A",
 		"postversion": "git push"
 	},
-	"version": "3.0.19"
+	"version": "3.0.20"
 }

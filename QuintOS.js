@@ -1311,41 +1311,9 @@ tile {
 	palettes.arcv = palettes.zx;
 	palettes.ibm2250 = palettes.zx;
 
-	/*#0f380f; #306230; #8bac0f; #9bbc0f; */
-
 	// assign palettes to the system's palette
 	QuintOS.palettes = palettes[QuintOS.sys] || [];
-	QuintOS.palette = QuintOS.palettes[0] || {};
-
-	const _colorPal = colorPal;
-
-	p5.prototype.colorPal = (c, palette) => {
-		if (typeof palette == 'number') {
-			palette = QuintOS.palettes[palette];
-		}
-		palette ??= QuintOS.palette;
-		return _colorPal(c, palette);
-	};
-
-	const _spriteArt = spriteArt;
-
-	p5.prototype.spriteArt = (txt, scale, palette) => {
-		if (typeof palette == 'number') {
-			palette = QuintOS.palettes[palette];
-		}
-		palette ??= QuintOS.palette;
-		return _spriteArt(txt, scale, palette);
-	};
-
-	// deprecated
-	Sprite.prototype.loadAni = function (name, atlas) {
-		this.addAni(name, atlas);
-	};
-
-	// deprecated
-	Sprite.prototype.loadImg = function (name, atlas) {
-		this.addAni(name, atlas);
-	};
+	p5play.world.palettes = QuintOS.palettes;
 
 	let bootScreens = {
 		calcu: [
@@ -1869,7 +1837,7 @@ READY.
 
 	window.centerX = width * 0.5;
 	window.centerY = height * 0.5;
-	if (typeof p5play.world !== 'undefined') {
+	if (p5play.world instanceof World) {
 		p5play.world.resize();
 	}
 
