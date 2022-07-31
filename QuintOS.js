@@ -937,7 +937,7 @@ function loadImg(imgPath) {
 
 p5.disableFriendlyErrors = true;
 
-async function preload() {
+async function setup() {
 	if (QuintOS.username) QuintOS.user = QuintOS.username;
 	if (QuintOS.gameTitle) QuintOS.game = QuintOS.gameTitle;
 	if (!QuintOS.user) QuintOS.user = 'quinton-ashley';
@@ -1873,6 +1873,3 @@ READY.
 
 	setup();
 }
-
-window.setup = () => {};
-window.draw = () => {};
