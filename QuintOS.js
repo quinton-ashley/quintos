@@ -1849,6 +1849,8 @@ READY.
 	}
 	document.title = title;
 
+	if (setup) await setup();
+
 	if (QuintOS.sys != 'macin') {
 		console.log(
 			`QuintOS${QuintOS.level >= 0 ? ' v' + QuintOS.level : ''} size: ${width}x${height} rows: ${rows} cols: ${cols}`
@@ -1870,6 +1872,4 @@ READY.
 	// for (let t = 0; draw.toString() == '() => {}' && t < 120; t++) {
 	// 	await delay();
 	// }
-
-	setup();
 }
