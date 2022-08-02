@@ -1832,7 +1832,7 @@ READY.
 				if (
 					QuintOS.preload ||
 					QuintOS.preloadCode ||
-					(!QuintOS.preload && (QuintOS.level >= 12 || QuintOS.level == -1))
+					(!QuintOS.preload && (QuintOS.level > 12 || QuintOS.level == -1))
 				) {
 					await QuintOS.preloadData();
 				}
