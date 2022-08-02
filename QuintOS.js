@@ -715,12 +715,25 @@ async function prompt(txt, row, col, w, h) {
 	});
 }
 
-QuintOS.runJS = (src, file) => {
-	return new Promise(async (resolve, reject) => {
-		file ??= await QuintOS.loadCode(src);
-		const script = document.createElement('script');
-		script.async = false;
-		script.onload = function () {
+QuintOS.runJS = async (src, file) => {
+	file ??= await QuintOS.loadCode(src);
+	const script = document.createElement('script');
+	script.async = false;
+	if (!file) {
+		script.src = src;
+	} else if (file == '404: Not Found' && !src.includes('preload')) {
+		script.innerHTML = 'QuintOS.error(`File not found: ' + src + '`);';
+	} else {
+		script.innerHTML = 'log(`running: ' + src + '`);\n' + file;
+	}
+
+	if (script.innerHTML) {
+		document.body.appendChild(script);
+		return;
+	}
+
+	return new Promise((resolve, reject) => {
+		script.onload = () => {
 			log('loaded: ' + src);
 			resolve();
 		};
@@ -731,17 +744,6 @@ Check the Javascript console for more info.
 To open the console use control+shift+i or
 command+option+i then click the Console tab.`);
 		};
-		// prevent page loading from the browser's cache
-		// if (QuintOS.context == 'live') {
-		// 	src += '?' + Date.now();
-		// }
-		if (!file) {
-			script.src = src;
-		} else if (file == '404: Not Found' && !src.includes('preload')) {
-			script.innerHTML = 'QuintOS.error(`File not found: ' + src + '`);';
-		} else {
-			script.innerHTML = 'log(`running: ' + src + '`);\n' + file;
-		}
 
 		document.body.appendChild(script);
 	});
