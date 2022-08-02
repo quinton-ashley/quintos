@@ -1444,7 +1444,7 @@ CopyLeft 1977`
 			{
 				name: 'bg',
 				col: 5,
-				row: 2,
+				row: 4,
 				speed: 100,
 				txt: (() => {
 					let p = ['\\', ' ', ' ', '\\', '_', '_'];
@@ -1462,7 +1462,7 @@ CopyLeft 1977`
 			{
 				name: 'logo',
 				col: 2,
-				row: 1,
+				row: 3,
 				speed: 50,
 				txt: `
           ________\n         /\\       \\\n        /  \\       \\
@@ -1476,7 +1476,7 @@ CopyLeft 1977`
 			{
 				name: 'h1',
 				col: 20,
-				row: 8,
+				row: 10,
 				speed: 10,
 				txt: `
  ██████╗ ██╗   ██╗██╗███╗   ██╗████████╗ ██████╗ ███████╗
@@ -1489,7 +1489,7 @@ CopyLeft 1977`
 			{
 				name: 'title',
 				col: 5,
-				row: 0,
+				row: 2,
 				speed: 1,
 				txt: 'QuintOS'
 			},
@@ -1615,10 +1615,24 @@ READY.
 		],
 		arc: [
 			{
+				name: 'bg',
+				row: 0,
+				col: 0,
+				speed: 52,
+				txt: (() => {
+					let res = '';
+					for (let i = 0; i < 200; i++) {
+						res += '.'.repeat(round(random(1, 5)));
+						res += ' '.repeat(round(random(1, 5)));
+					}
+					return res;
+				})()
+			},
+			{
 				name: 'logo',
 				row: 13,
 				col: 7,
-				speed: 1,
+				speed: 3,
 				txt: `
 ┏━┓ ┏┓ ┏┓┏━┳━┓
 ┃┃┣┳╋╋━┫┗┫┃┃━┫
@@ -1630,10 +1644,28 @@ READY.
 		],
 		Sokoban: [
 			{
+				name: 'bg',
+				row: 0,
+				col: 0,
+				speed: 20,
+				txt: (() => {
+					const STR$ = (val) => String.fromCodePoint((9380 + val) >>> 0);
+					const RND = (range) => Math.random() * range;
+					let txt = '';
+					for (let i = 0; i < rows; i++) {
+						for (let j = 0; j < cols; j++) {
+							txt += STR$(205.5 + RND(1));
+						}
+						txt += '\n';
+					}
+					return txt;
+				})()
+			},
+			{
 				name: 'logo',
 				row: 13,
 				col: 7,
-				speed: 1,
+				speed: 3,
 				txt: `
 ┏━┓ ┏┓ ┏┓┏━┳━┓
 ┃┃┣┳╋╋━┫┗┫┃┃━┫
@@ -1655,20 +1687,6 @@ READY.
 				await delay(48);
 			}
 			QuintOS._textSync([' '.repeat(QuintOS.cols)], 0, 0);
-		} else if (QuintOS.sys == 'c64') {
-			function makeMaze() {
-				const STR$ = (val) => String.fromCodePoint((9380 + val) >>> 0);
-				const RND = (range) => Math.random() * range;
-				let txt = '';
-				for (let i = 0; i < rows; i++) {
-					for (let j = 0; j < cols; j++) {
-						txt += STR$(205.5 + RND(1));
-					}
-					txt += '\n';
-				}
-				return txt;
-			}
-			await QuintOS.text(makeMaze(), 0, 0, 0, 0, 20);
 		} else if (QuintOS.sys == 'sas') {
 			let boom = '.|+x*';
 			for (let i = 0; i < 5; i++) {
@@ -1712,6 +1730,61 @@ READY.
 	if (!QuintOS.disableBoot) {
 		bootScreen = bootScreens[QuintOS.game] || bootScreens[QuintOS.sys] || [];
 	}
+
+	window.drawText = text;
+	window.text = QuintOS.text;
+	window.erase = QuintOS.erase;
+
+	window.size = () => {};
+
+	QuintOS._image = image; // p5.js image function
+
+	window.image = (img, ...args) => {
+		for (let i = 0; i < args.length; i++) {
+			args[i] = Math.round(args[i]);
+		}
+		QuintOS._image(img, ...args);
+	};
+
+	if (QuintOS.sys == 'gridc') {
+		// add the clock
+		setInterval(() => {
+			let time = new Date($.now());
+			QuintOS._textSync([Date.now() + ''], 29, 65);
+			time = time.toString().split(' GMT')[0];
+			QuintOS._textSync([time + ''], 29, 2);
+		}, 1000);
+	}
+
+	// onerror = (msg, url, lineNum) => {
+	// 	error(msg + ' ' + url + ':' + lineNum);
+	// };
+
+	// $('#screen0').parent().addClass('clear');
+	$('#screen0').parent().append($('main'));
+	$('main').css('display', 'block');
+
+	if (QuintOS.sys == 'c64') {
+		resizeCanvas(320, 200);
+	} else if (QuintOS.sys == 'arc') {
+		resizeCanvas(320, 400);
+	} else if (QuintOS.sys == 'arcv') {
+		resizeCanvas(960, 1200);
+	} else if (QuintOS.sys == 'ibm2250') {
+		resizeCanvas(1024, 1024);
+	} else if (QuintOS.sys == 'gridc') {
+		resizeCanvas(320, 270);
+	} else if (QuintOS.sys == 'gridc2') {
+		resizeCanvas(480, 270);
+	} else if (QuintOS.sys == 'zx') {
+		resizeCanvas(256, 192);
+	} else if (QuintOS.sys == 'gameboi') {
+		resizeCanvas(160, 144);
+	}
+
+	strokeWeight(2);
+	noSmooth();
+	$('canvas').removeAttr('style');
 
 	await Promise.all([
 		(async () => {
@@ -1759,32 +1832,27 @@ READY.
 				if (
 					QuintOS.preload ||
 					QuintOS.preloadCode ||
-					(!QuintOS.preload && (QuintOS.level >= 11 || QuintOS.level == -1))
+					(!QuintOS.preload && (QuintOS.level >= 12 || QuintOS.level == -1))
 				) {
-					QuintOS.preloadData();
+					await QuintOS.preloadData();
 				}
 			}
-
+			if (setup) await setup();
+		})(),
+		(async () => {
 			if (/(a2|gridc)/.test(QuintOS.sys)) await QuintOS.frame();
 
+			tint(100);
+			p5play.images.onLoad = (img) => {
+				image(img, round(random(-img.width, width)), round(random(-img.height, height)));
+			};
+
 			await displayBootscreen();
+
+			p5play.images.onLoad = (img) => {};
+			noTint();
 		})()
 	]);
-
-	window.drawText = text;
-	window.text = QuintOS.text;
-	window.erase = QuintOS.erase;
-
-	window.size = () => {};
-
-	QuintOS._image = image; // p5.js image function
-
-	window.image = (img, ...args) => {
-		for (let i = 0; i < args.length; i++) {
-			args[i] = Math.round(args[i]);
-		}
-		QuintOS._image(img, ...args);
-	};
 
 	// await delay(111111111); // test bootscreen
 	if (QuintOS.sys == 'calcu') await delay(1000);
@@ -1792,48 +1860,6 @@ READY.
 
 	await eraseRect();
 	QuintOS._lines = 0;
-
-	if (QuintOS.sys == 'gridc') {
-		// add the clock
-		setInterval(() => {
-			let time = new Date($.now());
-			QuintOS._textSync([Date.now() + ''], 29, 65);
-			time = time.toString().split(' GMT')[0];
-			QuintOS._textSync([time + ''], 29, 2);
-		}, 1000);
-	}
-
-	// onerror = (msg, url, lineNum) => {
-	// 	error(msg + ' ' + url + ':' + lineNum);
-	// };
-
-	// $('#screen0').parent().addClass('clear');
-	$('#screen0').parent().append($('main'));
-	$('main').css('display', 'block');
-
-	if (QuintOS.sys == 'c64') {
-		resizeCanvas(320, 200);
-	} else if (QuintOS.sys == 'arc') {
-		resizeCanvas(320, 400);
-	} else if (QuintOS.sys == 'arcv') {
-		resizeCanvas(960, 1200);
-	} else if (QuintOS.sys == 'ibm2250') {
-		resizeCanvas(1024, 1024);
-	} else if (QuintOS.sys == 'gridc') {
-		resizeCanvas(320, 270);
-	} else if (QuintOS.sys == 'gridc2') {
-		resizeCanvas(480, 270);
-	} else if (QuintOS.sys == 'zx') {
-		resizeCanvas(256, 192);
-	} else if (QuintOS.sys == 'gameboi') {
-		resizeCanvas(160, 144);
-	}
-
-	strokeWeight(2);
-	noSmooth();
-	$('canvas').removeAttr('style');
-
-	await delay(100);
 
 	window.centerX = width * 0.5;
 	window.centerY = height * 0.5;
@@ -1849,7 +1875,7 @@ READY.
 	}
 	document.title = title;
 
-	if (setup) await setup();
+	// if (setup) await setup();
 
 	if (QuintOS.sys != 'macin') {
 		console.log(
