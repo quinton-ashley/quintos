@@ -715,178 +715,6 @@ async function prompt(txt, row, col, w, h) {
 	});
 }
 
-QuintOS.runJS = async (src, file) => {
-	file ??= await QuintOS.loadCode(src);
-	const script = document.createElement('script');
-	script.async = false;
-	if (!file) {
-		script.src = src;
-	} else if (file == '404: Not Found' && !src.includes('preload')) {
-		script.innerHTML = 'QuintOS.error(`File not found: ' + src + '`);';
-	} else {
-		script.innerHTML = 'log(`running: ' + src + '`);\n' + file;
-	}
-
-	if (script.innerHTML) {
-		document.body.appendChild(script);
-		return;
-	}
-
-	return new Promise((resolve, reject) => {
-		script.onload = () => {
-			log('loaded: ' + src);
-			resolve();
-		};
-		script.onerror = () => {
-			reject(`
-Failed to load file: \n\n${src}\n\n
-Check the Javascript console for more info.
-To open the console use control+shift+i or
-command+option+i then click the Console tab.`);
-		};
-
-		document.body.appendChild(script);
-	});
-};
-
-QuintOS.translateJava = async (file) => {
-	if (QuintOS.fileType == 'pde') {
-		file = `
-public class ${QuintOS.game} {
-  ${file.replaceAll('\n', '\n  ')}
-  public static void main(String[] args) {}
-}`;
-	}
-
-	if (QuintOS.dev) log(file);
-
-	if (QuintOS.sys != 'calcu') {
-		file = file.replace(/(.*=)(.*\.)*next(Int|Float|Double|Line|Short|Long)*\(\);/gm, '$1 prompt();');
-	} else {
-		file = file.replace(
-			/System\.out\.print(ln)*\(([^\)]*)\);\s*(.*=)(.*\.)*next(Int|Float|Double|Short|Long)*\(\);/gm,
-			'$3 prompt($2);'
-		);
-	}
-
-	let rp = 'text($2);';
-	if (QuintOS.sys == 'calcu') rp = 'alert($2);';
-	file = file.replace(/System\.out\.print(ln)*\(([^\(\)]*(\([^\(\)]*\))*)*\);/gm, rp);
-
-	file = await jdk.transpile(file);
-
-	// file = file.replace(/size\(.*\);/gm, '');
-
-	if (QuintOS.dev) log(file);
-	return file;
-};
-
-QuintOS.runJava = async (src, file) => {
-	jdk.run();
-};
-
-QuintOS.preloadData = async () => {
-	if (QuintOS.preloadCode) {
-		await QuintOS.preloadCode();
-		return;
-	}
-	let dir = QuintOS.dir;
-	let title = QuintOS.game;
-	let src = `${dir}/${title[0].toLowerCase() + title.slice(1)}-preload.${QuintOS.fileType}`;
-	try {
-		await QuintOS.runCode(src);
-	} catch (error) {
-		QuintOS.error(error);
-	}
-};
-
-QuintOS.runCode = async (src, file) => {
-	if (QuintOS.language == 'js') {
-		await QuintOS.runJS(src, file);
-	} else if (QuintOS.language == 'java') {
-		await QuintOS.runJava(src, file);
-	}
-};
-
-QuintOS.runGame = async () => {
-	if (typeof QuintOS.gameCode == 'function') {
-		QuintOS.gameCode();
-	} else {
-		QuintOS.runCode(QuintOS.gameFile, QuintOS.gameCode);
-	}
-	if (/(a2|gridc)/.test(QuintOS.sys)) QuintOS.frame();
-
-	if (/(calcu|sas)/.test(QuintOS.sys)) return;
-
-	let title = QuintOS.game;
-	if (QuintOS.level >= 0) {
-		title = QuintOS.level.toString().padStart(2, '0') + '_' + title;
-	}
-	let col = !/(c64|gameboi|arc|ibm2250)/.test(QuintOS.sys) ? 2 : 0;
-	button(title, 0, col, () => {
-		if (QuintOS.gameFile) {
-			// open the javascript source in new tab
-			open(QuintOS.gameFile);
-		} else {
-			// open the Javascript editor and console in codepen
-			open(window.location.href + '?editors=0011');
-		}
-	});
-	if (!QuintOS.user) return;
-	text(' by ', 0, col + title.length);
-	let row = !/(gameboi|arc|ibm2250)/.test(QuintOS.sys) ? 0 : 1;
-	col = !/(gameboi|arc|ibm2250)/.test(QuintOS.sys) ? 6 + title.length : 0;
-	if (QuintOS.sys == 'c64') col = 4 + title.length;
-	button(QuintOS.user, row, col, () => {
-		open('https://github.com/' + QuintOS.user);
-	});
-};
-
-QuintOS.loadCode = async (src) => {
-	let file;
-	if (QuintOS.language == 'js') {
-		if (src.slice(0, 4) == 'http') {
-			file = await (await fetch(src)).text();
-			return file;
-		}
-		return;
-	}
-	if (QuintOS.language == 'java') {
-		file = await (await fetch(src)).text();
-		file = await QuintOS.translateJava(file);
-	}
-	return file;
-};
-
-QuintOS.loadGame = async () => {
-	let title = QuintOS.game;
-	if (QuintOS.gameCode) return;
-	let dir = QuintOS.dir;
-	let fileBase = title + '.';
-	if (QuintOS.language == 'js') fileBase = `${title.slice(0, 1).toLowerCase() + title.slice(1)}.`;
-	fileBase += QuintOS.fileType;
-	let src = dir + '/' + fileBase;
-	let gameCode;
-	try {
-		gameCode = await QuintOS.loadCode(src);
-	} catch (ror) {
-		QuintOS.error(ror);
-	}
-	QuintOS.gameFile = src;
-	return gameCode;
-};
-
-QuintOS.error = async (e) => {
-	console.error(e);
-	if (e.stack) {
-		let stack = e.stack.split('\n')[0].split('/').pop().split(':');
-		stack = stack[0] + ' line ' + stack[1];
-		await alert('ERROR: ' + e.message + '\n\n' + stack + '\n' + e.stack);
-	} else {
-		await alert('ERROR: ' + e);
-	}
-};
-
 async function exit() {
 	if (QuintOS.language == 'java') {
 		await alert('The program exited!');
@@ -925,21 +753,13 @@ window.addEventListener('keydown', function (e) {
 	}
 });
 
-function loadImg(imgPath) {
-	return new Promise((resolve) => {
-		loadImage(imgPath, () => {
-			resolve();
-		});
-	});
-}
-
 /********************************************************************
  ******************************* QUINTOS *****************************
  ********************************************************************/
 
 p5.disableFriendlyErrors = true;
 
-async function setup() {
+async function preload() {
 	if (QuintOS.username) QuintOS.user = QuintOS.username;
 	if (QuintOS.gameTitle) QuintOS.game = QuintOS.gameTitle;
 	if (!QuintOS.user) QuintOS.user = 'quinton-ashley';
@@ -976,9 +796,180 @@ async function setup() {
 		QuintOS.level ??= -1;
 	}
 
-	createCanvas();
-	frameRate(60);
-	noStroke();
+	_incrementPreload.call(window);
+	preload = () => {};
+
+	QuintOS.runJS = async (src, file) => {
+		file ??= await QuintOS.loadCode(src);
+		const script = document.createElement('script');
+		script.async = false;
+		if (!file) {
+			script.src = src;
+		} else if (file == '404: Not Found' && !src.includes('preload')) {
+			script.innerHTML = 'QuintOS.error(`File not found: ' + src + '`);';
+		} else {
+			script.innerHTML = 'log(`running: ' + src + '`);\n' + file;
+		}
+
+		if (script.innerHTML) {
+			document.body.appendChild(script);
+			return;
+		}
+
+		return new Promise((resolve, reject) => {
+			script.onload = () => {
+				log('loaded: ' + src);
+				resolve();
+			};
+			script.onerror = () => {
+				reject(`
+Failed to load file: \n\n${src}\n\n
+Check the Javascript console for more info.
+To open the console use control+shift+i or
+command+option+i then click the Console tab.`);
+			};
+
+			document.body.appendChild(script);
+		});
+	};
+
+	QuintOS.translateJava = async (file) => {
+		if (QuintOS.fileType == 'pde') {
+			file = `
+public class ${QuintOS.game} {
+  ${file.replaceAll('\n', '\n  ')}
+  public static void main(String[] args) {}
+}`;
+		}
+
+		if (QuintOS.dev) log(file);
+
+		if (QuintOS.sys != 'calcu') {
+			file = file.replace(/(.*=)(.*\.)*next(Int|Float|Double|Line|Short|Long)*\(\);/gm, '$1 prompt();');
+		} else {
+			file = file.replace(
+				/System\.out\.print(ln)*\(([^\)]*)\);\s*(.*=)(.*\.)*next(Int|Float|Double|Short|Long)*\(\);/gm,
+				'$3 prompt($2);'
+			);
+		}
+
+		let rp = 'text($2);';
+		if (QuintOS.sys == 'calcu') rp = 'alert($2);';
+		file = file.replace(/System\.out\.print(ln)*\(([^\(\)]*(\([^\(\)]*\))*)*\);/gm, rp);
+
+		file = await jdk.transpile(file);
+
+		// file = file.replace(/size\(.*\);/gm, '');
+
+		if (QuintOS.dev) log(file);
+		return file;
+	};
+
+	QuintOS.runJava = async (src, file) => {
+		jdk.run();
+	};
+
+	QuintOS.preloadData = async () => {
+		if (QuintOS.preloadCode) {
+			await QuintOS.preloadCode();
+			return;
+		}
+		let dir = QuintOS.dir;
+		let title = QuintOS.game;
+		let src = `${dir}/${title[0].toLowerCase() + title.slice(1)}-preload.${QuintOS.fileType}`;
+		try {
+			await QuintOS.runCode(src);
+		} catch (error) {
+			QuintOS.error(error);
+		}
+	};
+
+	QuintOS.runCode = async (src, file) => {
+		if (QuintOS.language == 'js') {
+			await QuintOS.runJS(src, file);
+		} else if (QuintOS.language == 'java') {
+			await QuintOS.runJava(src, file);
+		}
+	};
+
+	QuintOS.runGame = async () => {
+		if (typeof QuintOS.gameCode == 'function') {
+			QuintOS.gameCode();
+		} else {
+			await QuintOS.runCode(QuintOS.gameFile, QuintOS.gameCode);
+		}
+		if (/(a2|gridc)/.test(QuintOS.sys)) QuintOS.frame();
+
+		if (/(calcu|sas)/.test(QuintOS.sys)) return;
+
+		let title = QuintOS.game;
+		if (QuintOS.level >= 0) {
+			title = QuintOS.level.toString().padStart(2, '0') + '_' + title;
+		}
+		let col = !/(c64|gameboi|arc|ibm2250)/.test(QuintOS.sys) ? 2 : 0;
+		button(title, 0, col, () => {
+			if (QuintOS.gameFile) {
+				// open the javascript source in new tab
+				open(QuintOS.gameFile);
+			} else {
+				// open the Javascript editor and console in codepen
+				open(window.location.href + '?editors=0011');
+			}
+		});
+		if (!QuintOS.user) return;
+		text(' by ', 0, col + title.length);
+		let row = !/(gameboi|arc|ibm2250)/.test(QuintOS.sys) ? 0 : 1;
+		col = !/(gameboi|arc|ibm2250)/.test(QuintOS.sys) ? 6 + title.length : 0;
+		if (QuintOS.sys == 'c64') col = 4 + title.length;
+		button(QuintOS.user, row, col, () => {
+			open('https://github.com/' + QuintOS.user);
+		});
+	};
+
+	QuintOS.loadCode = async (src) => {
+		let file;
+		if (QuintOS.language == 'js') {
+			if (src.slice(0, 4) == 'http') {
+				file = await (await fetch(src)).text();
+				return file;
+			}
+			return;
+		}
+		if (QuintOS.language == 'java') {
+			file = await (await fetch(src)).text();
+			file = await QuintOS.translateJava(file);
+		}
+		return file;
+	};
+
+	QuintOS.loadGame = async () => {
+		let title = QuintOS.game;
+		if (QuintOS.gameCode) return;
+		let dir = QuintOS.dir;
+		let fileBase = title + '.';
+		if (QuintOS.language == 'js') fileBase = `${title.slice(0, 1).toLowerCase() + title.slice(1)}.`;
+		fileBase += QuintOS.fileType;
+		let src = dir + '/' + fileBase;
+		let gameCode;
+		try {
+			gameCode = await QuintOS.loadCode(src);
+		} catch (ror) {
+			QuintOS.error(ror);
+		}
+		QuintOS.gameFile = src;
+		return gameCode;
+	};
+
+	QuintOS.error = async (e) => {
+		console.error(e);
+		if (e.stack) {
+			let stack = e.stack.split('\n')[0].split('/').pop().split(':');
+			stack = stack[0] + ' line ' + stack[1];
+			await alert('ERROR: ' + e.message + '\n\n' + stack + '\n' + e.stack);
+		} else {
+			await alert('ERROR: ' + e);
+		}
+	};
 
 	let sys = QuintOS.sys || QuintOS.system || QuintOS.levels[QuintOS.level || 0][1];
 	QuintOS.sys = sys;
@@ -1762,6 +1753,8 @@ READY.
 	// 	error(msg + ' ' + url + ':' + lineNum);
 	// };
 
+	createCanvas();
+
 	// $('#screen0').parent().addClass('clear');
 	$('#screen0').parent().append($('main'));
 	$('main').css('display', 'block');
@@ -1784,6 +1777,7 @@ READY.
 		resizeCanvas(160, 144);
 	}
 
+	frameRate(60);
 	strokeWeight(2);
 	noSmooth();
 	$('canvas').removeAttr('style');
@@ -1828,8 +1822,6 @@ READY.
 					};
 				}
 			}
-		})(),
-		(async () => {
 			if (QuintOS.language != 'java') {
 				if (
 					QuintOS.preload ||
@@ -1838,8 +1830,8 @@ READY.
 				) {
 					await QuintOS.preloadData();
 				}
+				if (preload) preload();
 			}
-			if (setup) await setup();
 		})(),
 		(async () => {
 			if (/(a2|gridc)/.test(QuintOS.sys)) await QuintOS.frame();
@@ -1877,13 +1869,18 @@ READY.
 	}
 	document.title = title;
 
-	// if (setup) await setup();
+	// if (setup) setup();
 
 	if (QuintOS.sys != 'macin') {
 		console.log(
 			`QuintOS${QuintOS.level >= 0 ? ' v' + QuintOS.level : ''} size: ${width}x${height} rows: ${rows} cols: ${cols}`
 		);
-		QuintOS.runGame();
+		await QuintOS.runGame();
+
+		// prevent createCanvas from running inside _setup
+		this.createCanvas = () => {};
+
+		this._decrementPreload();
 	} else {
 		console.log(`QuintOS${QuintOS.level >= 0 ? ' v' + QuintOS.level : ''}`);
 		frames.iframe0.src = QuintOS.dir + '/index.html';
@@ -1896,8 +1893,7 @@ READY.
 			noLoop();
 		}, 6000);
 	}
-
-	// for (let t = 0; draw.toString() == '() => {}' && t < 120; t++) {
-	// 	await delay();
-	// }
 }
+
+window.setup = () => {};
+window.draw = () => {};
