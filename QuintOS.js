@@ -827,7 +827,7 @@ p5.prototype.registerMethod('init', function p5PlayInit() {
 			script.async = false;
 			if (!file) {
 				script.src = src;
-			} else if (file == '404: Not Found' && !src.includes('preload')) {
+			} else if (file == '404: Not Found') {
 				script.innerHTML = 'QuintOS.error(`File not found: ' + src + '`);';
 			} else {
 				script.innerHTML = 'log(`running: ' + src + '`);\n' + file;
@@ -887,33 +887,6 @@ public class ${QuintOS.game} {
 			return file;
 		}
 
-		async function runJava(src, file) {
-			jdk.run();
-		}
-
-		async function preloadData() {
-			if (QuintOS.preloadCode) {
-				await QuintOS.preloadCode();
-				return;
-			}
-			let dir = QuintOS.dir;
-			let title = QuintOS.game;
-			let src = `${dir}/${title[0].toLowerCase() + title.slice(1)}-preload.${QuintOS.fileType}`;
-			try {
-				await runCode(src);
-			} catch (error) {
-				QuintOS.error(error);
-			}
-		}
-
-		async function runCode(src, file) {
-			if (QuintOS.language == 'js') {
-				await runJS(src, file);
-			} else if (QuintOS.language == 'java') {
-				await runJava(src, file);
-			}
-		}
-
 		async function runGame() {
 			console.log(
 				`QuintOS${QuintOS.level >= 0 ? ' v' + QuintOS.level : ''} size: ${width}x${height} rows: ${rows} cols: ${cols}`
@@ -923,7 +896,11 @@ public class ${QuintOS.game} {
 			if (typeof QuintOS.gameCode == 'function') {
 				QuintOS.gameCode();
 			} else {
-				await runCode(QuintOS.gameFile, QuintOS.gameCode);
+				if (QuintOS.language == 'js') {
+					await runJS(QuintOS.gameFile, QuintOS.gameCode);
+				} else if (QuintOS.language == 'java') {
+					jdk.run();
+				}
 			}
 			// preload is either from the game or an empty function
 			this.preload();
@@ -1813,7 +1790,9 @@ READY.
 						};
 					}
 				}
-				await runGame();
+				if (QuintOS.sys != 'macin') {
+					await runGame();
+				}
 			})(),
 			(async function () {
 				if (/(a2|gridc)/.test(QuintOS.sys)) await frame();
