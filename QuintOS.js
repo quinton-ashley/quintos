@@ -178,6 +178,12 @@ p5.prototype.registerMethod('init', function quintosInit() {
 		return { lines, row, col, speed };
 	}
 
+	const _p5text = this.text;
+
+	this.drawText = function () {
+		_p5text.call(this, ...arguments);
+	};
+
 	/* Display text */
 	this.text = function (txt, row, col, w, h, speed) {
 		let noRow = !row && row != 0;
@@ -798,6 +804,8 @@ p5.prototype.registerMethod('init', function quintosInit() {
 			/*19*/ ['Sokoban', 'c64']
 		];
 
+		let systems = ['a2', 'arc', 'calcu', 'cpet', 'gameboi', 'gridc', 'ibm2250', 'macin', 'sas', 'zx'];
+
 		if (!QuintOS.game) {
 			if (typeof QuintOS.level != 'undefined') {
 				QuintOS.game = levels[QuintOS.level][0];
@@ -832,7 +840,13 @@ p5.prototype.registerMethod('init', function quintosInit() {
 			QuintOS.level ??= -1;
 		}
 
-		let sys = QuintOS.sys || QuintOS.system || levels[QuintOS.level || 0][1];
+		let sys = QuintOS.sys || QuintOS.system;
+
+		if (QuintOS.level == -1 && !sys) {
+			throw new Error('Please specify a QuintOS system! Valid options are: ' + systems.join(', '));
+		}
+
+		sys ??= levels[QuintOS.level || 0][1];
 		QuintOS.sys = sys;
 		QuintOS.system = sys;
 
@@ -880,7 +894,7 @@ p5.prototype.registerMethod('init', function quintosInit() {
 
 		pixelDensity(1);
 		frameRate(60);
-		strokeWeight(2);
+		noStroke();
 		noSmooth();
 
 		$('canvas').removeAttr('style');
