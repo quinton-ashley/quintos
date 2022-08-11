@@ -35,20 +35,6 @@ if (typeof QuintOS == 'undefined') {
 	}
 }
 
-window.addEventListener('keydown', function (e) {
-	if (
-		(e.key == ' ' ||
-			e.key == '/' ||
-			e.key == 'ArrowUp' ||
-			e.key == 'ArrowDown' ||
-			e.key == 'ArrowLeft' ||
-			e.key == 'ArrowRight') &&
-		e.target == document.body
-	) {
-		e.preventDefault();
-	}
-});
-
 p5.prototype.registerMethod('init', function quintosInit() {
 	let pInst = this;
 
@@ -1230,7 +1216,7 @@ tile {
 
 		// assign palettes to the system's palette
 		QuintOS.palettes = palettes[QuintOS.sys] || [];
-		p5play.world.palettes = QuintOS.palettes;
+		this.world.palettes = QuintOS.palettes;
 
 		let bootScreens = {
 			calcu: [
@@ -1839,10 +1825,10 @@ public class ${QuintOS.game} {
 
 		$('canvas').removeAttr('style');
 
-		window.centerX = width * 0.5;
-		window.centerY = height * 0.5;
-		if (p5play.world instanceof World) {
-			p5play.world.resize();
+		this.centerX = width * 0.5;
+		this.centerY = height * 0.5;
+		if (this.world instanceof World) {
+			this.world.resize();
 		}
 
 		// p5.disableFriendlyErrors = false;
@@ -1889,6 +1875,20 @@ public class ${QuintOS.game} {
 			frames.iframe0.src = QuintOS.dir + '/index.html';
 		}
 	};
+});
+
+window.addEventListener('keydown', function (e) {
+	if (
+		(e.key == ' ' ||
+			e.key == '/' ||
+			e.key == 'ArrowUp' ||
+			e.key == 'ArrowDown' ||
+			e.key == 'ArrowLeft' ||
+			e.key == 'ArrowRight') &&
+		e.target == document.body
+	) {
+		e.preventDefault();
+	}
 });
 
 window.setup = () => {};
