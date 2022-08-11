@@ -1688,9 +1688,7 @@ public class ${QuintOS.game} {
 		}
 
 		async function runGame() {
-			console.log(
-				`QuintOS${QuintOS.level >= 0 ? ' v' + QuintOS.level : ''} size: ${width}x${height} rows: ${rows} cols: ${cols}`
-			);
+			console.log(`QuintOS ${QuintOS.sys} size: ${width}x${height} rows: ${rows} cols: ${cols}`);
 			if (typeof QuintOS.gameCode == 'function') {
 				QuintOS.gameCode();
 			} else {
@@ -1834,9 +1832,9 @@ public class ${QuintOS.game} {
 		// p5.disableFriendlyErrors = false;
 
 		let title = QuintOS.game;
-		if (QuintOS.level >= 0) {
-			title = QuintOS.level.toString().padStart(2, '0') + '_' + title;
-		}
+		// if (QuintOS.level >= 0) {
+		// 	title = QuintOS.level.toString().padStart(2, '0') + '_' + title;
+		// }
 		document.title = title;
 
 		if (QuintOS.sys != 'macin') {
@@ -1844,9 +1842,9 @@ public class ${QuintOS.game} {
 
 			if (!/(calcu|sas)/.test(QuintOS.sys)) {
 				let title = QuintOS.game;
-				if (QuintOS.level >= 0) {
-					title = QuintOS.level.toString().padStart(2, '0') + '_' + title;
-				}
+				// if (QuintOS.level >= 0) {
+				// 	title = QuintOS.level.toString().padStart(2, '0') + '_' + title;
+				// }
 				let col = !/(c64|gameboi|arc|ibm2250)/.test(QuintOS.sys) ? 2 : 0;
 				button(title, 0, col, () => {
 					if (QuintOS.gameFile) {
@@ -1871,7 +1869,7 @@ public class ${QuintOS.game} {
 
 			this._decrementPreload(); // run game
 		} else {
-			console.log(`QuintOS${QuintOS.level >= 0 ? ' v' + QuintOS.level : ''}`);
+			console.log(`QuintOS macin}`);
 			frames.iframe0.src = QuintOS.dir + '/index.html';
 		}
 	};
