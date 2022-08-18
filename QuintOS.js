@@ -880,7 +880,7 @@ p5.prototype.registerMethod('init', function quintosInit() {
 
 		pixelDensity(1);
 		frameRate(60);
-		noStroke();
+		strokeWeight(2);
 		noSmooth();
 
 		$('canvas').removeAttr('style');
