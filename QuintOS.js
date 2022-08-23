@@ -28,7 +28,6 @@ if (typeof QuintOS == 'undefined') {
 		for (let pair of params.entries()) {
 			let k = pair[0].toLowerCase();
 			let v = pair[1];
-			if (k == 'gametitle' || k == 'game') k = 'game';
 			if (v === 'false') v = false;
 			QuintOS[k] = v;
 		}
