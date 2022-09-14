@@ -37,6 +37,10 @@ if (typeof QuintOS == 'undefined') {
 p5.prototype.registerMethod('init', function quintosInit() {
 	let pInst = this;
 
+	if (typeof this.world == 'undefined') {
+		throw new Error('You must load planck and p5.play before QuintOS');
+	}
+
 	this.QuintOS = {
 		_lines: 0
 	};
@@ -756,6 +760,12 @@ p5.prototype.registerMethod('init', function quintosInit() {
 	// 	_image(img, ...args);
 	// };
 
+	this._loadImage = this.loadImage;
+	this.loadImage = function () {
+		arguments[0] = QuintOS.dir + '/' + arguments[0];
+		return this._loadImage(...arguments);
+	};
+
 	this.preload = async () => {
 		let context = this._isGlobal ? window : this;
 		this._incrementPreload();
@@ -769,7 +779,7 @@ p5.prototype.registerMethod('init', function quintosInit() {
 			/*00*/ ['GuessTheNumber', 'calcu'], // primitives and if/else
 			/*01*/ ['PickAPath', 'cpet'], // array
 			/*02*/ ['Pong', 'zx'], // using objects
-			/*03*/ ['LeafEater', 'gameboi'], // iteration
+			/*03*/ ['LilyLeap', 'gameboi'], // iteration
 			/*04*/ ['Hangman', 'a2'], // strings
 			/*05*/ ['QuickClicks', 'gridc'], // recursion
 			/*06*/ ['BinaryCounter', 'cpet'], // binary
