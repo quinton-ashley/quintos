@@ -762,8 +762,18 @@ p5.prototype.registerMethod('init', function quintosInit() {
 
 	this._loadImage = this.loadImage;
 	this.loadImage = function () {
-		arguments[0] = QuintOS.dir + '/' + arguments[0];
+		if (!arguments[0].includes(this.QuintOS.dir)) {
+			arguments[0] = this.QuintOS.dir + '/' + arguments[0];
+		}
 		return this._loadImage(...arguments);
+	};
+
+	this._loadSound = this.loadSound;
+	this.loadSound = function () {
+		if (!arguments[0].includes(this.QuintOS.dir)) {
+			arguments[0] = this.QuintOS.dir + '/' + arguments[0];
+		}
+		return this._loadSound(...arguments);
 	};
 
 	this.preload = async () => {
