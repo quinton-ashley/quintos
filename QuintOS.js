@@ -865,12 +865,6 @@ p5.prototype.registerMethod('init', function quintosInit() {
 			$('head').append(`<link rel="stylesheet" href="${dir}/${QuintOS.sys}.css"></link>`);
 		}
 
-		if (QuintOS.sys != 'calcu') {
-			$('main').css('display', 'none');
-		} else {
-			$('main').remove();
-		}
-
 		if (QuintOS.sys == 'c64') {
 			createCanvas(320, 200);
 		} else if (QuintOS.sys == 'arc') {
@@ -889,6 +883,12 @@ p5.prototype.registerMethod('init', function quintosInit() {
 			createCanvas(160, 144);
 		} else {
 			createCanvas();
+		}
+
+		if (QuintOS.sys != 'calcu') {
+			$('main').css('display', 'none');
+		} else {
+			$('main').remove();
 		}
 
 		this.createCanvas = () => {};
@@ -1043,25 +1043,28 @@ tile {
 		if (/(calcu|sas)/.test(QuintOS.sys)) {
 			let keyElems = '#keys div p';
 			if (QuintOS.sys == 'sas') keyElems = '#keys div';
-			$(keyElems).click(function () {
-				let $this = $(this);
-				let key = $this.attr('name') || $this.text();
-				let count = 1;
-				if (key == 'Clear') {
-					count = 23;
-					key = 'Backspace';
-				}
-				if (QuintOS.sys == 'calcu' && 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'.includes(key)) {
-					key = key.toLowerCase();
-				}
-				for (let i = 0; i < count; i++) {
-					document.dispatchEvent(
-						new KeyboardEvent('keydown', {
-							key: key
-						})
-					);
-				}
-			});
+			let els = $(keyElems);
+			for (let el of els) {
+				el.onclick = function () {
+					let $this = $(this);
+					let key = $this.attr('name') || $this.text();
+					let count = 1;
+					if (key == 'Clear') {
+						count = 23;
+						key = 'Backspace';
+					}
+					if (QuintOS.sys == 'calcu' && 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'.includes(key)) {
+						key = key.toLowerCase();
+					}
+					for (let i = 0; i < count; i++) {
+						document.dispatchEvent(
+							new KeyboardEvent('keydown', {
+								key: key
+							})
+						);
+					}
+				};
+			}
 		} else if (QuintOS.sys == 'macin') {
 			setInterval(() => {
 				$('.time p').text(

@@ -276,6 +276,7 @@
 	height: 30px;
 	border-radius: 3px;
 	/* z-index: 2; */
+	cursor: pointer;
 }
 
 .calcu #keys div:active {
@@ -380,11 +381,9 @@
 	font-weight: 100;
 }
 
-.calcu #keys div:nth-child(4) p {
-}
+.calcu #keys div:nth-child(4) p {}
 
-.calcu #keys div:nth-child(5) p {
-}
+.calcu #keys div:nth-child(5) p {}
 
 .calcu #keys div:nth-child(4) p,
 .calcu #keys div:nth-child(6) p,
