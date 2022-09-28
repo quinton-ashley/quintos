@@ -167,13 +167,11 @@ body.c64 {
 	border-radius-bottom-left: 1rem;
 	border-left: 0.25vmin solid #cdbbae;
 	border-right: 0.25vmin solid #cdbbae;
-	background-image: linear-gradient(
-		to bottom,
-		#7c604d 0%,
-		#f4f0ed 1.25vmin,
-		#eae3de 6.5vmin,
-		rgba(215, 200, 190, 0) 7.25vmin
-	);
+	background-image: linear-gradient(to bottom,
+			#7c604d 0%,
+			#f4f0ed 1.25vmin,
+			#eae3de 6.5vmin,
+			rgba(215, 200, 190, 0) 7.25vmin);
 	perspective: 12in;
 }
 
@@ -219,27 +217,25 @@ body.c64 {
 	right: 8vmin;
 	width: 10vmin;
 	opacity: 0.5;
-	background-image: linear-gradient(
-		to bottom,
-		red 0%,
-		red 15%,
-		transparent 15%,
-		transparent 21.25%,
-		orange 21.25%,
-		orange 36.25%,
-		transparent 36.25%,
-		transparent 42.5%,
-		yellow 42.5%,
-		yellow 57.5%,
-		transparent 57.5%,
-		transparent 63.75%,
-		limegreen 63.75%,
-		limegreen 78.75%,
-		transparent 78.75%,
-		transparent 85%,
-		cyan 85%,
-		cyan 100%
-	);
+	background-image: linear-gradient(to bottom,
+			red 0%,
+			red 15%,
+			transparent 15%,
+			transparent 21.25%,
+			orange 21.25%,
+			orange 36.25%,
+			transparent 36.25%,
+			transparent 42.5%,
+			yellow 42.5%,
+			yellow 57.5%,
+			transparent 57.5%,
+			transparent 63.75%,
+			limegreen 63.75%,
+			limegreen 78.75%,
+			transparent 78.75%,
+			transparent 85%,
+			cyan 85%,
+			cyan 100%);
 }
 
 .c64 #badge #refreshLbl {
@@ -318,16 +314,14 @@ body.c64 {
 	box-shadow: 0 0.25vmin 0.1vmin rgba(0, 0, 0, 0.4), 0 0 0.75vmin #3d2f26;
 	background-image: radial-gradient(circle at 50% 45%, rgba(0, 0, 0, 0) 64%, rgba(0, 0, 0, 0.4) 70%),
 		radial-gradient(circle 3.75vmin at 50% 85%, rgba(255, 255, 255, 0) 64%, rgba(255, 255, 255, 0.4) 70%),
-		radial-gradient(
-			circle,
+		radial-gradient(circle,
 			rgba(0, 0, 0, 0.8),
 			rgba(0, 0, 0, 0.8) 15%,
 			rgba(0, 0, 0, 0) 40%,
 			rgba(0, 0, 0, 0) 45%,
 			#a7a7a7 45%,
 			silver 50%,
-			black
-		);
+			black);
 }
 
 .c64 #video::after,
@@ -398,4 +392,251 @@ body.c64 {
 	left: 0;
 	right: 0;
 	text-align: center;
+}
+
+/*------- Keyboard ------- */
+#keyboard {
+	display: none;
+	transform-style: preserve-3d;
+	transform: scale(.94) rotateX(25deg);
+}
+
+#keys {
+	margin: auto;
+	font-family: "Average Sans", sans-serif;
+	color: #555;
+	padding: 2.5vw 2.3333333333333335vw 2.3333333333333335vw;
+	background: #f5f3f1;
+	background: linear-gradient(to bottom, #e5e2e1, #f5f3f1, #e5e2e1);
+	box-shadow: 0 0 0.8333333333333334vw rgba(0, 0, 0, 0.2), inset 0 0 0.3125vw rgba(0, 0, 0, 0.3);
+	border-bottom: 1.5vw solid lightgray;
+	border-radius: 0.8333333333333334vw;
+	width: 66vw;
+}
+
+.a2 #keys {
+	filter: brightness(0.82) grayscale(1) sepia(1);
+}
+
+#main {
+	padding: 0 0.25vw;
+	background: #4d4d4d;
+	border-radius: 0.33333333333333337vw 0.33333333333333337vw 0 0;
+	position: relative;
+	display: flow-root;
+}
+
+#addition_wrap {
+	padding: 0 0.25vw;
+	background: #4d4d4d;
+	border-radius: 0 0 0.33333333333333337vw 0.33333333333333337vw;
+	position: relative;
+	display: flow-root;
+}
+
+.key,
+.f_key {
+	width: 4.5vw;
+	height: 3.7vw;
+	margin: 0.1vw;
+	margin-top: -0.33333333333333337vw;
+	border-width: 0.3125vw 0.5833333333333334vw 1.6666666666666667vw;
+	border-style: solid;
+	border-radius: 0.33333333333333337vw;
+	border-top-left-radius: 1vw;
+	border-top-right-radius: 1vw;
+	float: left;
+}
+
+.pressed {
+	transform: rotateX(15deg) translate(0, 1vw);
+}
+
+.key,
+.f_key {
+	color: #C3BFB3;
+	background: #696453;
+	border-color: #4A422E #605b4e #4E4737;
+}
+
+/* .key,
+.f_key {
+	background: #d3cfcc;
+	border-color: #ece8e4 #dedad6 #c9c4c4;
+} */
+
+/* .f_key {
+	background: #a8aeb8;
+	border-color: #c4c7cc #adb9cc #96a6bd;
+} */
+
+.keycap {
+	font-size: 1.3vw;
+	line-height: 1;
+	padding: 1vw;
+	margin-top: -1vw;
+	height: 3vw;
+	border-radius: 0.33333333333333337vw;
+	transform: rotateX(27deg);
+	z-index: 15;
+	text-align: center;
+}
+
+.keycap.two-char {
+	padding: .1vw;
+}
+
+.key .keycap,
+.f_key .keycap {
+	background: #696453;
+	background: linear-gradient(to right, #7A7464, #95958A, #8C8876);
+	position: relative;
+}
+
+/* .key .keycap,
+.f_key .keycap {
+	background: #f5f3f1;
+	background: linear-gradient(to right, #e5e2e1, #f5f3f1, #e5e2e1);
+	position: relative;
+}
+ */
+/* .f_key .keycap {
+	width: 90%;
+	background: #cdd3de;
+	background: linear-gradient(to right, #bbc3d2, #cdd3de, #bbc3d2);
+} */
+
+.top {
+	padding: 0.3125vw 0.4166666666666667vw 0 0;
+	font-size: 1vw;
+	font-style: italic;
+	text-align: right;
+	line-height: 1;
+	display: block;
+}
+
+.bottom {
+	width: inherit;
+	line-height: 1.6666666666666667vw;
+	display: block;
+}
+
+.side {
+	font-size: 0.8333333333333334vw;
+	line-height: 1;
+	display: block;
+	position: absolute;
+	left: 0.33333333333333337vw;
+	bottom: -0.8333333333333334vw;
+	transform: rotateX(20deg);
+}
+
+.f_key .side {
+	left: -0.3125vw;
+}
+
+.k13 .side {
+	right: 0.5833333333333334vw;
+	text-align: right;
+}
+
+/*------- key width ------- */
+.k18.left,
+.k192,
+.fn,
+.k18.right,
+.k17 {
+	width: 5.1vw;
+}
+
+.k27 {
+	width: 5.3vw;
+}
+
+.k27 .keycap {
+	width: 96%;
+}
+
+.k192 .keycap {
+	width: 2.5vw;
+}
+
+.k9 {
+	width: 7.2vw;
+	border-right-width: 0.8333333333333334vw;
+}
+
+.k8 {
+	width: 6.5vw;
+	border-left-width: 0.8333333333333334vw;
+}
+
+.k20 {
+	width: 8.4vw;
+	border-right-width: 0.8333333333333334vw;
+}
+
+.k13 {
+	width: 8vw;
+	border-left-width: 0.8333333333333334vw;
+}
+
+.k16.left {
+	width: 10vw;
+	border-right-width: 0.8333333333333334vw;
+}
+
+.k16.left .keycap {}
+
+.k16.right {
+	width: 11vw;
+	border-left-width: 0.8333333333333334vw;
+}
+
+.k91,
+.k93 {
+	width: 6vw;
+}
+
+.k91 .top,
+.k93 .top {
+	font-size: 1.0833333333333335vw;
+}
+
+.k91 .bottom,
+.k93 .bottom {
+	font-size: 1.6666666666666667vw;
+}
+
+.k91.left {
+	border-right-width: 0.8333333333333334vw;
+}
+
+.k93.right {
+	border-left-width: 0.8333333333333334vw;
+}
+
+.k32 {
+	width: 26.26vw;
+}
+
+.k32 .keycap {
+	width: 25.66vw;
+}
+
+.k93.right .side {
+	margin-left: .4vw;
+}
+
+/* .k37,
+.k38,
+.k39,
+.k40 {
+  width: 2.5vw;
+} */
+
+#cover {
+	height: 0.8333333333333334vw;
+	position: relative;
+	z-index: 1000;
 }
