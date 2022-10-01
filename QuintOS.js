@@ -792,7 +792,7 @@ p5.prototype.registerMethod('init', function quintosInit() {
 			/*03*/ ['LilyLeap', 'gameboi'], // iteration
 			/*04*/ ['Hangman', 'a2'], // strings
 			/*05*/ ['QuickClicks', 'gridc'], // recursion
-			/*06*/ ['BinaryCounter', 'cpet'], // binary
+			/*06*/ ['BinaryConverter', 'cpet'], // binary
 			/*07*/ ['GenerativeArt', 'ibm2250'], // fun (review)
 			/*08*/ ['CodeBreaker', 'gridc'], // loading files
 			/*09*/ ['TicTacToe', 'gridc'], // 2D Array
@@ -804,9 +804,8 @@ p5.prototype.registerMethod('init', function quintosInit() {
 			/*14*/ ['SpeakAndSpell', 'sas'],
 			/*15*/ ['Contain', 'zx'],
 			/*16*/ ['Snake', 'gameboi'],
-			/*17*/ ['SketchBook', 'c64'],
-			/*18*/ ['SuperJump', 'arc'],
-			/*19*/ ['Sokoban', 'c64']
+			/*17*/ ['SuperJump', 'arc'],
+			/*18*/ ['Sokoban', 'c64']
 		];
 
 		let systems = ['a2', 'arc', 'calcu', 'cpet', 'gameboi', 'gridc', 'ibm2250', 'macin', 'sas', 'zx'];
