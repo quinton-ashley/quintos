@@ -65,7 +65,7 @@ p5.prototype.registerMethod('init', function quintosInit() {
 			row >= QuintOS.rows ||
 			(QuintOS.sys == 'calcu' && row == 1 && col > 4)
 		) {
-			QuintOS.error(
+			this.error(
 				`Out of bounds error! Could not retrieve character at row: ${row} col: ${col}\nThe size of this screen is ${QuintOS.cols}x${QuintOS.rows} characters.`
 			);
 		}
@@ -79,7 +79,7 @@ p5.prototype.registerMethod('init', function quintosInit() {
 		let b0 = col < 0 || row < 0 || col >= QuintOS.cols || row >= QuintOS.rows;
 		let b1 = x1 < 0 || y1 < 0 || x1 > QuintOS.cols || y1 > QuintOS.rows;
 		if (b0 || b1) {
-			QuintOS.error(
+			this.error(
 				`Out of bounds! Failed to create a ${type} at row: ${row} col: ${col} of width: ${w} and height: ${h}. The size of this screen is: ${QuintOS.cols}x${QuintOS.rows} characters.`
 			);
 			return false;
@@ -124,8 +124,6 @@ p5.prototype.registerMethod('init', function quintosInit() {
 		}
 
 		clearInterval(interval);
-
-		// if (noRow) pInst.QuintOS._lines = txt.row + txt.lines.length;
 		return txt.lines.length; // returns the height
 	}
 
@@ -177,6 +175,7 @@ p5.prototype.registerMethod('init', function quintosInit() {
 	this.text = function (txt, row, col, w, h, speed) {
 		let noRow = !row && row != 0;
 		txt = _text(txt, row, col, w, h, speed);
+		if (noRow) pInst.QuintOS._lines = txt.row + txt.lines.length;
 		if (txt.speed) return _textAsync(txt);
 		return _textSync(txt);
 	};
@@ -261,6 +260,17 @@ p5.prototype.registerMethod('init', function quintosInit() {
 				_drawChar(row + rows - (i - row + 1), col + cols - 1, c.vert);
 			}
 			chars++;
+		}
+	};
+
+	this.error = async function (e) {
+		console.error(e);
+		if (e.stack) {
+			let stack = e.stack.split('\n')[0].split('/').pop().split(':');
+			stack = stack[0] + ' line ' + stack[1];
+			await pInst.alert('ERROR: ' + e.message + '\n\n' + stack + '\n' + e.stack);
+		} else {
+			await pInst.alert('ERROR: ' + e);
 		}
 	};
 
@@ -733,17 +743,6 @@ p5.prototype.registerMethod('init', function quintosInit() {
 		let inp = pInst.input('', 0, 0, () => {
 			inp.row++;
 		});
-	};
-
-	this.error = async function (e) {
-		console.error(e);
-		if (e.stack) {
-			let stack = e.stack.split('\n')[0].split('/').pop().split(':');
-			stack = stack[0] + ' line ' + stack[1];
-			await pInst.alert('ERROR: ' + e.message + '\n\n' + stack + '\n' + e.stack);
-		} else {
-			await pInst.alert('ERROR: ' + e);
-		}
 	};
 
 	/**
@@ -1732,7 +1731,7 @@ public class ${QuintOS.game} {
 			}
 			if (QuintOS.language == 'java') {
 				file = await (await fetch(src)).text();
-				file = await QuintOS.translateJava(file);
+				file = await translateJava(file);
 			}
 			return file;
 		}
@@ -1749,7 +1748,7 @@ public class ${QuintOS.game} {
 			try {
 				gameCode = await loadCode(src);
 			} catch (ror) {
-				QuintOS.error(ror);
+				this.error(ror);
 			}
 			QuintOS.gameFile = src;
 			return gameCode;
@@ -1799,7 +1798,7 @@ public class ${QuintOS.game} {
 					};
 				}
 			}
-			if (QuintOS.sys != 'macin' && QuintOS.mode != 'codepen') {
+			if (QuintOS.fileType != 'java' && QuintOS.sys != 'macin' && QuintOS.mode != 'codepen') {
 				await runGame();
 				// preload is either from the game or an empty function
 				this.preload();
@@ -1889,6 +1888,10 @@ public class ${QuintOS.game} {
 			if (context.start) context.setup = context.start;
 
 			this._decrementPreload(); // run game
+
+			if (QuintOS.fileType == 'java') {
+				await runGame();
+			}
 		} else {
 			console.log(`QuintOS macin}`);
 			frames.iframe0.src = QuintOS.dir + '/index.html';
