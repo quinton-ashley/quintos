@@ -1499,19 +1499,19 @@ CopyLeft 1977`
 				{
 					name: 'boot',
 					txt: `
-  **** QUINTOS v13 JAVASCRIPT ES12 ****
+**** QUINTOS v13 JAVASCRIPT ES12 ****
 
-  64GB RAM SYSTEM 38911 GIGABYTES FREE
+64GB RAM SYSTEM 38911 GIGABYTES FREE
 
 READY.
 10 PRINT CHR$(205.5+RND(1)); : GOTO 10
-  RUN\n`.slice(1)
+RUN\n`.slice(1)
 				},
 				{
 					name: 'logo',
 					col: 12,
-					row: 9,
-					speed: 2,
+					row: 12,
+					speed: 1,
 					txt: `
 ┏━━┓ ┏┓ ┏┓┏━┳━━┓
 ┃┏┓┣┳╋╋━┫┗┫┃┃━━┫
