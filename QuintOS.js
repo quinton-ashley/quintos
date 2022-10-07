@@ -92,6 +92,7 @@ p5.prototype.registerMethod('init', function quintosInit() {
 		for (let i = 0; i < lines.length; i++) {
 			let line = lines[i];
 			for (let j = 0; j < line.length; j++) {
+				if (line[j] == ' ') continue;
 				_drawChar(row + i, col + j, line[j]);
 			}
 		}
@@ -143,6 +144,11 @@ p5.prototype.registerMethod('init', function quintosInit() {
 		let lines = [];
 		for (let i = 0; i < txt.length; i++) {
 			let line = txt[i];
+			if (line == '' && (i == 0 || i == txt.length)) {
+				txt.splice(i, 1);
+				i--;
+				continue;
+			}
 			if (line.length > w) {
 				// break line if it is too long
 				let part0 = line.slice(0, w);
@@ -178,6 +184,22 @@ p5.prototype.registerMethod('init', function quintosInit() {
 		if (noRow) pInst.QuintOS._lines = txt.row + txt.lines.length;
 		if (txt.speed) return _textAsync(txt);
 		return _textSync(txt);
+	};
+
+	this.textAni = function (txtAni, row, col) {
+		let frames = txtAni.frames;
+		if (this.frameCount % txtAni.frameDelay == 0) {
+			txtAni.frame++;
+
+			let blanks = [];
+			for (let i = 0; i < txtAni.h; i++) {
+				blanks.push(' '.repeat(txtAni.w));
+			}
+			_textSync({ lines: blanks, row, col });
+		}
+		if (txtAni.frame >= frames.length) txtAni.frame = 0;
+		let lines = frames[txtAni.frame].split('\n');
+		_textSync({ lines, row, col });
 	};
 
 	/* Display an application window frame */
@@ -775,6 +797,42 @@ p5.prototype.registerMethod('init', function quintosInit() {
 		return this._loadSound(...arguments);
 	};
 
+	this.loadTextAni = function (file) {
+		if (!file.includes(this.QuintOS.dir)) {
+			file = this.QuintOS.dir + '/' + file;
+		}
+
+		let txtAni = {
+			frame: 0,
+			frameDelay: 16
+		};
+		this._incrementPreload();
+		(async () => {
+			let data = await fetch(file);
+			data = await data.text();
+			data = '\n' + data.trim();
+			txtAni.frames = data.split(/\n\d+\n/);
+			let w = (h = 0);
+			for (let i = 0; i < txtAni.frames.length; i++) {
+				let frame = txtAni.frames[i];
+				if (frame == '') {
+					txtAni.frames.splice(i, 1);
+					i--;
+					continue;
+				}
+				let lines = frame.split('\n');
+				if (lines.length > h) h = lines.length;
+				for (let line of lines) {
+					if (line.length > w) w = line.length;
+				}
+			}
+			txtAni.w = w;
+			txtAni.h = h;
+			this._decrementPreload();
+		})();
+		return txtAni;
+	};
+
 	this.preload = async () => {
 		let context = this._isGlobal ? window : this;
 		this._incrementPreload();
@@ -791,7 +849,7 @@ p5.prototype.registerMethod('init', function quintosInit() {
 			/*03*/ ['LilyLeap', 'gameboi'], // iteration
 			/*04*/ ['Hangman', 'a2'], // strings
 			/*05*/ ['QuickClicks', 'gridc'], // recursion
-			/*06*/ ['BinaryConverter', 'cpet'], // binary
+			/*06*/ ['BinaryConverter', 'calcu'], // binary
 			/*07*/ ['GenerativeArt', 'ibm2250'], // fun (review)
 			/*08*/ ['CodeBreaker', 'gridc'], // loading files
 			/*09*/ ['TicTacToe', 'gridc'], // 2D Array
@@ -823,19 +881,18 @@ p5.prototype.registerMethod('init', function quintosInit() {
 				return;
 			}
 		} else {
+			let g = QuintOS.game.toLowerCase();
 			for (let i in levels) {
 				let l = levels[i];
-				if (l[0].toLowerCase() == QuintOS.game.toLowerCase()) {
+				if (l[0].toLowerCase() == g) {
 					QuintOS.game = l[0];
 					QuintOS.level = Number(i);
 					break;
 				}
 			}
-			// fix letter case
-			let g = QuintOS.game.toLowerCase();
-			if (g == 'pickapath') {
-				QuintOS.game = 'PickAPath';
-				QuintOS.level = 1;
+			if (g == 'bigbinary') {
+				QuintOS.game = 'BigBinary';
+				QuintOS.sys = 'a2';
 			} else if (g == 'wheeloffortune') {
 				QuintOS.game = 'WheelOfFortune';
 				QuintOS.level = 8;
