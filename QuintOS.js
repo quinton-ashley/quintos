@@ -118,6 +118,7 @@ p5.prototype.registerMethod('init', function quintosInit() {
 		for (let i = 0; i < lines.length; i++) {
 			let line = lines[i];
 			for (let j = 0; j < line.length; j++) {
+				if (line[j] == ' ') continue;
 				if (chars % speed == 0) await delay(); // wait till the next animation frame is drawn
 				_drawChar(row + i, col + j, line[j]);
 				chars++;
@@ -137,6 +138,7 @@ p5.prototype.registerMethod('init', function quintosInit() {
 		if (QuintOS.sys == 'gridc') {
 			speed ??= 0;
 		} else {
+			speed ??= QuintOS.defaultTextSpeed;
 			speed ??= 10;
 		}
 		txt = txt.replace(/\t/g, '  ');
@@ -186,19 +188,19 @@ p5.prototype.registerMethod('init', function quintosInit() {
 		return _textSync(txt);
 	};
 
-	this.textAni = function (txtAni, row, col) {
-		let frames = txtAni.frames;
-		if (this.frameCount % txtAni.frameDelay == 0) {
+	this.textAni = function (txtAni, row, col, frame) {
+		let frames = txtAni;
+		let lines;
+		if (typeof frame != 'undefined') {
+			lines = txtAni[frame];
+		} else if (this.frameCount % txtAni.frameDelay == 0) {
 			txtAni.frame++;
-
-			let blanks = [];
-			for (let i = 0; i < txtAni.h; i++) {
-				blanks.push(' '.repeat(txtAni.w));
-			}
-			_textSync({ lines: blanks, row, col });
+			if (txtAni.frame >= frames.length) txtAni.frame = 0;
+			lines = frames[txtAni.frame];
+		} else {
+			return;
 		}
-		if (txtAni.frame >= frames.length) txtAni.frame = 0;
-		let lines = frames[txtAni.frame].split('\n');
+		_textSync({ lines: txtAni.blanks, row, col });
 		_textSync({ lines, row, col });
 	};
 
@@ -797,26 +799,22 @@ p5.prototype.registerMethod('init', function quintosInit() {
 		return this._loadSound(...arguments);
 	};
 
-	this.loadTextAni = function (file) {
-		if (!file.includes(this.QuintOS.dir)) {
-			file = this.QuintOS.dir + '/' + file;
+	class TextAni extends Array {
+		constructor() {
+			super(...arguments);
+			this.frame = 0;
+			this.frameDelay = 1;
+			this.blanks = [];
 		}
-
-		let txtAni = {
-			frame: 0,
-			frameDelay: 16
-		};
-		this._incrementPreload();
-		(async () => {
-			let data = await fetch(file);
-			data = await data.text();
+		init(data) {
 			data = '\n' + data.trim();
-			txtAni.frames = data.split(/\n\d+\n/);
-			let w = (h = 0);
-			for (let i = 0; i < txtAni.frames.length; i++) {
-				let frame = txtAni.frames[i];
+			let frames = data.split(/\n\d+\n/);
+			let w = 0;
+			let h = 0;
+			for (let i = 0; i < frames.length; i++) {
+				let frame = frames[i];
 				if (frame == '') {
-					txtAni.frames.splice(i, 1);
+					frames.splice(i, 1);
 					i--;
 					continue;
 				}
@@ -825,9 +823,36 @@ p5.prototype.registerMethod('init', function quintosInit() {
 				for (let line of lines) {
 					if (line.length > w) w = line.length;
 				}
+				this.push(frame.split('\n'));
 			}
-			txtAni.w = w;
-			txtAni.h = h;
+			this.w = w;
+			this.h = h;
+
+			for (let i = 0; i < h; i++) {
+				this.blanks.push(' '.repeat(w));
+			}
+		}
+		clone() {
+			let clone = new TextAni(...this.slice());
+			clone.frame = this.frame;
+			clone.frameDelay = this.frameDelay;
+			clone.w = this.w;
+			clone.h = this.h;
+			return clone;
+		}
+	}
+
+	this.loadTextAni = function (file) {
+		if (!file.includes(this.QuintOS.dir)) {
+			file = this.QuintOS.dir + '/' + file;
+		}
+
+		let txtAni = new TextAni();
+		this._incrementPreload();
+		(async () => {
+			let data = await fetch(file);
+			data = await data.text();
+			txtAni.init(data);
 			this._decrementPreload();
 		})();
 		return txtAni;
