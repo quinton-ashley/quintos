@@ -917,7 +917,7 @@ p5.prototype.registerMethod('init', function quintosInit() {
 			}
 			if (g == 'bigbinary') {
 				QuintOS.game = 'BigBinary';
-				QuintOS.sys = 'a2';
+				QuintOS.level = 4;
 			} else if (g == 'wheeloffortune') {
 				QuintOS.game = 'WheelOfFortune';
 				QuintOS.level = 8;
@@ -1730,7 +1730,7 @@ RUN\n`.slice(1)
 			if (!file) {
 				script.src = src;
 			} else if (file == '404: Not Found') {
-				script.innerHTML = 'QuintOS.error(`File not found: ' + src + '`);';
+				script.innerHTML = 'this.error(`File not found: ' + src + '`);';
 			} else {
 				script.innerHTML = 'log(`running: ' + src + '`);\n' + file;
 			}
