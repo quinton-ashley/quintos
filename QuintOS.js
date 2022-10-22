@@ -1604,18 +1604,11 @@ RUN\n`.slice(1)
 			],
 			gameboi: [
 				{
-					name: 'logo',
+					name: 'bg',
 					col: 0,
 					row: 0,
-					speed: 1,
-					txt: 'QuintOS'
-				},
-				{
-					name: 'version',
-					col: 1,
-					row: 1,
-					speed: 1,
-					txt: 'v7'
+					speed: 10,
+					txt: ('( ( '.repeat(5) + '\n' + ' ) )'.repeat(5) + '\n').repeat(18)
 				}
 			],
 			arc: [
