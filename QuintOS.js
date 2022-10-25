@@ -928,7 +928,10 @@ p5.prototype.registerMethod('init', function quintosInit() {
 		let sys = QuintOS.sys || QuintOS.system;
 
 		if (QuintOS.level == -1 && !sys) {
-			throw new Error('Please specify a QuintOS system! Valid options are: ' + systems.join(', '));
+			throw new Error(
+				`Check your load file to make sure the name of the game you're trying to load matches the name of the game's folder. If you are trying to load a custom game please specify a QuintOS system! Valid options are: ` +
+					systems.join(', ')
+			);
 		}
 
 		sys ??= levels[QuintOS.level || 0][1];
