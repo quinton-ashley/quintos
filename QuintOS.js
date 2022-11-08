@@ -131,7 +131,11 @@ p5.prototype.registerMethod('init', function quintosInit() {
 
 	/* Display text in one frame */
 	function _text(txt, row, col, w, h, speed) {
-		row ??= pInst.QuintOS._lines || 2;
+		if (QuintOS.sys != 'calcu') {
+			row ??= pInst.QuintOS._lines || 2;
+		} else {
+			row ??= 2;
+		}
 		col ??= 2;
 		if (typeof txt != 'string') txt += '';
 		w = w || QuintOS.cols - col;
@@ -573,7 +577,7 @@ p5.prototype.registerMethod('init', function quintosInit() {
 		let pu = QuintOS.popup;
 		let noRow = !row && row != 0;
 		if (noRow) {
-			if (pInst.QuintOS._lines) {
+			if (QuintOS.sys != 'calcu' && pInst.QuintOS._lines) {
 				row = pInst.QuintOS._lines + 1;
 			} else {
 				row = pu.row;
@@ -652,7 +656,7 @@ p5.prototype.registerMethod('init', function quintosInit() {
 		let pu = QuintOS.popup;
 		let noRow = !row && row != 0;
 		if (noRow) {
-			if (pInst.QuintOS._lines) {
+			if (QuintOS.sys != 'calcu' && pInst.QuintOS._lines) {
 				row = pInst.QuintOS._lines + 1;
 			} else {
 				row = pu.row;
@@ -716,7 +720,7 @@ p5.prototype.registerMethod('init', function quintosInit() {
 				cancelBtn.erase();
 			}
 
-			if (QuintOS.language == 'java' && QuintOS.level <= 3) {
+			if (QuintOS.language == 'java' && QuintOS.sys != 'calcu' && QuintOS.level <= 3) {
 				pInst.QuintOS._lines = 0;
 				erase();
 			} else {
@@ -874,8 +878,9 @@ p5.prototype.registerMethod('init', function quintosInit() {
 			/*03*/ ['LilyLeap', 'gameboi'], // iteration
 			/*04*/ ['Hangman', 'a2'], // strings
 			/*05*/ ['QuickClicks', 'gridc'], // recursion
+
 			/*06*/ ['BinaryConverter', 'calcu'], // binary
-			/*07*/ ['GenerativeArt', 'ibm2250'], // fun (review)
+			/*07*/ ['GenerativeArt', 'ibm2250'], // hex codes
 			/*08*/ ['CodeBreaker', 'gridc'], // loading files
 			/*09*/ ['TicTacToe', 'gridc'], // 2D Array
 			/*10*/ ['DataDesigner', 'c64'], // creating objects
