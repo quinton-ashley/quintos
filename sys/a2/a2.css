@@ -22,7 +22,7 @@ body.a2 {
 	height: 100vh;
 	display: grid;
 	place-items: center;
-	color: #1fda6c;
+	color: #3ae37f;
 }
 
 @media screen and (max-width: 1000px) {
