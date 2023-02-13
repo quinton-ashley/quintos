@@ -38,7 +38,7 @@ p5.prototype.registerMethod('init', function quintosInit() {
 	let pInst = this;
 
 	if (typeof this.world == 'undefined') {
-		throw new Error('You must load planck and p5.play before QuintOS');
+		throw new Error('You must load planck and p5play before QuintOS');
 	}
 
 	this.QuintOS = {
