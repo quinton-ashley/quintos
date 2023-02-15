@@ -1326,7 +1326,7 @@ tile {
 
 		// assign palettes to the system's palette
 		QuintOS.palettes = palettes[QuintOS.sys] || [];
-		this.world.palettes = QuintOS.palettes;
+		this.p5play.palettes = QuintOS.palettes;
 
 		let bootScreens = {
 			calcu: [
