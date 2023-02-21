@@ -179,71 +179,71 @@ public class QuintOS {
 
 	}
 
-	public static void text() {
+	public static void txt() {
 
 	}
 
-	public static void text(String txt) {
+	public static void txt(String txt) {
 
 	}
 
-	public static void text(String txt, int row) {
+	public static void txt(String txt, int row) {
 
 	}
 
-	public static void text(String txt, int row, int col) {
+	public static void txt(String txt, int row, int col) {
 
 	}
 
-	public static void text(String txt, int row, int col, int w) {
+	public static void txt(String txt, int row, int col, int w) {
 
 	}
 
-	public static void text(String txt, int row, int col, int w, int h) {
+	public static void txt(String txt, int row, int col, int w, int h) {
 
 	}
 
-	public static void text(double num) {
+	public static void txt(double num) {
 
 	}
 
-	public static void text(double num, int row) {
+	public static void txt(double num, int row) {
 
 	}
 
-	public static void text(double num, int row, int col) {
+	public static void txt(double num, int row, int col) {
 
 	}
 
-	public static void text(double num, int row, int col, int w) {
+	public static void txt(double num, int row, int col, int w) {
 
 	}
 
-	public static void text(double num, int row, int col, int w, int h) {
+	public static void txt(double num, int row, int col, int w, int h) {
 
 	}
 
-	public static void text(int num) {
+	public static void txt(int num) {
 
 	}
 
-	public static void text(int num, int row) {
+	public static void txt(int num, int row) {
 
 	}
 
-	public static void text(int num, int row, int col) {
+	public static void txt(int num, int row, int col) {
 
 	}
 
-	public static void text(int num, int row, int col, int w) {
+	public static void txt(int num, int row, int col, int w) {
 
 	}
 
-	public static void text(int num, int row, int col, int w, int h) {
+	public static void txt(int num, int row, int col, int w, int h) {
 
 	}
 
-	public static void textRect(int row, int col, int w, int h) {
+	public static void txtRect(int row, int col, int w, int h) {
 
 	}
 
