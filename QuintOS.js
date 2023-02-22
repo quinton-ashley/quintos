@@ -1969,6 +1969,7 @@ public class ${QuintOS.game} {
 
 			if (context.start) context.setup = context.start;
 
+			this.clear();
 			this._decrementPreload(); // run game
 
 			if (QuintOS.fileType == 'java') {
