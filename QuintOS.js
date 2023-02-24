@@ -613,7 +613,7 @@ p5.prototype.registerMethod('init', function quintosInit() {
 			erase();
 			t = t.slice(0, QuintOS.cols);
 			th = await txt(t, row, col, w);
-			if (QuintOS.sys == 'calcu') await t('OKAY', 1, 0);
+			if (QuintOS.sys == 'calcu') await txt('OKAY', 1, 0);
 			else {
 				await txt('PRESS ENTER', th + row, 4);
 				w = Math.max(w, 11);
@@ -1697,7 +1697,7 @@ RUN\n`.slice(1)
 
 			if (QuintOS.sys == 'calcu') {
 				let txt0 = "'-.⎽⎽.-'⎺⎺".repeat(3);
-				for (let i = 0; i < 30; i++) {
+				for (let i = 0; i < 10; i++) {
 					txt([txt0.slice(0, 23)], 0, 0);
 					txt0 = txt0[txt0.length - 1] + txt0.slice(0, -1);
 					await delay(48);
@@ -1716,7 +1716,7 @@ RUN\n`.slice(1)
 				await txt(t, el.row, el.col, 0, 0, el.speed);
 			}
 
-			if (QuintOS.sys == 'calcu') await delay(1000);
+			if (QuintOS.sys == 'calcu') await delay(500);
 			if (QuintOS.sys == 'a2') await delay(500);
 
 			p5play.images.onLoad = (img) => {};
