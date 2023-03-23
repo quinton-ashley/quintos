@@ -1892,7 +1892,10 @@ public class ${QuintOS.game} {
 			QuintOS.language = 'java';
 		}
 		QuintOS.fileType = QuintOS.language;
-		if (QuintOS.language == 'java' && /(Pong|Contain|SketchBook|SpeakAndSpell|SuperJump|Sokoban)/.test(QuintOS.game)) {
+		if (
+			QuintOS.language == 'java' &&
+			/(Pong|LilyLeap|Contain|SketchBook|SpeakAndSpell|SuperJump|Sokoban)/.test(QuintOS.game)
+		) {
 			QuintOS.fileType = 'pde';
 		}
 
