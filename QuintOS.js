@@ -719,7 +719,7 @@ p5.prototype.registerMethod('init', function quintosInit() {
 				cancelBtn.erase();
 			}
 
-			if (QuintOS.language == 'java' && QuintOS.sys != 'calcu' && QuintOS.level <= 3) {
+			if (QuintOS.language == 'java' && QuintOS.sys != 'calcu' && QuintOS.level <= 4) {
 				pInst.QuintOS._lines = 0;
 				erase();
 			} else {
