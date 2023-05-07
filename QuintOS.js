@@ -1913,7 +1913,7 @@ public class ${QuintOS.game} {
 
 		if (!QuintOS.web) {
 			QuintOS.dir ??= QuintOS.language;
-		} else if (QuintOS.level !== undefined) {
+		} else if (QuintOS.level != -1) {
 			QuintOS.dir = 'https://raw.githubusercontent.com/' + QuintOS.user + '/quintos-games/main';
 			if (QuintOS.v >= 6) QuintOS.dir += '/' + QuintOS.language;
 			else if (QuintOS.language == 'js') {
