@@ -1,6 +1,8 @@
 /**
  * QuintOS
- * Created by @quinton-ashley 2021-2022
+ * @version 6
+ * @author quinton-ashley
+ * @license gpl-3.0-only
  */
 
 let log = console.log; // log becomes a shortcut for console.log
@@ -13,11 +15,9 @@ if (typeof QuintOS == 'undefined') {
 	let url = location.href.split('?');
 	QuintOS.web ??= location.hostname != '127.0.0.1' || url[1] || location.href.slice(-9) == 'home.html';
 	if (!QuintOS.web) QuintOS.web = false;
-	// location.hostname != 'localhost' &&
-	// location.hostname != '127.0.0.1' &&
 
 	if (!QuintOS.web) {
-		$('head').append('<link rel="icon" href="node_modules/quintos/favicon.png" />');
+		document.head.innerHTML += '<link rel="icon" href="node_modules/quintos/favicon.png" />';
 	}
 
 	QuintOS.root = './node_modules';
@@ -32,6 +32,7 @@ if (typeof QuintOS == 'undefined') {
 			QuintOS[k] = v;
 		}
 	}
+	QuintOS.v ??= 6;
 }
 
 p5.prototype.registerMethod('init', function quintosInit() {
@@ -387,7 +388,7 @@ p5.prototype.registerMethod('init', function quintosInit() {
 		if (QuintOS.level > 4) pInst.QuintOS._lines = row;
 	};
 
-	class Button {
+	QuintOS.Button = class {
 		constructor(text, row, col, action) {
 			// TODO: whole number check
 			text = _txt(text, row, col);
@@ -427,43 +428,48 @@ p5.prototype.registerMethod('init', function quintosInit() {
 
 			for (let tile of this.tiles) {
 				// when a tile in the button is clicked, do button action
-				$(tile).click(() => {
+				const click = () => {
 					if (!this.action) return;
 					this.action();
-				});
-
+				};
 				// when one tile is hovered over, all tiles in the button are highlighted
-				let thisBtn = this;
-				$(tile).hover(
-					() => {
-						for (let tile of thisBtn.tiles) {
-							$(tile).addClass('hovered');
-						}
-					},
-					() => {
-						for (let tile of thisBtn.tiles) {
-							$(tile).removeClass('hovered');
-						}
+				const mouseOver = () => {
+					for (let tile of this.tiles) {
+						tile.classList.add('hovered');
 					}
-				);
+				};
+				const mouseLeave = () => {
+					// Code to execute on mouseleave
+					for (let tile of this.tiles) {
+						tile.classList.remove('hovered');
+					}
+				};
+
+				tile.addEventListener('click', click);
+				tile.addEventListener('mouseover', mouseOver);
+				tile.addEventListener('mouseleave', mouseLeave);
+
+				tile.listeners = [click, mouseOver, mouseLeave];
 			}
 		}
 
 		erase() {
 			// remove all tiles
 			for (let tile of this.tiles) {
-				$(tile).off();
-				$(tile).removeClass('hovered');
+				tile.removeEventListener('click', tile.listeners[0]);
+				tile.removeEventListener('mouseover', tile.listeners[1]);
+				tile.removeEventListener('mouseleave', tile.listeners[2]);
+				tile.classList.remove('hovered');
 				if (tile) tile.childNodes[0].nodeValue = ' ';
 			}
 			// remove from gpu stack
 			pInst.QuintOS.gpu.splice(pInst.QuintOS.gpu.indexOf(this), 1);
 		}
-	}
+	};
 
-	this.button = function (txt, row, col, action) {
-		let btn = new Button(txt, row, col, action);
-		pInst.QuintOS.gpu.push(btn);
+	this.button = (txt, row, col, action) => {
+		let btn = new QuintOS.Button(txt, row, col, action);
+		QuintOS.gpu.push(btn);
 		return btn;
 	};
 
@@ -500,7 +506,9 @@ p5.prototype.registerMethod('init', function quintosInit() {
 			this.value = '';
 
 			this.blink = setInterval(() => {
-				$(QuintOS.screen[this.row].tiles[this.cursorX]).toggleClass('hovered');
+				let cl = QuintOS.screen[this.row].tiles[this.cursorX].classList;
+				if (cl.contains('hovered')) cl.remove('hovered');
+				else cl.add('hovered');
 				if (QuintOS.sys == 'calcu' && _charAt(this.row, this.cursorX) != '_') {
 					_drawChar(this.row, this.cursorX, '_');
 				} else {
@@ -513,8 +521,7 @@ p5.prototype.registerMethod('init', function quintosInit() {
 			clearInterval(this.blink);
 			document.removeEventListener('keydown', this.onKeyDown);
 			let cursor = QuintOS.screen[this.row].tiles[this.cursorX];
-			$(cursor).off();
-			$(cursor).removeClass('hovered');
+			cursor.classList.remove('hovered');
 			for (let i = 0; i < this.cursorX - this.col + 1; i++) {
 				let tile = QuintOS.screen[this.row].tiles[this.col + i];
 				if (tile) tile.childNodes[0].nodeValue = ' ';
@@ -533,7 +540,7 @@ p5.prototype.registerMethod('init', function quintosInit() {
 		let inp = new Input(value, row, col, onSubmit, onChange);
 		inp.onKeyDown = (e) => {
 			// log(e.key);
-			$(QuintOS.screen[inp.row].tiles[inp.cursorX]).removeClass('hovered');
+			QuintOS.screen[inp.row].tiles[inp.cursorX].classList.remove('hovered');
 
 			if (e.key == 'Enter') {
 				inp.onSubmit(inp.value);
@@ -947,9 +954,9 @@ p5.prototype.registerMethod('init', function quintosInit() {
 		{
 			let dir = `${QuintOS.root}/quintos/sys/${QuintOS.sys}`;
 			let html = await (await fetch(`${dir}/${QuintOS.sys}.html`)).text();
-			$('body').append(html);
-			$('body').addClass(QuintOS.sys);
-			$('head').append(`<link rel="stylesheet" href="${dir}/${QuintOS.sys}.css"></link>`);
+			document.head.innerHTML += `<link rel="stylesheet" href="${dir}/${QuintOS.sys}.css"></link>`;
+			document.body.innerHTML += html;
+			document.body.classList += QuintOS.sys;
 		}
 
 		if (QuintOS.sys == 'c64') {
@@ -972,24 +979,24 @@ p5.prototype.registerMethod('init', function quintosInit() {
 			createCanvas();
 		}
 
+		let main = document.getElementsByTagName('main')[0];
+
 		if (QuintOS.sys != 'calcu') {
-			$('main').css('display', 'none');
+			main.style.display = 'none';
+			document.getElementById('screen0').parentElement.append(main);
+			main.style.display = 'block';
 		} else {
-			$('main').remove();
+			main.remove();
 		}
 
 		this.createCanvas = () => {};
-
-		// $('#screen0').parent().addClass('clear');
-		$('#screen0').parent().append($('main'));
-		$('main').css('display', 'block');
 
 		pixelDensity(1);
 		frameRate(60);
 		strokeWeight(2);
 		noSmooth();
 
-		$('canvas').removeAttr('style');
+		canvas.style = '';
 
 		let rows, cols;
 		if (QuintOS.sys == 'a2') {
@@ -1117,7 +1124,7 @@ p5.prototype.registerMethod('init', function quintosInit() {
 		}
 		// the rows will all have the same height
 		// the tiles will all have the same width
-		$('body').append(`
+		document.head.innerHTML += `
 <style>
 row {
 	height: ${100 / QuintOS.rows}%;
@@ -1125,16 +1132,14 @@ row {
 tile {
 	width: ${100 / QuintOS.cols}%;
 }
-</style>`);
+</style>`;
 
 		if (/(calcu|sas)/.test(QuintOS.sys)) {
-			let keyElems = '#keys div p';
-			if (QuintOS.sys == 'sas') keyElems = '#keys div';
-			let els = $(keyElems);
+			let keyElems = '#keys div';
+			let els = document.body.querySelectorAll(keyElems);
 			for (let el of els) {
-				el.onclick = function () {
-					let $this = $(this);
-					let key = $this.attr('name') || $this.text();
+				el.addEventListener('click', function () {
+					let key = this.name || this.textContent;
 					let count = 1;
 					if (key == 'Clear') {
 						count = 23;
@@ -1150,18 +1155,17 @@ tile {
 							})
 						);
 					}
-				};
+				});
 			}
 		} else if (QuintOS.sys == 'macin') {
+			const time = document.querySelector('.time p');
 			setInterval(() => {
-				$('.time p').text(
-					new Date().toLocaleTimeString('en-US', {
-						hour12: false,
-						hour: 'numeric',
-						minute: 'numeric',
-						second: 'numeric'
-					})
-				);
+				time.innerHTML = new Date().toLocaleTimeString('en-US', {
+					hour12: false,
+					hour: 'numeric',
+					minute: 'numeric',
+					second: 'numeric'
+				});
 			}, 1000);
 
 			function updateSearchBar() {
@@ -1171,9 +1175,9 @@ tile {
 				frames.iframe0.url = null;
 			}
 
-			frames.iframe0.onload = updateSearchBar;
+			frames.iframe0.addEventListener('load', updateSearchBar);
 
-			$('#window0')[0].onclick = updateSearchBar;
+			document.getElementById('window0').addEventListener('click', updateSearchBar);
 
 			function dragElement(elmnt) {
 				var pos1 = 0,
@@ -1225,9 +1229,9 @@ tile {
 		if (QuintOS.sys == 'gridc') {
 			// add the clock
 			setInterval(() => {
-				let time = new Date($.now());
-				txt([Date.now() + ''], 29, 65);
-				time = time.toString().split(' GMT')[0];
+				let time = Date.now();
+				txt([time + ''], 29, 65);
+				time = new Date(time).toString().split(' GMT')[0];
 				txt([time + ''], 29, 2);
 			}, 1000);
 		}
@@ -1821,7 +1825,7 @@ public class ${QuintOS.game} {
 		async function loadGame() {
 			let title = QuintOS.game;
 			if (QuintOS.gameCode) return;
-			let dir = QuintOS.dir;
+			let dir = QuintOS.dir || QuintOS.language || 'js';
 			let fileBase = title + '.';
 			if (QuintOS.language == 'js') fileBase = `${title.slice(0, 1).toLowerCase() + title.slice(1)}.`;
 			fileBase += QuintOS.fileType;
@@ -1836,6 +1840,15 @@ public class ${QuintOS.game} {
 			return gameCode;
 		}
 
+		function loadScript(src) {
+			return new Promise(function (resolve) {
+				let script = document.createElement('script');
+				script.src = src;
+				script.onload = resolve;
+				document.body.appendChild(script);
+			});
+		}
+
 		async function loadAll() {
 			if (this.start || this.setup.toString().length > 8 || this.draw.toString().length > 8) {
 				this.preload();
@@ -1843,9 +1856,10 @@ public class ${QuintOS.game} {
 			}
 
 			if (QuintOS.language == 'java') {
+				let dir = QuintOS.root + '/java2js';
+				await loadScript(dir + '/jdk.js');
 				try {
-					let dir = QuintOS.root + '/java2js/jdk';
-					await jdk.init(dir);
+					await jdk.init(dir + '/jdk');
 					if (QuintOS.java2js_worker) jdk.workerPath = QuintOS.java2js_worker;
 				} catch (ror) {
 					console.error(ror);
@@ -1888,9 +1902,7 @@ public class ${QuintOS.game} {
 		}
 
 		QuintOS.language ??= 'js';
-		if (QuintOS.dir?.includes('games_java')) {
-			QuintOS.language = 'java';
-		}
+
 		QuintOS.fileType = QuintOS.language;
 		if (
 			QuintOS.language == 'java' &&
@@ -1899,34 +1911,33 @@ public class ${QuintOS.game} {
 			QuintOS.fileType = 'pde';
 		}
 
-		if (!QuintOS.dir && QuintOS.level != -1) {
+		if (!QuintOS.web) {
+			QuintOS.dir ??= QuintOS.language;
+		} else if (QuintOS.level !== undefined) {
 			QuintOS.dir = 'https://raw.githubusercontent.com/' + QuintOS.user + '/quintos-games/main';
-			if (QuintOS.language == 'js') {
-				if (QuintOS.user != 'quinton-ashley') {
-					QuintOS.dir += '/GAMES';
-				} else {
-					QuintOS.dir += '/games_js';
-				}
+			if (QuintOS.v >= 6) QuintOS.dir += '/' + QuintOS.language;
+			else if (QuintOS.language == 'js') {
+				QuintOS.dir += '/GAMES';
 			} else if (QuintOS.language == 'java') {
 				QuintOS.dir += '/games_java';
 			}
-		} else if (!QuintOS.dir) {
+		} else {
 			QuintOS.dir = 'https://raw.githubusercontent.com/' + QuintOS.user + '/' + QuintOS.game + '/main';
 		}
 		QuintOS.dir += '/' + QuintOS.game;
 
-		$('canvas').removeAttr('style');
+		canvas.style = '';
 
 		await Promise.all([loadAll(), displayBootscreen()]);
 
-		$('canvas').removeAttr('style');
+		canvas.style = '';
 
 		// await delay(111111111); // test boot screen
 
 		await eraseRect();
 		this.QuintOS._lines = 0;
 
-		$('canvas').removeAttr('style');
+		canvas.style = '';
 
 		this.centerX = width * 0.5;
 		this.centerY = height * 0.5;
@@ -1961,7 +1972,7 @@ public class ${QuintOS.game} {
 					}
 				});
 				if (!QuintOS.user) return;
-				txt(' by ', 0, col + title.length);
+				txt('by', 0, col + 1 + title.length);
 				let row = !/(gameboi|arc|ibm2250)/.test(QuintOS.sys) ? 0 : 1;
 				col = !/(gameboi|arc|ibm2250)/.test(QuintOS.sys) ? 6 + title.length : 0;
 				if (QuintOS.sys == 'c64') col = 4 + title.length;

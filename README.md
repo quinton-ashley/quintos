@@ -8,7 +8,7 @@ Use the QuintOS [template project] to get started making your own retro games.
 
 # Credits
 
-Quinton Ashley (@quinton-ashley), the creator of QuintOS, would like to thank all the creators whose work has been included in this project. Your work inspires my students everyday!
+I'd like to thank all the creators whose work is included in this project and all the people who worked on the original machines that QuintOS simulates. Your work continues to inspire my students!
 
 ### Fonts
 

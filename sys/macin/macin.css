@@ -1,3 +1,8 @@
+html,
+body {
+	overflow-y: scroll !important;
+}
+
 .macin {
 	background: #350a60;
 	font-family: Silom, Chicago, Helvetica, arial, sans-serif;
@@ -10,6 +15,10 @@
 	justify-content: center;
 }
 
+.macin main {
+	position: absolute;
+}
+
 .macin .mac {
 	background: #ede1c1;
 	border-radius: 3.3vmin;
@@ -20,6 +29,7 @@
 	height: 136vmin;
 	width: 100vmin;
 }
+
 .macin .mac .monitor-frame {
 	background: #ede1c1;
 	box-shadow: inset 0 0 17vmin rgba(255, 255, 255, 0.3);
@@ -34,6 +44,7 @@
 	position: relative;
 	width: 83vmin;
 }
+
 .macin .mac .floppy {
 	margin-top: 13vmin;
 	margin-left: 40vmin;
@@ -41,6 +52,7 @@
 	position: relative;
 	width: 55vmin;
 }
+
 .macin .mac .floppy .sec-1 {
 	background: #444;
 	border-radius: 2vmin;
@@ -53,6 +65,7 @@
 	right: 0;
 	width: 23vmin;
 }
+
 .macin .mac .floppy .sec-2 {
 	background: #444;
 	border-radius: 2vmin;
@@ -65,6 +78,7 @@
 	top: 2vmin;
 	width: 25vmin;
 }
+
 .macin .mac .logo {
 	width: 10vmin;
 	height: 10vmin;
@@ -119,15 +133,13 @@
 .macin .bg {
 	height: 100%;
 	width: 100%;
-	background-image: repeating-linear-gradient(
-			45deg,
+	background-image: repeating-linear-gradient(45deg,
 			cyan,
 			black 25%,
 			transparent 25%,
 			transparent 75%,
 			blue 75%,
-			black 100%
-		),
+			black 100%),
 		repeating-linear-gradient(45deg, blue, blue 25%, transparent 25%, transparent 75%, blue 75%, cyan 100%);
 	background-size: 4px 4px, 4px 4px;
 	background-position: 0 0, 2px 2px;
@@ -273,6 +285,7 @@
 		height: 0%;
 		opacity: 0;
 	}
+
 	100% {
 		height: 95%;
 		opacity: 1;
@@ -283,6 +296,7 @@
 	0% {
 		opacity: 0;
 	}
+
 	100% {
 		opacity: 1;
 	}
@@ -328,11 +342,13 @@
 
 .macin .window .content {
 	flex-grow: 1;
+	overflow-y: scroll;
 }
 
 .macin ul {
 	list-style: none;
 }
+
 .macin .bar {
 	background-color: lightgray;
 	font-size: 0.7rem;
@@ -347,18 +363,22 @@
 	text-align: center;
 	width: 100%;
 }
+
 .macin .info.bar li {
 	padding: 0.5vmin;
 	padding-left: 1vmin;
 	padding-right: 1vmin;
 }
+
 .macin .info.bar p {
 	padding-top: 0.5vmin;
 }
+
 .macin .title.bar {
 	cursor: move;
 	height: 20px;
 }
+
 .macin .bar.title h1 {
 	background: lightgray;
 	border: 0 solid lightgray;
@@ -367,6 +387,7 @@
 	z-index: 1;
 	font-size: 14px;
 }
+
 .macin .bar.title:before,
 .macin .bar.title:after {
 	background: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAoAAAAJCAYAAAALpr0TAAAAG0lEQVQYV2NkIBIwAtX9J0YtSCFRgCSFw8ZqAGFpAwfpRLQ2AAAAAElFTkSuQmCC);
@@ -377,24 +398,30 @@
 	right: 0;
 	top: 5px;
 }
+
 .macin .bar.info {
 	border-bottom: 4px double black;
 	font-size: 0.75rem;
 }
+
 .macin .bar.links {
 	border-bottom: 2px solid black;
 }
+
 .macin .bar.links li {
 	padding-left: 1vmin;
 	padding-right: 1vmin;
 }
+
 .macin .bar li:hover {
 	background-color: black;
 	color: white;
 }
+
 .macin .window nav {
 	width: 0;
 }
+
 .macin .bar ul {
 	display: flex;
 	box-pack: justify;
@@ -407,6 +434,7 @@
 	margin: 0;
 	padding: 0;
 }
+
 .macin .bar .close {
 	width: 10px;
 	height: 10px;
@@ -417,6 +445,7 @@
 	left: 5px;
 	z-index: 1;
 }
+
 .macin .bar .maximize {
 	width: 10px;
 	height: 10px;
@@ -427,6 +456,7 @@
 	right: 5px;
 	z-index: 2;
 }
+
 .macin .bar .maximize:after {
 	width: 5px;
 	height: 5px;
@@ -452,6 +482,7 @@
 .macin .bar p {
 	margin: 0;
 }
+
 .macin .folder {
 	box-flex: 1;
 	-moz-flex: 1;
@@ -461,6 +492,7 @@
 	font-size: 4rem;
 	overflow: hidden;
 }
+
 .macin .appleii-colors {
 	display: flex;
 	box-orient: vertical;
@@ -473,6 +505,7 @@
 	/*background: url($mac-logo-url) center /15vh no-repeat*/
 	margin-bottom: 27px;
 }
+
 .macin .appleii-colors img {
 	height: 10vh;
 	width: 10vh;
@@ -480,6 +513,7 @@
 	bottom: 10%;
 	left: 10%;
 }
+
 .macin .appleii-colors .appleii-color-green {
 	box-flex: 1;
 	-moz-flex: 1;
@@ -487,6 +521,7 @@
 	background-color: #b9de00;
 	margin-right: 27px;
 }
+
 .macin .appleii-colors .appleii-color-orange {
 	box-flex: 1;
 	-moz-flex: 1;
@@ -494,6 +529,7 @@
 	background-color: #ffad3c;
 	margin-right: 27px;
 }
+
 .macin .appleii-colors .appleii-color-burnt-orange {
 	box-flex: 1;
 	-moz-flex: 1;
@@ -501,6 +537,7 @@
 	background-color: #f4581f;
 	margin-right: 27px;
 }
+
 .macin .appleii-colors .appleii-color-red {
 	box-flex: 1;
 	-moz-flex: 1;
@@ -508,6 +545,7 @@
 	background-color: #9f1e17;
 	margin-right: 27px;
 }
+
 .macin .appleii-colors .appleii-color-eggplant {
 	box-flex: 1;
 	-moz-flex: 1;
@@ -515,6 +553,7 @@
 	background-color: #862754;
 	margin-right: 27px;
 }
+
 .macin .appleii-colors .appleii-color-blue {
 	box-flex: 1;
 	-moz-flex: 1;
