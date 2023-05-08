@@ -1914,12 +1914,15 @@ public class ${QuintOS.game} {
 		if (!QuintOS.web) {
 			QuintOS.dir ??= QuintOS.language;
 		} else if (QuintOS.level != -1) {
-			QuintOS.dir = 'https://raw.githubusercontent.com/' + QuintOS.user + '/quintos-games/main';
-			if (QuintOS.v >= 6) QuintOS.dir += '/' + QuintOS.language;
-			else if (QuintOS.language == 'js') {
-				QuintOS.dir += '/GAMES';
-			} else if (QuintOS.language == 'java') {
-				QuintOS.dir += '/games_java';
+			QuintOS.dir = 'https://raw.githubusercontent.com/' + QuintOS.user;
+			if (QuintOS.v >= 6) QuintOS.dir += '/quintos-projects/main/' + QuintOS.language;
+			else {
+				QuintOS.dir += '/quintos-games/main';
+				if (QuintOS.language == 'js') {
+					QuintOS.dir += '/GAMES';
+				} else if (QuintOS.language == 'java') {
+					QuintOS.dir += '/games_java';
+				}
 			}
 		} else {
 			QuintOS.dir = 'https://raw.githubusercontent.com/' + QuintOS.user + '/' + QuintOS.game + '/main';
