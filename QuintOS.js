@@ -873,9 +873,8 @@ p5.prototype.registerMethod('init', function quintosInit() {
 		this._incrementPreload();
 		context.preload = () => {};
 
-		if (QuintOS.username) QuintOS.user = QuintOS.username;
-		if (QuintOS.gameTitle) QuintOS.game = QuintOS.gameTitle;
-		if (!QuintOS.user) QuintOS.user = 'quinton-ashley';
+		QuintOS.user ??= QuintOS.username || 'quinton-ashley';
+		QuintOS.game ??= QuintOS.gameTitle;
 
 		let levels = [
 			/*00*/ ['GuessTheNumber', 'calcu'], // primitives and if/else
@@ -1139,7 +1138,7 @@ tile {
 			let els = document.body.querySelectorAll(keyElems);
 			for (let el of els) {
 				el.addEventListener('click', function () {
-					let key = this.name || this.textContent;
+					let key = this.getAttribute('name') || this.textContent;
 					let count = 1;
 					if (key == 'Clear') {
 						count = 23;
