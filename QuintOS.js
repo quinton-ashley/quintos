@@ -1058,8 +1058,8 @@ p5.prototype.registerMethod('init', function quintosInit() {
 			},
 			c64: {
 				row: 10,
-				col: 10,
-				w: 20
+				col: 0,
+				w: 40
 			},
 			calcu: {
 				row: 0,
