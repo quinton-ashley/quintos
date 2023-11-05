@@ -178,7 +178,15 @@ p5.prototype.registerMethod('init', function quintosInit() {
 		return { lines, row, col, speed };
 	}
 
-	/* Display text */
+	/**
+	 * Displays text
+	 * @param {String|Number} text
+	 * @param {Number} row
+	 * @param {Number} col
+	 * @param {Number} w
+	 * @param {Number} h
+	 * @param {Number} speed
+	 */
 	this.txt = function (text, row, col, w, h, speed) {
 		let noRow = !row && row != 0;
 		text = _txt(text, row, col, w, h, speed);
@@ -203,7 +211,15 @@ p5.prototype.registerMethod('init', function quintosInit() {
 		_txtSync({ lines, row, col });
 	};
 
-	/* Display an application window frame */
+	/**
+	 * Display an application window frame
+	 * @param {Number} row
+	 * @param {Number} col
+	 * @param {Number} rows
+	 * @param {Number} cols
+	 * @param {String} [style] 'solid', 'dashed', 'outline'
+	 * @param {String} [c] character to populate the frame with
+	 */
 	this.frame = async function (row, col, rows, cols, style, speed, c) {
 		row ??= 0;
 		col ??= 0;
@@ -216,7 +232,16 @@ p5.prototype.registerMethod('init', function quintosInit() {
 		await txtRect(row, col, rows, cols, style, c, speed);
 	};
 
-	/* Display a rectangle with character or character set */
+	/**
+	 * Display a rectangle with character or character set
+	 * @param {Number} row
+	 * @param {Number} col
+	 * @param {Number} rows
+	 * @param {Number} cols
+	 * @param {String} [style] 'solid', 'dashed', 'outline'
+	 * @param {String} [c] character to populate the rect outline with
+	 * @param {Number} [speed]
+	 */
 	this.txtRect = async function (row, col, rows, cols, style, c, speed) {
 		style ??= 'solid';
 		if (QuintOS.sys == 'cpet') {
@@ -739,7 +764,7 @@ p5.prototype.registerMethod('init', function quintosInit() {
 				if (erasing) return;
 				await eraseBtn();
 				let val = inp.value;
-				if (val != '') val = isNaN(val) ? val : Number(val);
+				if (val != '') val = Number.isNaN(val) ? val : Number(val);
 				resolve(val);
 			};
 
@@ -891,13 +916,13 @@ p5.prototype.registerMethod('init', function quintosInit() {
 			/*10*/ ['DataDesigner', 'c64'], // creating objects
 			/*11*/ ['WorldWideWeb', 'macin'], // web
 
-			/*12*/ ['Wordle', 'a2'],
-			/*13*/ ['TicTacAIO', 'gridc'],
-			/*14*/ ['SpeakAndSpell', 'sas'],
+			/*12*/ ['Wordle', 'a2'], // review
+			/*13*/ ['TicTacAIO', 'gridc'], // intro to ai
+			/*14*/ ['SpeakAndSpell', 'sas'], // JS promises and using objects like HashMaps
 			/*15*/ ['Contain', 'zx'],
 			/*16*/ ['Snake', 'gameboi'],
 			/*17*/ ['SuperJump', 'arc'],
-			/*18*/ ['Sokoban', 'c64']
+			/*18*/ ['Sokoban', 'c64'] // final project
 		];
 
 		let systems = ['a2', 'arc', 'calcu', 'cpet', 'gameboi', 'gridc', 'ibm2250', 'macin', 'sas', 'zx'];
@@ -927,10 +952,10 @@ p5.prototype.registerMethod('init', function quintosInit() {
 			}
 			if (g == 'bigbinary') {
 				QuintOS.game = 'BigBinary';
-				QuintOS.level = 4;
+				QuintOS.sys = 'a2';
 			} else if (g == 'wheeloffortune') {
 				QuintOS.game = 'WheelOfFortune';
-				QuintOS.level = 8;
+				QuintOS.level = 12;
 			}
 			QuintOS.level ??= -1;
 		}
