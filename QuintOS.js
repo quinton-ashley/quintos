@@ -1968,9 +1968,6 @@ public class ${QuintOS.game} {
 
 		this.centerX = width * 0.5;
 		this.centerY = height * 0.5;
-		if (this.world instanceof World) {
-			this.world.resize();
-		}
 
 		// p5.disableFriendlyErrors = false;
 
