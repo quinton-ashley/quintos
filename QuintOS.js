@@ -764,7 +764,7 @@ p5.prototype.registerMethod('init', function quintosInit() {
 				if (erasing) return;
 				await eraseBtn();
 				let val = inp.value;
-				if (val != '') val = Number.isNaN(val) ? val : Number(val);
+				if (val != '') val = isNaN(val) ? val : Number(val);
 				resolve(val);
 			};
 
