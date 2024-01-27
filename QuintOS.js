@@ -531,7 +531,9 @@ p5.prototype.registerMethod('init', function quintosInit() {
 			this.value = '';
 
 			this.blink = setInterval(() => {
-				let cl = QuintOS.screen[this.row].tiles[this.cursorX].classList;
+				let tile = QuintOS.screen[this.row].tiles[this.cursorX];
+				if (!tile) return;
+				let cl = tile.classList;
 				if (cl.contains('hovered')) cl.remove('hovered');
 				else cl.add('hovered');
 				if (QuintOS.sys == 'calcu' && _charAt(this.row, this.cursorX) != '_') {
@@ -546,7 +548,7 @@ p5.prototype.registerMethod('init', function quintosInit() {
 			clearInterval(this.blink);
 			document.removeEventListener('keydown', this.onKeyDown);
 			let cursor = QuintOS.screen[this.row].tiles[this.cursorX];
-			cursor.classList.remove('hovered');
+			if (cursor) cursor.classList.remove('hovered');
 			for (let i = 0; i < this.cursorX - this.col + 1; i++) {
 				let tile = QuintOS.screen[this.row].tiles[this.col + i];
 				if (tile) tile.childNodes[0].nodeValue = ' ';
@@ -565,24 +567,25 @@ p5.prototype.registerMethod('init', function quintosInit() {
 		let inp = new Input(value, row, col, onSubmit, onChange);
 		inp.onKeyDown = (e) => {
 			// log(e.key);
-			QuintOS.screen[inp.row].tiles[inp.cursorX].classList.remove('hovered');
+			let tile = QuintOS.screen[inp.row].tiles[inp.cursorX];
+			if (tile) tile.classList.remove('hovered');
 
 			if (e.key == 'Enter') {
 				inp.onSubmit(inp.value);
 				return;
 			} else if (e.key == 'Backspace' && inp.value.length > 0) {
 				if (QuintOS.sys == 'calcu' && (inp.row != 1 || inp.value.length != 4)) {
-					_drawChar(inp.row, inp.cursorX, ' ');
+					if (tile) _drawChar(inp.row, inp.cursorX, ' ');
 				}
 				inp.value = inp.value.slice(0, -1);
 				inp.cursorX--;
-				_drawChar(inp.row, inp.cursorX, ' ');
+				if (tile) _drawChar(inp.row, inp.cursorX, ' ');
 				return;
 			} else if (e.key.length != 1) {
 				return;
 			}
 			let c = e.key[0];
-			_drawChar(inp.row, inp.cursorX, c);
+			if (tile) _drawChar(inp.row, inp.cursorX, c);
 			inp.value += c;
 			inp.cursorX++;
 			if (e.key != 'Backspace') {
