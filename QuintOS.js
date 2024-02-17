@@ -2,7 +2,7 @@
  * QuintOS
  * @version 6
  * @author quinton-ashley
- * @license gpl-3.0-only
+ * @license AGPL-3.0
  */
 
 let log = console.log; // log becomes a shortcut for console.log

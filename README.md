@@ -1,10 +1,28 @@
 # [QuintOS]
 
-Learn how to program by making games using QuintOS. I'm developing courses in JS and Java: [IntroToJS] and [IntroToJava]. Contact me <mailto:qashto@gmail.com> for lessons!
+Level up your coding skills by using QuintOS to create retro games and applications!
 
-At <https://quintos.org> you can play games made by my students!
+At <https://quintos.org> you can see programs made by my students!
 
-Use the QuintOS [template project] to get started making your own retro games.
+I've developed two courses that use QuintOS: [IntroToJS] and [IntroToJava].
+
+Contact me <mailto:qashto@gmail.com> for lessons! Or use the QuintOS [template project] to get started making your own retro stuff.
+
+## Features
+
+QuintOS is a JavaScript library that simulates the look and feel of retro computers and game consoles, including:
+
+- `a2` : Apple II
+- `arc` : Generic Arcade
+- `c64` : Commodore 64
+- `calcu` : Casio FX-702P
+- `cpet` : Commodore PET
+- `gameboi` : Nintendo GameBoy
+- `gridc` : GRID Compass
+- `ibm2250` : IBM 2250
+- `macin` : Macintosh
+- `sas` : Speak & Spell
+- `zx` : ZX Spectrum
 
 # Credits
 
