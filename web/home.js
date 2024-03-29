@@ -23,7 +23,7 @@ function generatePreviews(games) {
 		let game = games[i];
 		if (!game) break;
 		let { user, title, v } = game;
-		let url = `/?user=${user}&game=${title}`;
+		let url = `/quintos/?user=${user}&game=${title}`;
 		for (let attr in game) {
 			if (attr == 'title' || attr == 'user') continue;
 			url += `&${attr}=${game[attr]}`;
