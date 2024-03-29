@@ -1019,7 +1019,7 @@ p5.prototype.registerMethod('init', function quintosInit() {
 		this.createCanvas = () => {};
 
 		pixelDensity(1);
-		frameRate(60);
+		// frameRate(60);
 		strokeWeight(2);
 		noSmooth();
 
@@ -1722,7 +1722,7 @@ RUN\n`.slice(1)
 			if (/(a2|gridc)/.test(QuintOS.sys)) await frame();
 
 			tint(100);
-			p5play.images.onLoad = (img) => {
+			p5play.onImageLoad = (img) => {
 				image(img, round(random(-img.width, width)), round(random(-img.height, height)));
 			};
 
