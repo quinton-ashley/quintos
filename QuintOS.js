@@ -935,11 +935,11 @@ p5.prototype.registerMethod('init', function quintosInit() {
 				QuintOS.game = levels[QuintOS.level][0];
 			} else {
 				if (
-					location.href == 'quintos.org' ||
-					location.href == 'https://quintos.org' ||
-					location.href == 'https://quintos.org/'
+					location.href == 'quinton-ashley.github.io/quintos' ||
+					location.href == 'https://quinton-ashley.github.io/quintos' ||
+					location.href == 'https://quinton-ashley.github.io/quintos/'
 				) {
-					location.href = 'https://quintos.org/home.html';
+					location.href = 'https://quinton-ashley.github.io/quintos/web/home.html';
 				}
 				return;
 			}

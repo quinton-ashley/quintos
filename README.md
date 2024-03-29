@@ -2,7 +2,7 @@
 
 Level up your coding skills by using QuintOS to create retro games and applications!
 
-At <https://quintos.org> you can see programs made by my students!
+At <https://quinton-ashley.github.io/quintos> you can see programs made by my students!
 
 I've developed two courses that use QuintOS: [IntroToJS] and [IntroToJava].
 
