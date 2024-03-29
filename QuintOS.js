@@ -1020,7 +1020,7 @@ p5.prototype.registerMethod('init', function quintosInit() {
 		this.createCanvas = () => {};
 
 		pixelDensity(1);
-		frameRate(60);
+		// frameRate(60);
 		strokeWeight(2);
 		noSmooth();
 
