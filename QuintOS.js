@@ -956,6 +956,7 @@ p5.prototype.registerMethod('init', function quintosInit() {
 			if (g == 'bigbinary') {
 				QuintOS.game = 'BigBinary';
 				QuintOS.sys = 'a2';
+				QuintOS.level = 6;
 			} else if (g == 'wheeloffortune') {
 				QuintOS.game = 'WheelOfFortune';
 				QuintOS.level = 12;
@@ -1019,7 +1020,7 @@ p5.prototype.registerMethod('init', function quintosInit() {
 		this.createCanvas = () => {};
 
 		pixelDensity(1);
-		// frameRate(60);
+		frameRate(60);
 		strokeWeight(2);
 		noSmooth();
 
