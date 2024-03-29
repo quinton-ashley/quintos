@@ -129,7 +129,6 @@ I'd like to thank all the creators whose work is included in this project and al
 [template project]: https://github.com/quinton-ashley/quintos-template
 [introtojava]: https://github.com/quinton-ashley/IntroToJava/blob/main/README.md
 [introtojs]: https://github.com/quinton-ashley/IntroToJS/blob/main/README.md
-[quintos]: https://quintos.org
 
 <!-----------------------------------[ Fonts ]--------------------------------->
 

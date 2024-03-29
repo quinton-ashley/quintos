@@ -1264,7 +1264,8 @@ tile {
 			}, 1000);
 		}
 
-		// if QuintOS is running in an iframe on quintos.org
+		// if QuintOS is running in an iframe on
+		// https://quinton-ashley.github.io/quintos
 		if (QuintOS.iframe) {
 			outputVolume(0);
 			setTimeout(() => {
