@@ -23,7 +23,7 @@ body.ibm2250 {
 }
 
 .ibm2250 main,
-.ibm2250 #defaultCanvas0,
+.ibm2250 canvas,
 .ibm2250 #screen0 {
 	position: absolute;
 	width: 85.3vmin !important;

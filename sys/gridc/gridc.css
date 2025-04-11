@@ -55,7 +55,7 @@ body.gridc {
 }
 
 .gridc main,
-.gridc #defaultCanvas0,
+.gridc canvas,
 .gridc #screen0 {
 	position: absolute;
 	width: 84vw;
@@ -416,7 +416,7 @@ body.gridc {
 
 	.gridc .terminalScreen,
 	.gridc main,
-	.gridc #defaultCanvas0,
+	.gridc canvas,
 	.gridc #screen0 {
 		height: 70.875vw;
 	}

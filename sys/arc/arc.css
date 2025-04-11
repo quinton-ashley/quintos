@@ -23,7 +23,7 @@ body.arc {
 }
 
 .arc main,
-.arc #defaultCanvas0,
+.arc canvas,
 .arc #screen0 {
 	position: absolute;
 	border-radius: 2vmin;
@@ -157,16 +157,15 @@ body.arc {
 	box-shadow: inset 0 0 1vmin 0.25vmin rgba(0, 0, 0, 0.85), 0 0 10vmin -2vmin #666, 0 0 10vmin -5vmin #333;
 	background-blend-mode: multiply, normal, screen;
 	background-image: radial-gradient(ellipse closest-corner, transparent 70%, rgba(90, 90, 90, 0.7)),
-		linear-gradient(
-			85deg,
+		linear-gradient(85deg,
 			rgba(64, 68, 64, 0.2) 0%,
 			rgba(255, 255, 255, 0) 64.5%,
 			rgba(174, 172, 191, 0.05) 74.5%,
 			rgba(243, 242, 250, 0.05) 75%,
 			rgba(213, 210, 229, 0.07) 85%,
-			rgba(255, 255, 255, 0) 85.5%
-		);
+			rgba(255, 255, 255, 0) 85.5%);
 }
+
 .arc #bootScreen {
 	display: block;
 	top: 1%;
@@ -188,13 +187,11 @@ body.arc {
 	background-color: #d7c8be;
 	border-left: 0.25vmin solid #cdbbae;
 	border-right: 0.25vmin solid #cdbbae;
-	background-image: linear-gradient(
-		to bottom,
-		#7c604d 0%,
-		#f4f0ed 1.25vmin,
-		#eae3de 6.5vmin,
-		rgba(215, 200, 190, 0) 7.25vmin
-	);
+	background-image: linear-gradient(to bottom,
+			#7c604d 0%,
+			#f4f0ed 1.25vmin,
+			#eae3de 6.5vmin,
+			rgba(215, 200, 190, 0) 7.25vmin);
 	perspective: 12in;
 }
 
@@ -240,27 +237,25 @@ body.arc {
 	right: 8vmin;
 	width: 10vmin;
 	opacity: 0.5;
-	background-image: linear-gradient(
-		to bottom,
-		red 0%,
-		red 15%,
-		transparent 15%,
-		transparent 21.25%,
-		orange 21.25%,
-		orange 36.25%,
-		transparent 36.25%,
-		transparent 42.5%,
-		yellow 42.5%,
-		yellow 57.5%,
-		transparent 57.5%,
-		transparent 63.75%,
-		limegreen 63.75%,
-		limegreen 78.75%,
-		transparent 78.75%,
-		transparent 85%,
-		cyan 85%,
-		cyan 100%
-	);
+	background-image: linear-gradient(to bottom,
+			red 0%,
+			red 15%,
+			transparent 15%,
+			transparent 21.25%,
+			orange 21.25%,
+			orange 36.25%,
+			transparent 36.25%,
+			transparent 42.5%,
+			yellow 42.5%,
+			yellow 57.5%,
+			transparent 57.5%,
+			transparent 63.75%,
+			limegreen 63.75%,
+			limegreen 78.75%,
+			transparent 78.75%,
+			transparent 85%,
+			cyan 85%,
+			cyan 100%);
 }
 
 .arc #badge #power {
@@ -339,16 +334,14 @@ body.arc {
 	box-shadow: 0 0.25vmin 0.1vmin rgba(0, 0, 0, 0.4), 0 0 0.75vmin #3d2f26;
 	background-image: radial-gradient(circle at 50% 45%, rgba(0, 0, 0, 0) 64%, rgba(0, 0, 0, 0.4) 70%),
 		radial-gradient(circle 3.75vmin at 50% 85%, rgba(255, 255, 255, 0) 64%, rgba(255, 255, 255, 0.4) 70%),
-		radial-gradient(
-			circle,
+		radial-gradient(circle,
 			rgba(0, 0, 0, 0.8),
 			rgba(0, 0, 0, 0.8) 15%,
 			rgba(0, 0, 0, 0) 40%,
 			rgba(0, 0, 0, 0) 45%,
 			#a7a7a7 45%,
 			silver 50%,
-			black
-		);
+			black);
 }
 
 .arc #video::after,

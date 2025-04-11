@@ -15,13 +15,11 @@
 
 body.gameboi {
 	background-color: #000;
-	background-image: repeating-linear-gradient(
-			132deg,
+	background-image: repeating-linear-gradient(132deg,
 			#000 0% 10%,
 			transparent 10% 11%,
 			#000 11% 21%,
-			transparent 21% 22%
-		),
+			transparent 21% 22%),
 		linear-gradient(50deg, #7e2e52 30%, #513a8d 60%);
 	display: flex;
 	flex-direction: column;
@@ -44,7 +42,7 @@ body.gameboi {
 }
 
 .gameboi main,
-.gameboi #defaultCanvas0,
+.gameboi canvas,
 .gameboi #screen0 {
 	position: absolute;
 	width: 40vw;
@@ -81,11 +79,13 @@ body.gameboi {
 		transform: translateY(20%) scale(1.5);
 	}
 }
+
 @media screen and (max-width: 600px) {
 	.gameboi .wrapper {
 		transform: translateY(40%) scale(1.75);
 	}
 }
+
 @media screen and (max-width: 500px) {
 	.gameboi .wrapper {
 		transform: translate(-5%, 40%) scale(2.25);
@@ -120,37 +120,37 @@ body.gameboi {
 	left: 15vw;
 }
 
-.gameboi .gameboy > .top {
+.gameboi .gameboy>.top {
 	display: flex;
 	padding-bottom: 1vw;
 	margin-bottom: 1vw;
 	border-bottom: 0.31vw solid rgba(0, 0, 0, 0.1);
 }
 
-.gameboi .gameboy > .top .corner {
+.gameboi .gameboy>.top .corner {
 	width: 5vw;
 	height: 4vw;
 }
 
-.gameboi .gameboy > .top .corner.left {
+.gameboi .gameboy>.top .corner.left {
 	margin-right: 1vw;
 }
 
-.gameboi .gameboy > .top .corner.right {
+.gameboi .gameboy>.top .corner.right {
 	margin-left: 1vw;
 }
 
-.gameboi .gameboy > .top .top {
+.gameboi .gameboy>.top .top {
 	width: 100%;
 }
 
-.gameboi .gameboy > .top > div {
+.gameboi .gameboy>.top>div {
 	border-radius: 0 0 0.4vw 0.4vw;
 	border: 0.31vw solid rgba(0, 0, 0, 0.1);
 	box-shadow: 0.31vw 0.31vw 0.6vw rgba(0, 0, 0, 0.25);
 }
 
-.gameboi .gameboy > .top > div span {
+.gameboi .gameboy>.top>div span {
 	font-family: Arial, sans-serif;
 	font-size: 2.4vw;
 	box-shadow: 0.4vw 0.4vw 0.4vw rgba(0, 0, 0, 0.5) inset;
@@ -171,23 +171,24 @@ body.gameboi {
 	height: 50vw;
 	margin: 0.1em auto;
 }
+
 .gameboi .bezel span {
 	font-family: Arial, sans-serif;
 	font-size: 2vw;
 	color: #fff;
 }
+
 .gameboi .bezel .top {
 	margin: 0 3vw;
 	height: 6vw;
-	background: linear-gradient(
-		transparent 2vw,
-		#7d1a4a 2vw 2.4vw,
-		transparent 2.4vw 3.2vw,
-		#35224e 3.2vw 3.6vw,
-		transparent 18px
-	);
+	background: linear-gradient(transparent 2vw,
+			#7d1a4a 2vw 2.4vw,
+			transparent 2.4vw 3.2vw,
+			#35224e 3.2vw 3.6vw,
+			transparent 18px);
 	position: relative;
 }
+
 .gameboi .bezel .top span {
 	padding: 0 1.6vw;
 	background: #767189;
@@ -196,9 +197,11 @@ body.gameboi {
 	right: 6vw;
 	top: 1.6vw;
 }
+
 .gameboi .bezel .bottom {
 	display: flex;
 }
+
 .gameboi .bezel .bottom .led {
 	width: 2vw;
 	height: 2vw;
@@ -206,10 +209,12 @@ body.gameboi {
 	border-radius: 50%;
 	margin: 1.2vw;
 }
+
 .gameboi .bezel .bottom .led.on {
 	background: #d81e07;
 	box-shadow: 0 0 1vw #d81e07;
 }
+
 .gameboi .bezel .bottom .battery {
 	padding: 0 1.5vw;
 	display: flex;
@@ -230,6 +235,7 @@ body.gameboi {
 	overflow: hidden;
 	padding: 1vw;
 }
+
 .gameboi .gamescreen span {
 	display: none;
 	font-family: Press_Start_2P;
@@ -238,10 +244,12 @@ body.gameboi {
 	letter-spacing: -0.31vw;
 	color: #0f380f;
 }
+
 .gameboi .gamescreen span sup {
 	font-weight: normal;
 	font-size: 2.4vw;
 }
+
 .gameboi .gamescreen.startup span {
 	display: block;
 	-webkit-animation: startup 2s linear forwards;
@@ -253,6 +261,7 @@ body.gameboi {
 	0% {
 		transform: translate(0, -25px);
 	}
+
 	100% {
 		transform: translate(0, 80px);
 	}
@@ -262,11 +271,13 @@ body.gameboi {
 .gameboi .brand {
 	margin: 1vw 6vw;
 }
+
 .gameboi .brand span {
 	font-family: Pretendo, sans-serif;
 	font-size: 3vw;
 	color: #302058;
 }
+
 .gameboi .brand span:nth-child(2) {
 	font-family: Lato, sans-serif;
 	font-weight: bold;
@@ -384,12 +395,14 @@ body.gameboi {
 	justify-content: center;
 	margin-bottom: 10vw;
 }
+
 .gameboi .gamecontrols .gap {
 	background: linear-gradient(#b7acb1 -10%, #f1f3f2 130%);
 	transform: rotate(-28deg);
 	margin: 0 1vw;
 	border-radius: 3vw;
 }
+
 .gameboi .gamecontrols .button {
 	background: #9e9baf;
 	border-radius: 2vw;
@@ -399,9 +412,11 @@ body.gameboi {
 	height: 2.4vw;
 	margin: 1.2vw 1.6vw;
 }
+
 .gameboi .gamecontrols .button:active {
 	box-shadow: -0.4vw -0.4vw 1vw rgba(0, 0, 0, 0.4) inset, 0.4vw 0.4vw 1vw rgba(0, 0, 0, 0.7) inset;
 }
+
 .gameboi .gamecontrols .button::after {
 	font-family: Pretendo, sans-serif;
 	font-size: 2.4vw;
@@ -413,7 +428,7 @@ body.gameboi {
 }
 
 /* Gameboy bottom body part */
-.gameboi .gameboy > .bottom {
+.gameboi .gameboy>.bottom {
 	display: flex;
 	flex-direction: column;
 	align-items: center;

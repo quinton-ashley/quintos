@@ -109,18 +109,19 @@ if (args.user) {
 		{ user: 'OleHo370', title: 'GenerativeArt', v: 5 },
 		{ user: 'seva-zoff', title: 'QuickClicks', v: 4 },
 		{ user: 'Ali4110', title: 'PickAPath', v: 4 },
-		{ user: 'AmaniZungu', title: 'LilyLeap', v: 4 }, // CornN10
+		// { user: 'AmaniZungu', title: 'LilyLeap', v: 4 }, // CornN10
 		{ user: 'quinton-ashley', title: 'Pong' },
 		{ user: 'quinton-ashley', title: 'BigBinary' },
+		{ user: 'quinton-ashley', title: 'Sokoban' },
+		{ user: 'Ali4110', title: 'DataDesigner', v: 4 },
 
 		{ user: 'Ali4110', title: 'TicTacAIO', v: 4 },
 		{ user: 'CornN10', title: 'LilyLeap', v: 4 },
 		{ user: 'WarriorFPHS', title: 'GenerativeArt', v: 4 },
-		{ user: 'Paeto-Chayarat', title: 'NumberDash', sys: 'arc', v: 4 },
 		{ user: 'quinton-ashley', title: 'Sokoban' },
 		{ user: 'quinton-ashley', title: 'Hangman' },
 		{ user: 'quinton-ashley', title: 'WheelOfFortune' },
-		{ user: 'Ali4110', title: 'DataDesigner', v: 4 },
+
 		{ user: 'quinton-ashley', title: 'SpeakAndSpell' } // jaximuslim 's version needs menu select
 	];
 	generatePreviews(games);

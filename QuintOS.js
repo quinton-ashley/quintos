@@ -35,7 +35,7 @@ if (typeof QuintOS == 'undefined') {
 	QuintOS.v ??= 6;
 }
 
-p5.prototype.registerMethod('init', function quintosInit() {
+p5.prototype.registerMethod('init', async function quintosInit() {
 	let pInst = this;
 
 	if (typeof this.world == 'undefined') {
@@ -821,20 +821,20 @@ p5.prototype.registerMethod('init', function quintosInit() {
 	// 	_image(img, ...args);
 	// };
 
-	this._loadImage = this.loadImage;
+	let _loadImage = this.loadImage;
 	this.loadImage = function () {
 		if (!arguments[0].includes(this.QuintOS.dir)) {
 			arguments[0] = this.QuintOS.dir + '/' + arguments[0];
 		}
-		return this._loadImage(...arguments);
+		return _loadImage.call(this, ...arguments);
 	};
 
-	this._loadSound = this.loadSound;
+	let _loadSound = this.loadSound;
 	this.loadSound = function () {
 		if (!arguments[0].includes(this.QuintOS.dir)) {
 			arguments[0] = this.QuintOS.dir + '/' + arguments[0];
 		}
-		return this._loadSound(...arguments);
+		return _loadSound.call(this, ...arguments);
 	};
 
 	class TxtAni extends Array {
@@ -896,263 +896,258 @@ p5.prototype.registerMethod('init', function quintosInit() {
 		return txtAni;
 	};
 
-	this.preload = async () => {
-		let context = this._isGlobal ? window : this;
-		this._incrementPreload();
-		context.preload = () => {};
+	this._incrementPreload();
 
-		QuintOS.user ??= QuintOS.username || 'quinton-ashley';
-		QuintOS.game ??= QuintOS.gameTitle;
+	QuintOS.user ??= QuintOS.username || 'quinton-ashley';
+	QuintOS.game ??= QuintOS.gameTitle;
 
-		let levels = [
-			/*00*/ ['GuessTheNumber', 'calcu'], // primitives and if/else
-			/*01*/ ['PickAPath', 'cpet'], // array
-			/*02*/ ['Pong', 'zx'], // using objects
-			/*03*/ ['LilyLeap', 'gameboi'], // iteration
-			/*04*/ ['Hangman', 'a2'], // strings
-			/*05*/ ['QuickClicks', 'gridc'], // recursion
+	let levels = [
+		/*00*/ ['GuessTheNumber', 'calcu'], // primitives and if/else
+		/*01*/ ['PickAPath', 'cpet'], // array
+		/*02*/ ['Pong', 'zx'], // using objects
+		/*03*/ ['LilyLeap', 'gameboi'], // iteration
+		/*04*/ ['Hangman', 'a2'], // strings
+		/*05*/ ['QuickClicks', 'gridc'], // recursion
 
-			/*06*/ ['BinaryConverter', 'calcu'], // binary
-			/*07*/ ['GenerativeArt', 'ibm2250'], // hex codes
-			/*08*/ ['CodeBreaker', 'gridc'], // loading files
-			/*09*/ ['TicTacToe', 'gridc'], // 2D Array
-			/*10*/ ['DataDesigner', 'c64'], // creating objects
-			/*11*/ ['WorldWideWeb', 'macin'], // web
+		/*06*/ ['BinaryConverter', 'calcu'], // binary
+		/*07*/ ['GenerativeArt', 'ibm2250'], // hex codes
+		/*08*/ ['CodeBreaker', 'gridc'], // loading files
+		/*09*/ ['TicTacToe', 'gridc'], // 2D Array
+		/*10*/ ['DataDesigner', 'c64'], // creating objects
+		/*11*/ ['WorldWideWeb', 'macin'], // web
 
-			/*12*/ ['Wordle', 'a2'], // review
-			/*13*/ ['TicTacAIO', 'gridc'], // intro to ai
-			/*14*/ ['SpeakAndSpell', 'sas'], // JS promises and using objects like HashMaps
-			/*15*/ ['Contain', 'zx'],
-			/*16*/ ['Snake', 'gameboi'],
-			/*17*/ ['SuperJump', 'arc'],
-			/*18*/ ['Sokoban', 'c64'] // final project
-		];
+		/*12*/ ['Wordle', 'a2'], // review
+		/*13*/ ['TicTacAIO', 'gridc'], // intro to ai
+		/*14*/ ['SpeakAndSpell', 'sas'], // JS promises and using objects like HashMaps
+		/*15*/ ['Contain', 'zx'],
+		/*16*/ ['Snake', 'gameboi'],
+		/*17*/ ['SuperJump', 'arc'],
+		/*18*/ ['Sokoban', 'c64'] // final project
+	];
 
-		let systems = ['a2', 'arc', 'calcu', 'cpet', 'gameboi', 'gridc', 'ibm2250', 'macin', 'sas', 'zx'];
+	let systems = ['a2', 'arc', 'calcu', 'cpet', 'gameboi', 'gridc', 'ibm2250', 'macin', 'sas', 'zx'];
 
-		if (!QuintOS.game) {
-			if (typeof QuintOS.level != 'undefined') {
-				QuintOS.game = levels[QuintOS.level][0];
-			} else {
-				if (
-					location.href == 'quinton-ashley.github.io/quintos' ||
-					location.href == 'https://quinton-ashley.github.io/quintos' ||
-					location.href == 'https://quinton-ashley.github.io/quintos/'
-				) {
-					location.href = 'https://quinton-ashley.github.io/quintos/web/home.html';
-				}
-				return;
-			}
+	if (!QuintOS.game) {
+		if (typeof QuintOS.level != 'undefined') {
+			QuintOS.game = levels[QuintOS.level][0];
 		} else {
-			let g = QuintOS.game.toLowerCase();
-			for (let i in levels) {
-				let l = levels[i];
-				if (l[0].toLowerCase() == g) {
-					QuintOS.game = l[0];
-					QuintOS.level = Number(i);
-					break;
-				}
+			if (
+				location.href == 'quinton-ashley.github.io/quintos' ||
+				location.href == 'https://quinton-ashley.github.io/quintos' ||
+				location.href == 'https://quinton-ashley.github.io/quintos/'
+			) {
+				location.href = 'https://quinton-ashley.github.io/quintos/web/home.html';
 			}
-			if (g == 'bigbinary') {
-				QuintOS.game = 'BigBinary';
-				QuintOS.sys = 'a2';
-				QuintOS.level = 6;
-			} else if (g == 'wheeloffortune') {
-				QuintOS.game = 'WheelOfFortune';
-				QuintOS.level = 12;
+			return;
+		}
+	} else {
+		let g = QuintOS.game.toLowerCase();
+		for (let i in levels) {
+			let l = levels[i];
+			if (l[0].toLowerCase() == g) {
+				QuintOS.game = l[0];
+				QuintOS.level = Number(i);
+				break;
 			}
-			QuintOS.level ??= -1;
 		}
-
-		let sys = QuintOS.sys || QuintOS.system;
-
-		if (QuintOS.level == -1 && !sys) {
-			throw new Error(
-				`Check your load file to make sure the name of the game you're trying to load matches the name of the game's folder. If you are trying to load a custom game please specify a QuintOS system! Valid options are: ` +
-					systems.join(', ')
-			);
+		if (g == 'bigbinary') {
+			QuintOS.game = 'BigBinary';
+			QuintOS.sys = 'a2';
+			QuintOS.level = 6;
+		} else if (g == 'wheeloffortune') {
+			QuintOS.game = 'WheelOfFortune';
+			QuintOS.level = 12;
 		}
+		QuintOS.level ??= -1;
+	}
 
-		sys ??= levels[QuintOS.level || 0][1];
-		QuintOS.sys = sys;
-		QuintOS.system = sys;
+	let sys = QuintOS.sys || QuintOS.system;
 
-		QuintOS.gpu = [];
+	if (QuintOS.level == -1 && !sys) {
+		throw new Error(
+			`Check your load file to make sure the name of the game you're trying to load matches the name of the game's folder. If you are trying to load a custom game please specify a QuintOS system! Valid options are: ` +
+				systems.join(', ')
+		);
+	}
 
-		{
-			let dir = `${QuintOS.root}/quintos/sys/${QuintOS.sys}`;
-			let html = await (await fetch(`${dir}/${QuintOS.sys}.html`)).text();
-			document.head.innerHTML += `<link rel="stylesheet" href="${dir}/${QuintOS.sys}.css"></link>`;
-			document.body.innerHTML += html;
-			document.body.classList += QuintOS.sys;
+	sys ??= levels[QuintOS.level || 0][1];
+	QuintOS.sys = sys;
+	QuintOS.system = sys;
+
+	QuintOS.gpu = [];
+
+	{
+		let dir = `${QuintOS.root}/quintos/sys/${QuintOS.sys}`;
+		let html = await (await fetch(`${dir}/${QuintOS.sys}.html`)).text();
+		document.head.innerHTML += `<link rel="stylesheet" href="${dir}/${QuintOS.sys}.css"></link>`;
+		document.body.innerHTML += html;
+		document.body.classList += QuintOS.sys;
+	}
+
+	if (QuintOS.sys == 'c64') {
+		this.createCanvas(320, 200);
+	} else if (QuintOS.sys == 'arc') {
+		this.createCanvas(320, 400);
+	} else if (QuintOS.sys == 'arcv') {
+		this.createCanvas(960, 1200);
+	} else if (QuintOS.sys == 'ibm2250') {
+		this.createCanvas(1024, 1024);
+	} else if (QuintOS.sys == 'gridc') {
+		this.createCanvas(320, 270);
+	} else if (QuintOS.sys == 'gridc2') {
+		this.createCanvas(480, 270);
+	} else if (QuintOS.sys == 'zx') {
+		this.createCanvas(256, 192);
+	} else if (QuintOS.sys == 'gameboi') {
+		this.createCanvas(160, 144);
+	} else {
+		this.createCanvas();
+	}
+
+	let main = document.getElementsByTagName('main')[0];
+
+	if (QuintOS.sys != 'calcu') {
+		main.style.display = 'none';
+		document.getElementById('screen0').parentElement.append(main);
+		main.style.display = 'block';
+	} else {
+		main.remove();
+	}
+
+	this.createCanvas = () => {};
+
+	this.displayMode('normal', 'pixelated');
+	this.strokeWeight(2);
+
+	canvas.style = '';
+
+	let rows, cols;
+	if (QuintOS.sys == 'a2') {
+		rows = 24;
+		cols = 40;
+	} else if (QuintOS.sys == 'arc') {
+		rows = 34;
+		cols = 28;
+	} else if (QuintOS.sys == 'arcv') {
+		rows = 34;
+		cols = 28;
+	} else if (QuintOS.sys == 'ibm2250') {
+		rows = 16;
+		cols = 16;
+	} else if (/(c64|cpet)/.test(QuintOS.sys)) {
+		rows = 25;
+		cols = 40;
+	} else if (QuintOS.sys == 'calcu') {
+		rows = 2;
+		cols = 23;
+	} else if (QuintOS.sys == 'gameboi') {
+		rows = 18;
+		cols = 20;
+	} else if (QuintOS.sys == 'gridc') {
+		rows = 30;
+		cols = 80;
+	} else if (QuintOS.sys == 'sas') {
+		rows = 4;
+		cols = 20;
+	} else if (QuintOS.sys == 'zx') {
+		rows = 24;
+		cols = 32;
+	}
+	QuintOS.cols ??= cols;
+	QuintOS.rows ??= rows;
+	cols = QuintOS.cols;
+	rows = QuintOS.rows;
+
+	// default values for alerts and prompts for each system
+	let popup = {
+		a2: {
+			row: 2,
+			col: 2,
+			w: 36
+		},
+		arc: {
+			row: 16,
+			col: 4,
+			w: 20
+		},
+		arcv: {
+			row: 16,
+			col: 4,
+			w: 20
+		},
+		ibm2250: {
+			row: 16,
+			col: 4,
+			w: 20
+		},
+		c64: {
+			row: 10,
+			col: 0,
+			w: 40
+		},
+		calcu: {
+			row: 0,
+			col: 0,
+			w: 23,
+			h: 1
+		},
+		cpet: {
+			row: 2,
+			col: 0,
+			w: 40
+		},
+		gridc: {
+			row: 1,
+			col: 1,
+			w: 78
+		},
+		gameboi: {
+			row: 5,
+			col: 0,
+			w: 20
+		},
+		macin: {
+			row: 2,
+			col: 2,
+			w: 20
+		},
+		sas: {
+			row: 0,
+			col: 0,
+			w: 8,
+			h: 1
+		},
+		zx: {
+			row: 2,
+			col: 0,
+			w: 32
 		}
+	};
+	QuintOS.popup = popup[QuintOS.sys];
+	QuintOS.popup.h ??= 2;
 
-		if (QuintOS.sys == 'c64') {
-			createCanvas(320, 200);
-		} else if (QuintOS.sys == 'arc') {
-			createCanvas(320, 400);
-		} else if (QuintOS.sys == 'arcv') {
-			createCanvas(960, 1200);
-		} else if (QuintOS.sys == 'ibm2250') {
-			createCanvas(1024, 1024);
-		} else if (QuintOS.sys == 'gridc') {
-			createCanvas(320, 270);
-		} else if (QuintOS.sys == 'gridc2') {
-			createCanvas(480, 270);
-		} else if (QuintOS.sys == 'zx') {
-			createCanvas(256, 192);
-		} else if (QuintOS.sys == 'gameboi') {
-			createCanvas(160, 144);
-		} else {
-			createCanvas();
+	let screen0 = document.getElementById('screen0');
+
+	// create rows
+	for (let i = 0; i < rows; i++) {
+		let row = document.createElement('row');
+		screen0.appendChild(row);
+	}
+	QuintOS.screen = screen0.childNodes;
+
+	// create single character text tiles
+	for (let i = 0; i < rows; i++) {
+		let c = i != 1 || QuintOS.sys != 'calcu' ? cols : 4;
+		for (let j = 0; j < c; j++) {
+			let tile = document.createElement('tile');
+			tile.appendChild(document.createTextNode(' '));
+			QuintOS.screen[i].appendChild(tile);
 		}
-
-		let main = document.getElementsByTagName('main')[0];
-
-		if (QuintOS.sys != 'calcu') {
-			main.style.display = 'none';
-			document.getElementById('screen0').parentElement.append(main);
-			main.style.display = 'block';
-		} else {
-			main.remove();
-		}
-
-		this.createCanvas = () => {};
-
-		pixelDensity(1);
-		// frameRate(60);
-		strokeWeight(2);
-		noSmooth();
-
-		canvas.style = '';
-
-		let rows, cols;
-		if (QuintOS.sys == 'a2') {
-			rows = 24;
-			cols = 40;
-		} else if (QuintOS.sys == 'arc') {
-			rows = 34;
-			cols = 28;
-		} else if (QuintOS.sys == 'arcv') {
-			rows = 34;
-			cols = 28;
-		} else if (QuintOS.sys == 'ibm2250') {
-			rows = 16;
-			cols = 16;
-		} else if (/(c64|cpet)/.test(QuintOS.sys)) {
-			rows = 25;
-			cols = 40;
-		} else if (QuintOS.sys == 'calcu') {
-			rows = 2;
-			cols = 23;
-		} else if (QuintOS.sys == 'gameboi') {
-			rows = 18;
-			cols = 20;
-		} else if (QuintOS.sys == 'gridc') {
-			rows = 30;
-			cols = 80;
-		} else if (QuintOS.sys == 'sas') {
-			rows = 4;
-			cols = 20;
-		} else if (QuintOS.sys == 'zx') {
-			rows = 24;
-			cols = 32;
-		}
-		QuintOS.cols ??= cols;
-		QuintOS.rows ??= rows;
-		cols = QuintOS.cols;
-		rows = QuintOS.rows;
-
-		// default values for alerts and prompts for each system
-		let popup = {
-			a2: {
-				row: 2,
-				col: 2,
-				w: 36
-			},
-			arc: {
-				row: 16,
-				col: 4,
-				w: 20
-			},
-			arcv: {
-				row: 16,
-				col: 4,
-				w: 20
-			},
-			ibm2250: {
-				row: 16,
-				col: 4,
-				w: 20
-			},
-			c64: {
-				row: 10,
-				col: 0,
-				w: 40
-			},
-			calcu: {
-				row: 0,
-				col: 0,
-				w: 23,
-				h: 1
-			},
-			cpet: {
-				row: 2,
-				col: 0,
-				w: 40
-			},
-			gridc: {
-				row: 1,
-				col: 1,
-				w: 78
-			},
-			gameboi: {
-				row: 5,
-				col: 0,
-				w: 20
-			},
-			macin: {
-				row: 2,
-				col: 2,
-				w: 20
-			},
-			sas: {
-				row: 0,
-				col: 0,
-				w: 8,
-				h: 1
-			},
-			zx: {
-				row: 2,
-				col: 0,
-				w: 32
-			}
-		};
-		QuintOS.popup = popup[QuintOS.sys];
-		QuintOS.popup.h ??= 2;
-
-		let screen0 = document.getElementById('screen0');
-
-		// create rows
-		for (let i = 0; i < rows; i++) {
-			let row = document.createElement('row');
-			screen0.appendChild(row);
-		}
-		QuintOS.screen = screen0.childNodes;
-
-		// create single character text tiles
-		for (let i = 0; i < rows; i++) {
-			let c = i != 1 || QuintOS.sys != 'calcu' ? cols : 4;
-			for (let j = 0; j < c; j++) {
-				let tile = document.createElement('tile');
-				tile.appendChild(document.createTextNode(' '));
-				QuintOS.screen[i].appendChild(tile);
-			}
-			QuintOS.screen[i].tiles = QuintOS.screen[i].childNodes;
-		}
-		// the rows will all have the same height
-		// the tiles will all have the same width
-		document.head.innerHTML += `
+		QuintOS.screen[i].tiles = QuintOS.screen[i].childNodes;
+	}
+	// the rows will all have the same height
+	// the tiles will all have the same width
+	document.head.innerHTML += `
 <style>
 row {
 	height: ${100 / QuintOS.rows}%;
@@ -1162,221 +1157,221 @@ tile {
 }
 </style>`;
 
-		if (/(calcu|sas)/.test(QuintOS.sys)) {
-			let keyElems = '#keys div';
-			let els = document.body.querySelectorAll(keyElems);
-			for (let el of els) {
-				el.addEventListener('click', function () {
-					let key = this.getAttribute('name') || this.textContent;
-					let count = 1;
-					if (key == 'Clear') {
-						count = 23;
-						key = 'Backspace';
-					}
-					if (QuintOS.sys == 'calcu' && 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'.includes(key)) {
-						key = key.toLowerCase();
-					}
-					for (let i = 0; i < count; i++) {
-						document.dispatchEvent(
-							new KeyboardEvent('keydown', {
-								key: key
-							})
-						);
-					}
-				});
-			}
-		} else if (QuintOS.sys == 'macin') {
-			const time = document.querySelector('.time p');
-			setInterval(() => {
-				time.innerHTML = new Date().toLocaleTimeString('en-US', {
-					hour12: false,
-					hour: 'numeric',
-					minute: 'numeric',
-					second: 'numeric'
-				});
-			}, 1000);
-
-			function updateSearchBar() {
-				try {
-					document.getElementById('searchBar').value = frames.iframe0.url || frames.iframe0.contentWindow.location.href;
-				} catch (e) {}
-				frames.iframe0.url = null;
-			}
-
-			frames.iframe0.addEventListener('load', updateSearchBar);
-
-			document.getElementById('window0').addEventListener('click', updateSearchBar);
-
-			function dragElement(elmnt) {
-				var pos1 = 0,
-					pos2 = 0,
-					pos3 = 0,
-					pos4 = 0;
-				if (document.getElementById(elmnt.id + 'header')) {
-					// if present, the header is where you move the DIV from:
-					document.getElementById(elmnt.id + 'header').onmousedown = dragMouseDown;
-				} else {
-					// otherwise, move the DIV from anywhere inside the DIV:
-					elmnt.onmousedown = dragMouseDown;
+	if (/(calcu|sas)/.test(QuintOS.sys)) {
+		let keyElems = '#keys div';
+		let els = document.body.querySelectorAll(keyElems);
+		for (let el of els) {
+			el.addEventListener('click', function () {
+				let key = this.getAttribute('name') || this.textContent;
+				let count = 1;
+				if (key == 'Clear') {
+					count = 23;
+					key = 'Backspace';
 				}
-
-				function dragMouseDown(e) {
-					e = e || window.event;
-					e.preventDefault();
-					// get the mouse cursor position at startup:
-					pos3 = e.clientX;
-					pos4 = e.clientY;
-					document.onmouseup = closeDragElement;
-					// call a function whenever the cursor moves:
-					document.onmousemove = elementDrag;
+				if (QuintOS.sys == 'calcu' && 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'.includes(key)) {
+					key = key.toLowerCase();
 				}
-
-				function elementDrag(e) {
-					e = e || window.event;
-					e.preventDefault();
-					// calculate the new cursor position:
-					pos1 = pos3 - e.clientX;
-					pos2 = pos4 - e.clientY;
-					pos3 = e.clientX;
-					pos4 = e.clientY;
-					// set the element's new position:
-					elmnt.style.top = elmnt.offsetTop - pos2 + 'px';
-					elmnt.style.left = elmnt.offsetLeft - pos1 + 'px';
+				for (let i = 0; i < count; i++) {
+					document.dispatchEvent(
+						new KeyboardEvent('keydown', {
+							key: key
+						})
+					);
 				}
+			});
+		}
+	} else if (QuintOS.sys == 'macin') {
+		const time = document.querySelector('.time p');
+		setInterval(() => {
+			time.innerHTML = new Date().toLocaleTimeString('en-US', {
+				hour12: false,
+				hour: 'numeric',
+				minute: 'numeric',
+				second: 'numeric'
+			});
+		}, 1000);
 
-				function closeDragElement() {
-					// stop moving when mouse button is released:
-					document.onmouseup = null;
-					document.onmousemove = null;
-				}
-			}
-			// Make the DIV element draggable:
-			dragElement(document.getElementById('window0'));
+		function updateSearchBar() {
+			try {
+				document.getElementById('searchBar').value = frames.iframe0.url || frames.iframe0.contentWindow.location.href;
+			} catch (e) {}
+			frames.iframe0.url = null;
 		}
 
-		if (QuintOS.sys == 'gridc') {
-			// add the clock
-			setInterval(() => {
-				let time = Date.now();
-				txt([time + ''], 29, 65);
-				time = new Date(time).toString().split(' GMT')[0];
-				txt([time + ''], 29, 2);
-			}, 1000);
+		frames.iframe0.addEventListener('load', updateSearchBar);
+
+		document.getElementById('window0').addEventListener('click', updateSearchBar);
+
+		function dragElement(elmnt) {
+			var pos1 = 0,
+				pos2 = 0,
+				pos3 = 0,
+				pos4 = 0;
+			if (document.getElementById(elmnt.id + 'header')) {
+				// if present, the header is where you move the DIV from:
+				document.getElementById(elmnt.id + 'header').onmousedown = dragMouseDown;
+			} else {
+				// otherwise, move the DIV from anywhere inside the DIV:
+				elmnt.onmousedown = dragMouseDown;
+			}
+
+			function dragMouseDown(e) {
+				e = e || window.event;
+				e.preventDefault();
+				// get the mouse cursor position at startup:
+				pos3 = e.clientX;
+				pos4 = e.clientY;
+				document.onmouseup = closeDragElement;
+				// call a function whenever the cursor moves:
+				document.onmousemove = elementDrag;
+			}
+
+			function elementDrag(e) {
+				e = e || window.event;
+				e.preventDefault();
+				// calculate the new cursor position:
+				pos1 = pos3 - e.clientX;
+				pos2 = pos4 - e.clientY;
+				pos3 = e.clientX;
+				pos4 = e.clientY;
+				// set the element's new position:
+				elmnt.style.top = elmnt.offsetTop - pos2 + 'px';
+				elmnt.style.left = elmnt.offsetLeft - pos1 + 'px';
+			}
+
+			function closeDragElement() {
+				// stop moving when mouse button is released:
+				document.onmouseup = null;
+				document.onmousemove = null;
+			}
 		}
+		// Make the DIV element draggable:
+		dragElement(document.getElementById('window0'));
+	}
 
-		// if QuintOS is running in an iframe on
-		// https://quinton-ashley.github.io/quintos
-		if (QuintOS.iframe) {
-			outputVolume(0);
-			setTimeout(() => {
-				noLoop();
-			}, 6000);
-		}
+	if (QuintOS.sys == 'gridc') {
+		// add the clock
+		setInterval(() => {
+			let time = Date.now();
+			txt([time + ''], 29, 65);
+			time = new Date(time).toString().split(' GMT')[0];
+			txt([time + ''], 29, 2);
+		}, 1000);
+	}
 
-		let palettes = {
-			zx: [
-				{
-					' ': '',
-					'.': '',
-					'-': '',
-					_: '',
-					b: '#000000', // Black
-					u: '#0000d8', // blUe
-					r: '#d80000', // Red
-					m: '#d800d8', // Magenta
-					g: '#00d800', // Green
-					c: '#00d8d8', // Cyan
-					y: '#d8d800', // Yellow
-					w: '#ffffff', // White
-					//
-					B: '#000000', // bright 1 black
-					U: '#0000ff', // bright 1 blue
-					R: '#ff0000', // bright 1 red
-					M: '#ff00ff', // bright 1 magenta
-					G: '#00ff00', // bright 1 green
-					C: '#00ffff', // bright 1 cyan
-					Y: '#ffff00', // bright 1 yellow
-					W: '#ffffff' // bright 1 white
-				}
-			],
-			c64: [
-				{
-					' ': '',
-					'.': '',
-					'-': '',
-					_: '',
-					b: '#000000', // blacK
-					d: '#626252', // Dark-gray
-					m: '#898989', // Mid-gray
-					l: '#adadad', // Light-gray
-					w: '#ffffff', // White
-					c: '#cb7e75', // Coral
-					r: '#9f4e44', // Red
-					n: '#6d5412', // browN
-					o: '#a1683c', // Orange
-					y: '#c9d487', // Yellow
-					e: '#9ae29b', // light grEEn
-					g: '#5cab5e', // Green
-					t: '#6abfc6', // Teal
-					u: '#50459b', // blUe
-					i: '#887ecb', // Indigo
-					p: '#a057a3' // Purple
-				}
-			],
-			gameboi: [
-				{
-					' ': '',
-					'.': '',
-					'-': '',
-					_: '',
-					0: '#071821',
-					1: '#306850',
-					2: '#86c06c',
-					3: '#e0f8cf'
-				}
-				// {
-				// 	0: '#000000',
-				// 	1: '#555555',
-				// 	2: '#aaaaaa',
-				// 	3: '#ffffff'
-				// }
-			],
-			gridc: [
-				{
-					' ': '',
-					'.': '',
-					'-': '',
-					_: '',
-					X: '#e5b930'
-				}
-			]
-		};
+	// if QuintOS is running in an iframe on
+	// https://quinton-ashley.github.io/quintos
+	if (QuintOS.iframe) {
+		outputVolume(0);
+		setTimeout(() => {
+			noLoop();
+		}, 6000);
+	}
 
-		palettes.arc = palettes.c64;
-		palettes.arcv = palettes.zx;
-		palettes.ibm2250 = palettes.zx;
+	let palettes = {
+		zx: [
+			{
+				' ': '',
+				'.': '',
+				'-': '',
+				_: '',
+				b: '#000000', // Black
+				u: '#0000d8', // blUe
+				r: '#d80000', // Red
+				m: '#d800d8', // Magenta
+				g: '#00d800', // Green
+				c: '#00d8d8', // Cyan
+				y: '#d8d800', // Yellow
+				w: '#ffffff', // White
+				//
+				B: '#000000', // bright 1 black
+				U: '#0000ff', // bright 1 blue
+				R: '#ff0000', // bright 1 red
+				M: '#ff00ff', // bright 1 magenta
+				G: '#00ff00', // bright 1 green
+				C: '#00ffff', // bright 1 cyan
+				Y: '#ffff00', // bright 1 yellow
+				W: '#ffffff' // bright 1 white
+			}
+		],
+		c64: [
+			{
+				' ': '',
+				'.': '',
+				'-': '',
+				_: '',
+				b: '#000000', // blacK
+				d: '#626252', // Dark-gray
+				m: '#898989', // Mid-gray
+				l: '#adadad', // Light-gray
+				w: '#ffffff', // White
+				c: '#cb7e75', // Coral
+				r: '#9f4e44', // Red
+				n: '#6d5412', // browN
+				o: '#a1683c', // Orange
+				y: '#c9d487', // Yellow
+				e: '#9ae29b', // light grEEn
+				g: '#5cab5e', // Green
+				t: '#6abfc6', // Teal
+				u: '#50459b', // blUe
+				i: '#887ecb', // Indigo
+				p: '#a057a3' // Purple
+			}
+		],
+		gameboi: [
+			{
+				' ': '',
+				'.': '',
+				'-': '',
+				_: '',
+				0: '#071821',
+				1: '#306850',
+				2: '#86c06c',
+				3: '#e0f8cf'
+			}
+			// {
+			// 	0: '#000000',
+			// 	1: '#555555',
+			// 	2: '#aaaaaa',
+			// 	3: '#ffffff'
+			// }
+		],
+		gridc: [
+			{
+				' ': '',
+				'.': '',
+				'-': '',
+				_: '',
+				X: '#e5b930'
+			}
+		]
+	};
 
-		// assign palettes to the system's palette
-		QuintOS.palettes = palettes[QuintOS.sys] || [];
-		this.p5play.palettes = QuintOS.palettes;
+	palettes.arc = palettes.c64;
+	palettes.arcv = palettes.zx;
+	palettes.ibm2250 = palettes.zx;
 
-		let bootScreens = {
-			calcu: [
-				{
-					name: 'info',
-					col: 0,
-					row: 0,
-					speed: 1,
-					txt: 'Hello! QuintOS v0.0'
-				}
-			],
-			cpet: [
-				{
-					name: 'boot',
-					col: 0,
-					row: 0,
-					speed: 2,
-					txt: `
+	// assign palettes to the system's palette
+	QuintOS.palettes = palettes[QuintOS.sys] || [];
+	this.p5play.palettes = QuintOS.palettes;
+
+	let bootScreens = {
+		calcu: [
+			{
+				name: 'info',
+				col: 0,
+				row: 0,
+				speed: 1,
+				txt: 'Hello! QuintOS v0.0'
+			}
+		],
+		cpet: [
+			{
+				name: 'boot',
+				col: 0,
+				row: 0,
+				speed: 2,
+				txt: `
 *** QUINTOS JAVASCRIPT 1.0 ***
 
  2902 BYTES FREE
@@ -1386,63 +1381,63 @@ READY
 .
 .
 .`.slice(1)
-				},
-				{
-					name: 'h1',
-					col: 5,
-					row: 8,
-					speed: 3,
-					txt: `
+			},
+			{
+				name: 'h1',
+				col: 5,
+				row: 8,
+				speed: 3,
+				txt: `
  █████                 ██   ██
 █     █               █  █ █  
 █     █               █  █ █    
 █     █ █ █ █ ██  ███ █  █  █
 █     █ █ █ █ █ █  █  █  █   █
 █  █  █ ███ █ █ █  █  █  █   █`
-				},
-				{
-					name: 'h1-b',
-					col: 5,
-					row: 14,
-					speed: 2,
-					txt: `
+			},
+			{
+				name: 'h1-b',
+				col: 5,
+				row: 14,
+				speed: 2,
+				txt: `
  █████                 ██  ██
     █                                       `
-				},
-				{
-					name: 'bg',
-					col: 0,
-					row: 17,
-					speed: 5,
-					txt: '.\n'.repeat(9)
-				}
-			],
-			zx: [
-				{
-					name: 'bg',
-					col: 0,
-					row: 0,
-					speed: 20,
-					txt: ['§', 'ж', '*', '^', '°', '#', '¤', '‡', '˜', '»'][Math.floor(Math.random() * 10)].repeat(1000)
-				},
-				{
-					name: 'info',
-					col: 12,
-					row: 20,
-					speed: 1,
-					txt: `
+			},
+			{
+				name: 'bg',
+				col: 0,
+				row: 17,
+				speed: 5,
+				txt: '.\n'.repeat(9)
+			}
+		],
+		zx: [
+			{
+				name: 'bg',
+				col: 0,
+				row: 0,
+				speed: 20,
+				txt: ['§', 'ж', '*', '^', '°', '#', '¤', '‡', '˜', '»'][Math.floor(Math.random() * 10)].repeat(1000)
+			},
+			{
+				name: 'info',
+				col: 12,
+				row: 20,
+				speed: 1,
+				txt: `
 JavaScript READY
 QuintOS version 02
 CopyLeft 1977`
-				}
-			],
-			a2: [
-				{
-					name: 'bg',
-					col: 2,
-					row: 0,
-					speed: 80,
-					txt: `
+			}
+		],
+		a2: [
+			{
+				name: 'bg',
+				col: 2,
+				row: 0,
+				speed: 80,
+				txt: `
     _     _     _  _     _     _
 (_.' )  .' )  .' )( \`.  ( \`.  ( \`._)
    .' .' .' .' .'  \`. \`. \`. \`. \`.
@@ -1464,52 +1459,52 @@ CopyLeft 1977`
   ( '. '. '. \`. '.,' ,\` ,' ,' ,' )
  _ '. '. '. '. '.  ,' ,' ,' ,' ,' _
 ( '._)  '._)  '._)(_,'  (_,'  ( ,' )`
-				},
-				{
-					name: 'logo',
-					col: 15,
-					row: 8,
-					speed: 1,
-					txt: `
+			},
+			{
+				name: 'logo',
+				col: 15,
+				row: 8,
+				speed: 1,
+				txt: `
 ▓▓▓ ▓▓▓ 
   ▓ ▓
   ▓ ▓   
   ▓ ▓  
 ▓▓▓ ▓▓▓ \\_`
-				},
-				{
-					name: 'info',
-					col: 15,
-					row: 15,
-					speed: 1,
-					txt: 'QuintOS ][e'
-				}
-			],
-			gridc: [
-				{
-					name: 'bg',
-					col: 5,
-					row: 4,
-					speed: 100,
-					txt: (() => {
-						let p = ['\\', ' ', ' ', '\\', '_', '_'];
-						let t = '';
-						for (let i = 0; i < 88; i += 4) {
-							let pat = '';
-							for (let j = 5; j >= 0; j--) {
-								pat += p[(i + j) % 6];
-							}
-							t += pat.repeat(12).slice(0, -2) + '\n';
+			},
+			{
+				name: 'info',
+				col: 15,
+				row: 15,
+				speed: 1,
+				txt: 'QuintOS ][e'
+			}
+		],
+		gridc: [
+			{
+				name: 'bg',
+				col: 5,
+				row: 4,
+				speed: 100,
+				txt: (() => {
+					let p = ['\\', ' ', ' ', '\\', '_', '_'];
+					let t = '';
+					for (let i = 0; i < 88; i += 4) {
+						let pat = '';
+						for (let j = 5; j >= 0; j--) {
+							pat += p[(i + j) % 6];
 						}
-						return t;
-					})()
-				},
-				{
-					name: 'logo',
-					col: 2,
-					row: 3,
-					speed: 50,
-					txt: `
+						t += pat.repeat(12).slice(0, -2) + '\n';
+					}
+					return t;
+				})()
+			},
+			{
+				name: 'logo',
+				col: 2,
+				row: 3,
+				speed: 50,
+				txt: `
           ________\n         /\\       \\\n        /  \\       \\
        /    \\       \\\n      /      \\_______\\\n      \\      /       /
     ___\\    /   ____/___\n   /\\   \\  /   /\\       \\
@@ -1517,44 +1512,44 @@ CopyLeft 1977`
 /      \\_______\\   \\_______\\\n\\      /       /   /       /
  \\    /       /   /       /\n  \\  /       /\\  /       /
    \\/_______/  \\/_______/`.slice(1)
-				},
-				{
-					name: 'h1',
-					col: 20,
-					row: 10,
-					speed: 10,
-					txt: `
+			},
+			{
+				name: 'h1',
+				col: 20,
+				row: 10,
+				speed: 10,
+				txt: `
  ██████╗ ██╗   ██╗██╗███╗   ██╗████████╗ ██████╗ ███████╗
 ██╔═══██╗██║   ██║██║████╗  ██║╚══██╔══╝██╔═══██╗██╔════╝
 ██║   ██║██║   ██║██║██╔██╗ ██║   ██║   ██║   ██║███████╗
 ██║▄▄ ██║██║   ██║██║██║╚██╗██║   ██║   ██║   ██║╚════██║
 ╚██████╔╝╚██████╔╝██║██║ ╚████║   ██║   ╚██████╔╝███████║
  ╚══▀▀═╝  ╚═════╝ ╚═╝╚═╝  ╚═══╝   ╚═╝    ╚═════╝ ╚══════╝`
-				},
-				{
-					name: 'title',
-					col: 5,
-					row: 2,
-					speed: 1,
-					txt: 'QuintOS'
-				},
-				{
-					name: 'info',
-					col: 20,
-					row: 21,
-					speed: 2,
-					txt: `
+			},
+			{
+				name: 'title',
+				col: 5,
+				row: 2,
+				speed: 1,
+				txt: 'QuintOS'
+			},
+			{
+				name: 'info',
+				col: 20,
+				row: 21,
+				speed: 2,
+				txt: `
 THE Personal Computer: Powered by JavaScript™
 Version 4.0 Copyleft QuintOS ©1981`
-				}
-			],
-			TicTacToe: [
-				{
-					name: 'logo',
-					col: 24,
-					row: 4,
-					speed: 30,
-					txt: `
+			}
+		],
+		TicTacToe: [
+			{
+				name: 'logo',
+				col: 24,
+				row: 4,
+				speed: 30,
+				txt: `
              ,,,,,,
          o#'9MMHb':'-,o,
       .oH":HH$' "' ' -*R&o,
@@ -1571,24 +1566,24 @@ Version 4.0 Copyleft QuintOS ©1981`
     '.   \`#?..  .       ..'
        -.   .         .-
          ''-.oo,oo.-''`
-				},
-				{
-					name: 'info',
-					col: 23,
-					row: 24,
-					speed: 2,
-					txt: `
+			},
+			{
+				name: 'info',
+				col: 23,
+				row: 24,
+				speed: 2,
+				txt: `
 QUiNT Compass qOS BIOS Version 05
 Copyleft © 1983 QUiNT Systems Corp`
-				}
-			],
-			ClickAPath: [
-				{
-					name: 'logo',
-					row: 6,
-					col: 25,
-					speed: 20,
-					txt: `
+			}
+		],
+		ClickAPath: [
+			{
+				name: 'logo',
+				row: 6,
+				col: 25,
+				speed: 20,
+				txt: `
           ________\n         /\\       \\\n        /  \\       \\
        /    \\       \\\n      /      \\_______\\\n      \\      /       /
     ___\\    /   ____/___\n   /\\   \\  /   /\\       \\
@@ -1596,31 +1591,31 @@ Copyleft © 1983 QUiNT Systems Corp`
 /      \\_______\\   \\_______\\\n\\      /       /   /       /
  \\    /       /   /       /\n  \\  /       /\\  /       /
    \\/_______/  \\/_______/`
-				}
-			],
-			Contain: [
-				{
-					name: 'bg',
-					col: 0,
-					row: 0,
-					speed: 20,
-					txt: ['§', 'ж', '*', '^', '°', '#', '¤', '‡', '˜', '»'][Math.floor(Math.random() * 10)].repeat(1000)
-				},
-				{
-					name: 'info',
-					col: 12,
-					row: 20,
-					speed: 1,
-					txt: `
+			}
+		],
+		Contain: [
+			{
+				name: 'bg',
+				col: 0,
+				row: 0,
+				speed: 20,
+				txt: ['§', 'ж', '*', '^', '°', '#', '¤', '‡', '˜', '»'][Math.floor(Math.random() * 10)].repeat(1000)
+			},
+			{
+				name: 'info',
+				col: 12,
+				row: 20,
+				speed: 1,
+				txt: `
 JavaScript READY
 QuintOS version 09
 CopyLeft 1977`
-				}
-			],
-			c64: [
-				{
-					name: 'boot',
-					txt: `
+			}
+		],
+		c64: [
+			{
+				name: 'boot',
+				txt: `
 **** QUINTOS v13 JAVASCRIPT ES12 ****
 
 64GB RAM SYSTEM 38911 GIGABYTES FREE
@@ -1628,414 +1623,400 @@ CopyLeft 1977`
 READY.
 10 PRINT CHR$(205.5+RND(1)); : GOTO 10
 RUN\n`.slice(1)
-				},
-				{
-					name: 'logo',
-					col: 12,
-					row: 12,
-					speed: 1,
-					txt: `
+			},
+			{
+				name: 'logo',
+				col: 12,
+				row: 12,
+				speed: 1,
+				txt: `
 ┏━━┓ ┏┓ ┏┓┏━┳━━┓
 ┃┏┓┣┳╋╋━┫┗┫┃┃━━┫
 ┃┗┛┃┃┃┃┃┃┏┫┃┣━━┃
 ┗━┓┣━┻┻┻┻━┻━┻━━┛
   ┗┛`
-				}
-			],
-			gameboi: [
-				{
-					name: 'bg',
-					col: 0,
-					row: 0,
-					speed: 10,
-					txt: ('( ( '.repeat(5) + '\n' + ' ) )'.repeat(5) + '\n').repeat(18)
-				}
-			],
-			arc: [
-				{
-					name: 'bg',
-					row: 0,
-					col: 0,
-					speed: 52,
-					txt: (() => {
-						let res = '';
-						for (let i = 0; i < 200; i++) {
-							res += '.'.repeat(round(random(1, 5)));
-							res += ' '.repeat(round(random(1, 5)));
-						}
-						return res;
-					})()
-				},
-				{
-					name: 'logo',
-					row: 13,
-					col: 7,
-					speed: 3,
-					txt: `
+			}
+		],
+		gameboi: [
+			{
+				name: 'bg',
+				col: 0,
+				row: 0,
+				speed: 10,
+				txt: ('( ( '.repeat(5) + '\n' + ' ) )'.repeat(5) + '\n').repeat(18)
+			}
+		],
+		arc: [
+			{
+				name: 'bg',
+				row: 0,
+				col: 0,
+				speed: 52,
+				txt: (() => {
+					let res = '';
+					for (let i = 0; i < 200; i++) {
+						res += '.'.repeat(round(random(1, 5)));
+						res += ' '.repeat(round(random(1, 5)));
+					}
+					return res;
+				})()
+			},
+			{
+				name: 'logo',
+				row: 13,
+				col: 7,
+				speed: 3,
+				txt: `
 ┏━┓ ┏┓ ┏┓┏━┳━┓
 ┃┃┣┳╋╋━┫┗┫┃┃━┫
 ┃┃┃┃┃┃┃┃┏┫┃┃ ┃
 ┃┃┃┃┃┃┃┃┃┫┃┣━┃
 ┗┓┣━┻┻┻┻━┻━┻━┛
  ┗┛`
-				}
-			],
-			Sokoban: [
-				{
-					name: 'bg',
-					row: 0,
-					col: 0,
-					speed: 20,
-					txt: (() => {
-						const STR$ = (val) => String.fromCodePoint((9380 + val) >>> 0);
-						const RND = (range) => Math.random() * range;
-						let t = '';
-						for (let i = 0; i < rows; i++) {
-							for (let j = 0; j < cols; j++) {
-								t += STR$(205.5 + RND(1));
-							}
-							t += '\n';
+			}
+		],
+		Sokoban: [
+			{
+				name: 'bg',
+				row: 0,
+				col: 0,
+				speed: 20,
+				txt: (() => {
+					const STR$ = (val) => String.fromCodePoint((9380 + val) >>> 0);
+					const RND = (range) => Math.random() * range;
+					let t = '';
+					for (let i = 0; i < rows; i++) {
+						for (let j = 0; j < cols; j++) {
+							t += STR$(205.5 + RND(1));
 						}
-						return t;
-					})()
-				},
-				{
-					name: 'logo',
-					row: 13,
-					col: 7,
-					speed: 3,
-					txt: `
+						t += '\n';
+					}
+					return t;
+				})()
+			},
+			{
+				name: 'logo',
+				row: 13,
+				col: 7,
+				speed: 3,
+				txt: `
 ┏━┓ ┏┓ ┏┓┏━┳━┓
 ┃┃┣┳╋╋━┫┗┫┃┃━┫
 ┃┃┃┃┃┃┃┃┏┫┃┃ ┃
 ┃┃┃┃┃┃┃┃┃┫┃┣━┃
 ┗┓┣━┻┻┻┻━┻━┻━┛
  ┗┛`
-				}
-			]
-		};
-
-		async function displayBootscreen() {
-			let bootScreen = [];
-			if (!QuintOS.disableBoot) {
-				bootScreen = bootScreens[QuintOS.game] || bootScreens[QuintOS.sys] || [];
 			}
+		]
+	};
 
-			if (/(a2|gridc)/.test(QuintOS.sys)) await frame();
-
-			tint(100);
-			p5play.onImageLoad = (img) => {
-				image(img, round(random(-img.width, width)), round(random(-img.height, height)));
-			};
-
-			if (QuintOS.sys == 'calcu') {
-				let txt0 = "'-.⎽⎽.-'⎺⎺".repeat(3);
-				for (let i = 0; i < 10; i++) {
-					txt([txt0.slice(0, 23)], 0, 0);
-					txt0 = txt0[txt0.length - 1] + txt0.slice(0, -1);
-					await delay(48);
-				}
-				txt([' '.repeat(QuintOS.cols)], 0, 0);
-			} else if (QuintOS.sys == 'sas') {
-				let boom = '.|+x*';
-				for (let i = 0; i < 5; i++) {
-					await txt((boom[i].repeat(20) + '\n').repeat(4), 0, 0, 0, 0, 5);
-				}
-				erase();
-			}
-
-			for (let el of bootScreen) {
-				let t = el.txt[0] == '/n' ? el.txt.slice(1) : el.txt;
-				await txt(t, el.row, el.col, 0, 0, el.speed);
-			}
-
-			if (QuintOS.sys == 'calcu') await delay(500);
-			if (QuintOS.sys == 'a2') await delay(500);
-
-			p5play.images.onLoad = (img) => {};
-			noTint();
+	async function displayBootscreen() {
+		let bootScreen = [];
+		if (!QuintOS.disableBoot) {
+			bootScreen = bootScreens[QuintOS.game] || bootScreens[QuintOS.sys] || [];
 		}
 
-		async function runJS(src, file) {
-			file ??= await loadCode(src);
-			const script = document.createElement('script');
-			script.async = false;
-			if (!file) {
-				script.src = src;
-			} else if (file == '404: Not Found') {
-				script.innerHTML = 'this.error(`File not found: ' + src + '`);';
-			} else {
-				script.innerHTML = 'log(`running: ' + src + '`);\n' + file;
-			}
+		if (/(a2|gridc)/.test(QuintOS.sys)) await frame();
 
-			if (script.innerHTML) {
-				document.body.appendChild(script);
-				return;
-			}
+		tint(100);
+		p5play.onImageLoad = (img) => {
+			image(img, round(random(-img.width, width)), round(random(-img.height, height)));
+		};
 
-			return new Promise((resolve, reject) => {
-				script.onload = () => {
-					log('loaded: ' + src);
-					resolve();
-				};
-				script.onerror = () => {
-					reject(`
+		if (QuintOS.sys == 'calcu') {
+			let txt0 = "'-.⎽⎽.-'⎺⎺".repeat(3);
+			for (let i = 0; i < 10; i++) {
+				txt([txt0.slice(0, 23)], 0, 0);
+				txt0 = txt0[txt0.length - 1] + txt0.slice(0, -1);
+				await delay(48);
+			}
+			txt([' '.repeat(QuintOS.cols)], 0, 0);
+		} else if (QuintOS.sys == 'sas') {
+			let boom = '.|+x*';
+			for (let i = 0; i < 5; i++) {
+				await txt((boom[i].repeat(20) + '\n').repeat(4), 0, 0, 0, 0, 5);
+			}
+			erase();
+		}
+
+		for (let el of bootScreen) {
+			let t = el.txt[0] == '/n' ? el.txt.slice(1) : el.txt;
+			await txt(t, el.row, el.col, 0, 0, el.speed);
+		}
+
+		if (QuintOS.sys == 'calcu') await delay(500);
+		if (QuintOS.sys == 'a2') await delay(500);
+
+		p5play.images.onLoad = (img) => {};
+		noTint();
+	}
+
+	async function runJS(src, file) {
+		file ??= await loadCode(src);
+		const script = document.createElement('script');
+		script.async = false;
+		if (!file) {
+			script.src = src;
+		} else if (file == '404: Not Found') {
+			script.innerHTML = 'this.error(`File not found: ' + src + '`);';
+		} else {
+			script.innerHTML = 'log(`running: ' + src + '`);\n' + file;
+		}
+
+		if (script.innerHTML) {
+			document.body.appendChild(script);
+			return;
+		}
+
+		return new Promise((resolve, reject) => {
+			script.onload = () => {
+				log('loaded: ' + src);
+				resolve();
+			};
+			script.onerror = () => {
+				reject(`
 Failed to load file: \n\n${src}\n\n
 Check the Javascript console for more info.
 To open the console use control+shift+i or
 command+option+i then click the Console tab.`);
-				};
+			};
 
-				document.body.appendChild(script);
-			});
-		}
+			document.body.appendChild(script);
+		});
+	}
 
-		async function translateJava(file) {
-			if (QuintOS.fileType == 'pde') {
-				file = `
+	async function translateJava(file) {
+		if (QuintOS.fileType == 'pde') {
+			file = `
 public class ${QuintOS.game} {
   ${file.replaceAll('\n', '\n  ')}
   public static void main(String[] args) {}
 }`;
-			}
-
-			if (QuintOS.dev) log(file);
-
-			if (QuintOS.sys != 'calcu') {
-				file = file.replace(/(.*=)(.*\.)*next(Int|Float|Double|Line|Short|Long)*\(\);/gm, '$1 prompt();');
-			} else {
-				file = file.replace(
-					/System\.out\.print(ln)*\(([^\)]*)\);\s*(.*=)(.*\.)*next(Int|Float|Double|Short|Long)*\(\);/gm,
-					'$3 prompt($2);'
-				);
-			}
-
-			let rp = 'txt($2);';
-			if (QuintOS.sys == 'calcu') rp = 'alert($2);';
-			file = file.replace(/System\.out\.print(ln)*\(([^\(\)]*(\([^\(\)]*\))*)*\);/gm, rp);
-
-			file = await jdk.transpile(file);
-
-			// file = file.replace(/size\(.*\);/gm, '');
-
-			if (QuintOS.dev) log(file);
-			return file;
 		}
 
-		async function runGame() {
-			console.log(`QuintOS ${QuintOS.sys} size: ${width}x${height} rows: ${rows} cols: ${cols}`);
-			if (typeof QuintOS.gameCode == 'function') {
-				QuintOS.gameCode();
-			} else {
-				if (QuintOS.language == 'js') {
-					await runJS(QuintOS.gameFile, QuintOS.gameCode);
-				} else if (QuintOS.language == 'java') {
-					jdk.run();
-				}
-			}
+		if (QuintOS.dev) log(file);
+
+		if (QuintOS.sys != 'calcu') {
+			file = file.replace(/(.*=)(.*\.)*next(Int|Float|Double|Line|Short|Long)*\(\);/gm, '$1 prompt();');
+		} else {
+			file = file.replace(
+				/System\.out\.print(ln)*\(([^\)]*)\);\s*(.*=)(.*\.)*next(Int|Float|Double|Short|Long)*\(\);/gm,
+				'$3 prompt($2);'
+			);
 		}
 
-		async function loadCode(src) {
-			let file;
+		let rp = 'txt($2);';
+		if (QuintOS.sys == 'calcu') rp = 'alert($2);';
+		file = file.replace(/System\.out\.print(ln)*\(([^\(\)]*(\([^\(\)]*\))*)*\);/gm, rp);
+
+		file = await jdk.transpile(file);
+
+		// file = file.replace(/size\(.*\);/gm, '');
+
+		if (QuintOS.dev) log(file);
+		return file;
+	}
+
+	async function runGame() {
+		console.log(`QuintOS ${QuintOS.sys} size: ${width}x${height} rows: ${rows} cols: ${cols}`);
+		if (typeof QuintOS.gameCode == 'function') {
+			QuintOS.gameCode();
+		} else {
 			if (QuintOS.language == 'js') {
-				if (src.slice(0, 4) == 'http') {
-					file = await (await fetch(src)).text();
-					return file;
-				}
+				await runJS(QuintOS.gameFile, QuintOS.gameCode);
+			} else if (QuintOS.language == 'java') {
+				jdk.run();
+			}
+		}
+	}
+
+	async function loadCode(src) {
+		let file;
+		if (QuintOS.language == 'js') {
+			if (src.slice(0, 4) == 'http') {
+				file = await (await fetch(src)).text();
+				return file;
+			}
+			return;
+		}
+		if (QuintOS.language == 'java') {
+			file = await (await fetch(src)).text();
+			file = await translateJava(file);
+		}
+		return file;
+	}
+
+	async function loadGame() {
+		let title = QuintOS.game;
+		if (QuintOS.gameCode) return;
+		let dir = QuintOS.dir || QuintOS.language || 'js';
+		let fileBase = title + '.';
+		if (QuintOS.language == 'js') fileBase = `${title.slice(0, 1).toLowerCase() + title.slice(1)}.`;
+		fileBase += QuintOS.fileType;
+		let src = dir + '/' + fileBase;
+		let gameCode;
+		try {
+			gameCode = await loadCode(src);
+		} catch (ror) {
+			this.error(ror);
+		}
+		QuintOS.gameFile = src;
+		return gameCode;
+	}
+
+	function loadScript(src) {
+		return new Promise(function (resolve) {
+			let script = document.createElement('script');
+			script.src = src;
+			script.onload = resolve;
+			document.body.appendChild(script);
+		});
+	}
+
+	async function loadAll() {
+		if (this.start || this.setup.toString().length > 8 || this.draw.toString().length > 8) {
+			if (this.preload) this.preload();
+			return;
+		}
+
+		if (QuintOS.language == 'java') {
+			let dir = QuintOS.root + '/java2js';
+			await loadScript(dir + '/jdk.js');
+			try {
+				await jdk.init(dir + '/jdk');
+				if (QuintOS.java2js_worker) jdk.workerPath = QuintOS.java2js_worker;
+			} catch (ror) {
+				console.error(ror);
 				return;
 			}
-			if (QuintOS.language == 'java') {
-				file = await (await fetch(src)).text();
-				file = await translateJava(file);
+			System.exit = exit;
+			// jdk.log = function (...args) {
+			// 	this.logged = args[0];
+			// };
+			if (QuintOS.gameCode) {
+				QuintOS.gameCode = await translateJava(QuintOS.gameCode);
 			}
-			return file;
 		}
+		QuintOS.gameCode ??= await loadGame();
+		// if (QuintOS.language == 'java') {
+		// 	jdk.load(QuintOS.game);
+		// }
+		if (QuintOS.fileType == 'pde') {
+			let inst = new window[QuintOS.game]();
+			let loaded = false;
+			if (typeof inst.preload == 'function') inst.preload();
+			if (typeof inst.setup == 'function') {
+				setup = () => {
+					inst.setup();
+					loaded = true;
+				};
+			}
+			if (typeof inst.draw == 'function') {
+				draw = () => {
+					if (!loaded) return;
+					inst.draw();
+				};
+			}
+		}
+		if (QuintOS.fileType != 'java' && QuintOS.sys != 'macin' && QuintOS.mode != 'codepen') {
+			await runGame();
+			// preload is either from the game or an empty function
+			if (this.preload) this.preload();
+		}
+	}
 
-		async function loadGame() {
+	QuintOS.language ??= 'js';
+
+	QuintOS.fileType = QuintOS.language;
+	if (
+		QuintOS.language == 'java' &&
+		/(Pong|LilyLeap|Contain|SketchBook|SpeakAndSpell|SuperJump|Sokoban)/.test(QuintOS.game)
+	) {
+		QuintOS.fileType = 'pde';
+	}
+
+	if (!QuintOS.web) {
+		QuintOS.dir ??= QuintOS.language;
+	} else if (QuintOS.level != -1) {
+		QuintOS.dir = 'https://raw.githubusercontent.com/' + QuintOS.user;
+		if (QuintOS.v >= 6) QuintOS.dir += '/quintos-projects/main/' + QuintOS.language;
+		else {
+			QuintOS.dir += '/quintos-games/main';
+			if (QuintOS.language == 'js') {
+				QuintOS.dir += '/GAMES';
+			} else if (QuintOS.language == 'java') {
+				QuintOS.dir += '/games_java';
+			}
+		}
+	} else {
+		QuintOS.dir = 'https://raw.githubusercontent.com/' + QuintOS.user + '/' + QuintOS.game + '/main';
+	}
+	QuintOS.dir += '/' + QuintOS.game;
+
+	canvas.style = '';
+
+	await Promise.all([loadAll(), displayBootscreen()]);
+
+	canvas.style = '';
+
+	// await delay(111111111); // test boot screen
+
+	await eraseRect();
+	this.QuintOS._lines = 0;
+
+	canvas.style = '';
+
+	this.centerX = width * 0.5;
+	this.centerY = height * 0.5;
+
+	// p5.disableFriendlyErrors = false;
+
+	let title = QuintOS.game;
+	// if (QuintOS.level >= 0) {
+	// 	title = QuintOS.level.toString().padStart(2, '0') + '_' + title;
+	// }
+	document.title = title;
+
+	if (QuintOS.sys != 'macin') {
+		if (/(a2|gridc)/.test(QuintOS.sys)) frame();
+
+		if (!/(calcu|sas)/.test(QuintOS.sys)) {
 			let title = QuintOS.game;
-			if (QuintOS.gameCode) return;
-			let dir = QuintOS.dir || QuintOS.language || 'js';
-			let fileBase = title + '.';
-			if (QuintOS.language == 'js') fileBase = `${title.slice(0, 1).toLowerCase() + title.slice(1)}.`;
-			fileBase += QuintOS.fileType;
-			let src = dir + '/' + fileBase;
-			let gameCode;
-			try {
-				gameCode = await loadCode(src);
-			} catch (ror) {
-				this.error(ror);
-			}
-			QuintOS.gameFile = src;
-			return gameCode;
-		}
-
-		function loadScript(src) {
-			return new Promise(function (resolve) {
-				let script = document.createElement('script');
-				script.src = src;
-				script.onload = resolve;
-				document.body.appendChild(script);
+			// if (QuintOS.level >= 0) {
+			// 	title = QuintOS.level.toString().padStart(2, '0') + '_' + title;
+			// }
+			let col = !/(c64|gameboi|arc|ibm2250)/.test(QuintOS.sys) ? 2 : 0;
+			button(title, 0, col, () => {
+				if (QuintOS.gameFile) {
+					// open the javascript source in new tab
+					open(QuintOS.gameFile);
+				} else {
+					// open the Javascript editor and console in codepen
+					open(window.location.href + '?editors=0011');
+				}
+			});
+			if (!QuintOS.user) return;
+			txt('by', 0, col + 1 + title.length);
+			let row = !/(gameboi|arc|ibm2250)/.test(QuintOS.sys) ? 0 : 1;
+			col = !/(gameboi|arc|ibm2250)/.test(QuintOS.sys) ? 6 + title.length : 0;
+			if (QuintOS.sys == 'c64') col = 4 + title.length;
+			button(QuintOS.user, row, col, () => {
+				open('https://github.com/' + QuintOS.user);
 			});
 		}
 
-		async function loadAll() {
-			if (this.start || this.setup.toString().length > 8 || this.draw.toString().length > 8) {
-				this.preload();
-				return;
-			}
+		if (this._isGlobal && window.start) window.setup = window.start;
+		else if (this.start) this.setup = this.start;
 
-			if (QuintOS.language == 'java') {
-				let dir = QuintOS.root + '/java2js';
-				await loadScript(dir + '/jdk.js');
-				try {
-					await jdk.init(dir + '/jdk');
-					if (QuintOS.java2js_worker) jdk.workerPath = QuintOS.java2js_worker;
-				} catch (ror) {
-					console.error(ror);
-					return;
-				}
-				System.exit = exit;
-				// jdk.log = function (...args) {
-				// 	this.logged = args[0];
-				// };
-				if (QuintOS.gameCode) {
-					QuintOS.gameCode = await translateJava(QuintOS.gameCode);
-				}
-			}
-			QuintOS.gameCode ??= await loadGame();
-			// if (QuintOS.language == 'java') {
-			// 	jdk.load(QuintOS.game);
-			// }
-			if (QuintOS.fileType == 'pde') {
-				let inst = new window[QuintOS.game]();
-				let loaded = false;
-				if (typeof inst.preload == 'function') inst.preload();
-				if (typeof inst.setup == 'function') {
-					setup = () => {
-						inst.setup();
-						loaded = true;
-					};
-				}
-				if (typeof inst.draw == 'function') {
-					draw = () => {
-						if (!loaded) return;
-						inst.draw();
-					};
-				}
-			}
-			if (QuintOS.fileType != 'java' && QuintOS.sys != 'macin' && QuintOS.mode != 'codepen') {
-				await runGame();
-				// preload is either from the game or an empty function
-				this.preload();
-			}
+		this.clear();
+		this._decrementPreload(); // run game
+
+		if (QuintOS.fileType == 'java') {
+			await runGame();
 		}
-
-		QuintOS.language ??= 'js';
-
-		QuintOS.fileType = QuintOS.language;
-		if (
-			QuintOS.language == 'java' &&
-			/(Pong|LilyLeap|Contain|SketchBook|SpeakAndSpell|SuperJump|Sokoban)/.test(QuintOS.game)
-		) {
-			QuintOS.fileType = 'pde';
-		}
-
-		if (!QuintOS.web) {
-			QuintOS.dir ??= QuintOS.language;
-		} else if (QuintOS.level != -1) {
-			QuintOS.dir = 'https://raw.githubusercontent.com/' + QuintOS.user;
-			if (QuintOS.v >= 6) QuintOS.dir += '/quintos-projects/main/' + QuintOS.language;
-			else {
-				QuintOS.dir += '/quintos-games/main';
-				if (QuintOS.language == 'js') {
-					QuintOS.dir += '/GAMES';
-				} else if (QuintOS.language == 'java') {
-					QuintOS.dir += '/games_java';
-				}
-			}
-		} else {
-			QuintOS.dir = 'https://raw.githubusercontent.com/' + QuintOS.user + '/' + QuintOS.game + '/main';
-		}
-		QuintOS.dir += '/' + QuintOS.game;
-
-		canvas.style = '';
-
-		await Promise.all([loadAll(), displayBootscreen()]);
-
-		canvas.style = '';
-
-		// await delay(111111111); // test boot screen
-
-		await eraseRect();
-		this.QuintOS._lines = 0;
-
-		canvas.style = '';
-
-		this.centerX = width * 0.5;
-		this.centerY = height * 0.5;
-
-		// p5.disableFriendlyErrors = false;
-
-		let title = QuintOS.game;
-		// if (QuintOS.level >= 0) {
-		// 	title = QuintOS.level.toString().padStart(2, '0') + '_' + title;
-		// }
-		document.title = title;
-
-		if (QuintOS.sys != 'macin') {
-			if (/(a2|gridc)/.test(QuintOS.sys)) frame();
-
-			if (!/(calcu|sas)/.test(QuintOS.sys)) {
-				let title = QuintOS.game;
-				// if (QuintOS.level >= 0) {
-				// 	title = QuintOS.level.toString().padStart(2, '0') + '_' + title;
-				// }
-				let col = !/(c64|gameboi|arc|ibm2250)/.test(QuintOS.sys) ? 2 : 0;
-				button(title, 0, col, () => {
-					if (QuintOS.gameFile) {
-						// open the javascript source in new tab
-						open(QuintOS.gameFile);
-					} else {
-						// open the Javascript editor and console in codepen
-						open(window.location.href + '?editors=0011');
-					}
-				});
-				if (!QuintOS.user) return;
-				txt('by', 0, col + 1 + title.length);
-				let row = !/(gameboi|arc|ibm2250)/.test(QuintOS.sys) ? 0 : 1;
-				col = !/(gameboi|arc|ibm2250)/.test(QuintOS.sys) ? 6 + title.length : 0;
-				if (QuintOS.sys == 'c64') col = 4 + title.length;
-				button(QuintOS.user, row, col, () => {
-					open('https://github.com/' + QuintOS.user);
-				});
-			}
-
-			if (context.start) context.setup = context.start;
-
-			this.clear();
-			this._decrementPreload(); // run game
-
-			if (QuintOS.fileType == 'java') {
-				await runGame();
-			}
-		} else {
-			console.log(`QuintOS macin}`);
-			frames.iframe0.src = QuintOS.dir + '/index.html';
-		}
-	};
-});
-
-window.addEventListener('keydown', function (e) {
-	if (
-		(e.key == ' ' ||
-			e.key == '/' ||
-			e.key == 'ArrowUp' ||
-			e.key == 'ArrowDown' ||
-			e.key == 'ArrowLeft' ||
-			e.key == 'ArrowRight') &&
-		e.target == document.body
-	) {
-		e.preventDefault();
+	} else {
+		console.log(`QuintOS macin}`);
+		frames.iframe0.src = QuintOS.dir + '/index.html';
 	}
 });
 

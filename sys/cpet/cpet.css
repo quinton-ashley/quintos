@@ -31,7 +31,7 @@ body.cpet {
 	margin-top: 1vw;
 }
 
-.cpet #defaultCanvas0 {
+.cpet canvas {
 	display: none;
 }
 

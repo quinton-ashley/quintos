@@ -1,8 +1,10 @@
 # [QuintOS]
 
-Level up your coding skills by using QuintOS to create retro games and applications!
+Level up your coding skills by creating retro games and applications!
 
-At <https://quinton-ashley.github.io/quintos> you can see programs made by my students!
+On the [QuintOS webpage](https://quinton-ashley.github.io/quintos) you can see programs made by my students.
+
+QuintOS uses [q5.js] and [p5play], it's retro programming with modern JavaScript!
 
 I've developed two courses that use QuintOS: [IntroToJS] and [IntroToJava].
 
@@ -10,7 +12,7 @@ Contact me <mailto:qashto@gmail.com> for lessons! Or use the QuintOS [template p
 
 ## Features
 
-QuintOS is a JavaScript library that simulates the look and feel of retro computers and game consoles, including:
+QuintOS simulates the look and feel of retro computers and game consoles, including:
 
 - `a2` : Apple II
 - `arc` : Generic Arcade
@@ -73,12 +75,6 @@ I'd like to thank all the creators whose work is included in this project and al
   - [Dungeon Mini Tileset 6382]
   - [Pixel Tribe Man 2]
 
-#### PigeonSimulator
-
-- [Pigeons 2D Pixel Asset Pack]
-- [Tiny Tiny Heroes Animals]
-- [Pixel Sidescroller Background City]
-
 ### Sounds
 
 #### SpeakAndSpell
@@ -129,6 +125,8 @@ I'd like to thank all the creators whose work is included in this project and al
 [template project]: https://github.com/quinton-ashley/quintos-template
 [introtojava]: https://github.com/quinton-ashley/IntroToJava/blob/main/README.md
 [introtojs]: https://github.com/quinton-ashley/IntroToJS/blob/main/README.md
+[q5.js]: https://q5js.org
+[p5play]: https://p5play.org
 
 <!-----------------------------------[ Fonts ]--------------------------------->
 
@@ -143,9 +141,6 @@ I'd like to thank all the creators whose work is included in this project and al
 
 <!------------------------------------[ Art ]---------------------------------->
 
-[pixel sidescroller background city]: https://www.gamedevmarket.net/asset/pixel-sidescroller-background-city/
-[pigeons 2d pixel asset pack]: https://www.gamedevmarket.net/asset/pigeons-2d-pixel-asset-pack/
-[tiny tiny heroes animals]: https://www.gamedevmarket.net/asset/tiny-tiny-heroes-animals/
 [pixel art adventurer sprites]: https://www.gamedevmarket.net/asset/pixel-art-adventurer-sprites/
 [rpg dungeon crawl tileset]: https://www.gamedevmarket.net/asset/rpg-dungeon-crawl-tileset/
 [pixel tribe man 2]: https://www.gamedevmarket.net/asset/pixel-tribe-man-2/

@@ -31,7 +31,7 @@ body.zx {
 }
 
 .zx main,
-.zx #defaultCanvas0,
+.zx canvas,
 .zx #screen0 {
 	position: absolute;
 	top: 0;
@@ -137,13 +137,7 @@ body.zx {
 	align-items: center;
 }
 
-.tv
-	.television-container
-	.television
-	.television-inner
-	.television-screen-container
-	.television-crt
-	.television-screen {
+.tv .television-container .television .television-inner .television-screen-container .television-crt .television-screen {
 	background: #302d30;
 	width: 100%;
 	height: 100%;
@@ -153,50 +147,41 @@ body.zx {
 	position: relative;
 }
 
-.tv
-	.television-container
-	.television
-	.television-inner
-	.television-screen-container
-	.television-crt
-	.television-screen
-	.noise {
+.tv .television-container .television .television-inner .television-screen-container .television-crt .television-screen .noise {
 	width: 100%;
 	height: 100%;
-	background: linear-gradient(
-		to bottom,
-		transparent,
-		rgba(0, 0, 0, 0.05),
-		transparent,
-		transparent,
-		transparent,
-		rgba(0, 0, 0, 0.05),
-		transparent,
-		rgba(255, 255, 255, 0.05),
-		transparent,
-		rgba(255, 255, 255, 0.1),
-		transparent,
-		transparent,
-		transparent,
-		transparent,
-		transparent,
-		transparent,
-		rgba(255, 255, 255, 0.05),
-		transparent,
-		rgba(0, 0, 0, 0.03),
-		transparent,
-		transparent,
-		transparent,
-		transparent,
-		rgba(0, 0, 0, 0.05),
-		transparent,
-		rgba(0, 0, 0, 0.05),
-		transparent,
-		transparent,
-		transparent,
-		rgba(255, 255, 255, 0.2),
-		transparent
-	);
+	background: linear-gradient(to bottom,
+			transparent,
+			rgba(0, 0, 0, 0.05),
+			transparent,
+			transparent,
+			transparent,
+			rgba(0, 0, 0, 0.05),
+			transparent,
+			rgba(255, 255, 255, 0.05),
+			transparent,
+			rgba(255, 255, 255, 0.1),
+			transparent,
+			transparent,
+			transparent,
+			transparent,
+			transparent,
+			transparent,
+			rgba(255, 255, 255, 0.05),
+			transparent,
+			rgba(0, 0, 0, 0.03),
+			transparent,
+			transparent,
+			transparent,
+			transparent,
+			rgba(0, 0, 0, 0.05),
+			transparent,
+			rgba(0, 0, 0, 0.05),
+			transparent,
+			transparent,
+			transparent,
+			rgba(255, 255, 255, 0.2),
+			transparent);
 	-webkit-animation: moveBand 8s linear infinite;
 	animation: moveBand 8s linear infinite;
 	z-index: 4;
@@ -204,14 +189,7 @@ body.zx {
 	top: 0;
 }
 
-.tv
-	.television-container
-	.television
-	.television-inner
-	.television-screen-container
-	.television-crt
-	.television-screen
-	.off {
+.tv .television-container .television .television-inner .television-screen-container .television-crt .television-screen .off {
 	width: 100%;
 	height: 100%;
 	background: radial-gradient(#222, #1a1a1a, #111);
@@ -220,14 +198,7 @@ body.zx {
 	top: 0;
 }
 
-.tv
-	.television-container
-	.television
-	.television-inner
-	.television-screen-container
-	.television-crt
-	.television-screen
-	.logo-container {
+.tv .television-container .television .television-inner .television-screen-container .television-crt .television-screen .logo-container {
 	position: absolute;
 	z-index: 0;
 	width: 100%;
@@ -237,15 +208,7 @@ body.zx {
 	align-items: center;
 }
 
-.tv
-	.television-container
-	.television
-	.television-inner
-	.television-screen-container
-	.television-crt
-	.television-screen
-	.logo-container
-	.logo {
+.tv .television-container .television .television-inner .television-screen-container .television-crt .television-screen .logo-container .logo {
 	background: #f34b59;
 	width: 9vw;
 	height: 6.4vw;
@@ -255,16 +218,7 @@ body.zx {
 	place-items: center;
 }
 
-.tv
-	.television-container
-	.television
-	.television-inner
-	.television-screen-container
-	.television-crt
-	.television-screen
-	.logo-container
-	.logo
-	.play {
+.tv .television-container .television .television-inner .television-screen-container .television-crt .television-screen .logo-container .logo .play {
 	width: 3vw;
 	height: 3vw;
 	background: #fff;
@@ -272,15 +226,7 @@ body.zx {
 	clip-path: polygon(0 0, 100% 50%, 0 100%);
 }
 
-.tv
-	.television-container
-	.television
-	.television-inner
-	.television-screen-container
-	.television-crt
-	.television-screen
-	.logo-container
-	.text {
+.tv .television-container .television .television-inner .television-screen-container .television-crt .television-screen .logo-container .text {
 	font-family: 'Heading Pro', sans-serif;
 	font-size: 8.4vw;
 	color: white;
@@ -329,15 +275,7 @@ body.zx {
 	height: 100%;
 }
 
-.tv
-	.television-container
-	.television
-	.television-inner
-	.television-lateral
-	.dial-container
-	.dial
-	.data-container
-	.data {
+.tv .television-container .television .television-inner .television-lateral .dial-container .dial .data-container .data {
 	color: #888;
 	font-size: 1.2vw;
 	text-shadow: 0 0 0.4vw #888;
@@ -347,135 +285,47 @@ body.zx {
 	transform-origin: 50% 50%;
 }
 
-.tv
-	.television-container
-	.television
-	.television-inner
-	.television-lateral
-	.dial-container
-	.dial
-	.data-container
-	.data:nth-child(2) {
+.tv .television-container .television .television-inner .television-lateral .dial-container .dial .data-container .data:nth-child(2) {
 	transform: rotate(30deg);
 }
 
-.tv
-	.television-container
-	.television
-	.television-inner
-	.television-lateral
-	.dial-container
-	.dial
-	.data-container
-	.data:nth-child(3) {
+.tv .television-container .television .television-inner .television-lateral .dial-container .dial .data-container .data:nth-child(3) {
 	transform: rotate(60deg);
 }
 
-.tv
-	.television-container
-	.television
-	.television-inner
-	.television-lateral
-	.dial-container
-	.dial
-	.data-container
-	.data:nth-child(4) {
+.tv .television-container .television .television-inner .television-lateral .dial-container .dial .data-container .data:nth-child(4) {
 	transform: rotate(90deg);
 }
 
-.tv
-	.television-container
-	.television
-	.television-inner
-	.television-lateral
-	.dial-container
-	.dial
-	.data-container
-	.data:nth-child(5) {
+.tv .television-container .television .television-inner .television-lateral .dial-container .dial .data-container .data:nth-child(5) {
 	transform: rotate(120deg);
 }
 
-.tv
-	.television-container
-	.television
-	.television-inner
-	.television-lateral
-	.dial-container
-	.dial
-	.data-container
-	.data:nth-child(6) {
+.tv .television-container .television .television-inner .television-lateral .dial-container .dial .data-container .data:nth-child(6) {
 	transform: rotate(150deg);
 }
 
-.tv
-	.television-container
-	.television
-	.television-inner
-	.television-lateral
-	.dial-container
-	.dial
-	.data-container
-	.data:nth-child(7) {
+.tv .television-container .television .television-inner .television-lateral .dial-container .dial .data-container .data:nth-child(7) {
 	transform: rotate(180deg);
 }
 
-.tv
-	.television-container
-	.television
-	.television-inner
-	.television-lateral
-	.dial-container
-	.dial
-	.data-container
-	.data:nth-child(8) {
+.tv .television-container .television .television-inner .television-lateral .dial-container .dial .data-container .data:nth-child(8) {
 	transform: rotate(210deg);
 }
 
-.tv
-	.television-container
-	.television
-	.television-inner
-	.television-lateral
-	.dial-container
-	.dial
-	.data-container
-	.data:nth-child(9) {
+.tv .television-container .television .television-inner .television-lateral .dial-container .dial .data-container .data:nth-child(9) {
 	transform: rotate(240deg);
 }
 
-.tv
-	.television-container
-	.television
-	.television-inner
-	.television-lateral
-	.dial-container
-	.dial
-	.data-container
-	.data:nth-child(10) {
+.tv .television-container .television .television-inner .television-lateral .dial-container .dial .data-container .data:nth-child(10) {
 	transform: rotate(270deg);
 }
 
-.tv
-	.television-container
-	.television
-	.television-inner
-	.television-lateral
-	.dial-container
-	.dial
-	.data-container
-	.data:nth-child(11) {
+.tv .television-container .television .television-inner .television-lateral .dial-container .dial .data-container .data:nth-child(11) {
 	transform: rotate(300deg);
 }
 
-.tv
-	.television-container
-	.television
-	.television-inner
-	.television-lateral
-	.dial-container
-	.dial
-	.data-container
-	.data:nth-child(12) {
+.tv .television-container .television .television-inner .television-lateral .dial-container .dial .data-container .data:nth-child(12) {
 	transform: rotate(330deg);
 }
 
@@ -641,6 +491,7 @@ body.zx {
 	0% {
 		background-position-y: 0, 0;
 	}
+
 	100% {
 		background-position-y: -44.2vw, -30vw;
 	}
@@ -650,6 +501,7 @@ body.zx {
 	0% {
 		background-position-y: 0, 0;
 	}
+
 	100% {
 		background-position-y: -44.2vw, -30vw;
 	}
@@ -833,15 +685,13 @@ body.zx {
 	border-radius: 2.5vw 2.5vw 0.5vw 0.5vw;
 	background: #272729;
 	background: linear-gradient(to right, transparent 96%, #0002 98%, #fff2 99%),
-		linear-gradient(
-			113deg,
+		linear-gradient(113deg,
 			transparent 0 71.5vw,
 			#ea5a48 71.6vw 72.7vw,
 			#e0c92b 72.8vw 73.8vw,
 			#66ae43 73.8vw 75vw,
 			#70b9e6 75vw 76.2vw,
-			transparent 762px
-		),
+			transparent 762px),
 		linear-gradient(to right, #1f1f21 0, #4d4b50 1%, #323136 2.5% 97%, #4d4b50cc 99%, #1f1f21 100%);
 	transform: translateY(-40px);
 	display: flex;
@@ -855,7 +705,7 @@ body.zx {
 	margin-top: 0.8vw;
 }
 
-.zx-spectrum .zx-spectrum-keyboard .keyboard-container > .keyboard-row {
+.zx-spectrum .zx-spectrum-keyboard .keyboard-container>.keyboard-row {
 	width: 100%;
 	display: flex;
 	align-items: flex-end;
@@ -888,21 +738,11 @@ body.zx {
 	transform: translateX(30px);
 }
 
-.zx-spectrum
-	.zx-spectrum-keyboard
-	.keyboard-container
-	.keyboard-row-2
-	.key-container:is(:nth-child(1), :nth-child(2), :nth-child(3))
-	.secondary {
+.zx-spectrum .zx-spectrum-keyboard .keyboard-container .keyboard-row-2 .key-container:is(:nth-child(1), :nth-child(2), :nth-child(3)) .secondary {
 	letter-spacing: 0.31vw;
 }
 
-.zx-spectrum
-	.zx-spectrum-keyboard
-	.keyboard-container
-	.keyboard-row-2
-	.key-container:is(:nth-child(1), :nth-child(2), :nth-child(3), :nth-child(4), :nth-child(5))
-	.secondary {
+.zx-spectrum .zx-spectrum-keyboard .keyboard-container .keyboard-row-2 .key-container:is(:nth-child(1), :nth-child(2), :nth-child(3), :nth-child(4), :nth-child(5)) .secondary {
 	font-size: 1.2vw;
 }
 
