@@ -12,11 +12,12 @@ if (typeof QuintOS == 'undefined') {
 }
 
 {
-	let url = document.currentScript.src;
-	QuintOS.web ??= url.includes('quinton-ashley.github.io');
+	let src = document.currentScript.src;
+	QuintOS.web ??= src.includes('quinton-ashley.github.io');
 
 	QuintOS.root = QuintOS.web ? 'https://quinton-ashley.github.io' : './node_modules';
 
+	let url = location.href;
 	if (url.includes('?')) {
 		let params = new URLSearchParams(url.split('?')[1]);
 		for (let pair of params.entries()) {
