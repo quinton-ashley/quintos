@@ -12,19 +12,13 @@ if (typeof QuintOS == 'undefined') {
 }
 
 {
-	let url = location.href.split('?');
-	QuintOS.web ??= location.hostname != '127.0.0.1' || url[1] || location.href.slice(-9) == 'home.html';
-	if (!QuintOS.web) QuintOS.web = false;
+	let url = document.currentScript.src;
+	QuintOS.web ??= url.includes('quinton-ashley.github.io');
 
-	if (!QuintOS.web) {
-		document.head.innerHTML += '<link rel="icon" href="node_modules/quintos/favicon.png" />';
-	}
+	QuintOS.root = QuintOS.web ? 'https://quinton-ashley.github.io' : './node_modules';
 
-	QuintOS.root = './node_modules';
-	if (QuintOS.web) QuintOS.root = 'https://quinton-ashley.github.io';
-
-	if (url.length > 1) {
-		let params = new URLSearchParams(url[1]);
+	if (url.includes('?')) {
+		let params = new URLSearchParams(url.split('?')[1]);
 		for (let pair of params.entries()) {
 			let k = pair[0].toLowerCase();
 			let v = pair[1];
@@ -1150,10 +1144,10 @@ p5.prototype.registerMethod('init', async function quintosInit() {
 	document.head.innerHTML += `
 <style>
 row {
-	height: ${100 / QuintOS.rows}%;
+	height: ${100 / QuintOS.rows}% !important;
 }
 tile {
-	width: ${100 / QuintOS.cols}%;
+	width: ${100 / QuintOS.cols}% !important;
 }
 </style>`;
 
